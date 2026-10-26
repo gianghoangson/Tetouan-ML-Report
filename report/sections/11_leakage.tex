@@ -1,0 +1,47 @@
+\section{Data Leakage Investigation}\label{sec:leakage}
+\subsection{Availability, chronology and what is verified}
+For an issuance time $\tau$, an operational forecast should depend only on information available by $\tau$. Writing that information as $\mathcal I_\tau$, a deployable prediction satisfies $\widehat y_t=f(\mathcal I_\tau)$ for a future target interval $t$. A feature can precede its target in a DataFrame while still be unavailable at the intended issuance time. Conversely, a future calendar value is normally known in advance and is not leakage merely because its date lies after training.
+
+The pipeline implements several verified protections: chronological fit/evaluation partitions; training-fitted input and target scaling; training-only mean profiles; shifted load lags and rolling windows; and numerical checks of history construction. Notebook 02 deliberately inserts an unshifted rolling feature and detects it. This negative test establishes that the checker catches that construction error; it does not show that the final model uses the deliberately corrupted feature. No main-model same-hour zone input or unshifted target-derived rolling predictor was found.
+
+Target-hour weather is a distinct, confirmed availability mismatch for advance forecasting. Its hourly average is observed during the interval being predicted and is passed to the model without shifting. It is not an archived weather forecast available at midnight or before the next hour. If the reported scores were presented as fully operational advance forecasts, this would constitute look-ahead information. Under the explicitly stated oracle-weather experiment, the scores instead describe conditional predictive performance; the deployment limitation remains real and unquantified. The weather-free tree ablation does not resolve it for the selected SVR.
+
+Immediate delivery of completed-hour load measurements is another assumption, rather than a verified data-service capability. The notebook checks historical indices, not acquisition latency. Full-year descriptive EDA, development-fold reuse and documented test reruns additionally weaken claims of an independently hidden test. These limitations should be stated separately from an assertion that evaluation labels were directly used to fit the main estimator, which the inspected training code does not show.
+
+\subsection{S1--S4 design}
+Notebook 08 conducts diagnostics after final evaluation. The same absolute RF parameter values are used in S1--S4: 200 trees, maximum depth 30, minimum leaf size two and feature fraction 0.8. Input dimensions differ, so that fraction can correspond to different numbers of candidate split features. \Cref{tab:leakage} records sample counts and metrics.
+
+S1 uses ten-minute observations with five weather variables and eight calendar fields: month, day, hour, minute, day of year, week of year, weekday and quarter. After the common initial lag-related row removal, \num{52415} rows are randomly split 75/25 with seed 42. S2 uses the same shuffled split and adds the immediately previous ten-minute load. S3 uses chronological fitting before December and evaluates all \num{4320} December ten-minute targets; it retains the short lag, removes day of year, and retains the other calendar fields, including month and day. S4 returns to the 17-feature hourly h24 pipeline with \num{7825} development and 720 test rows.
+\input{report/tables/leakage.tex}
+
+S1 achieves RMSE \num{1325.3} kW and MAPE \num{1.25}\%; S2 achieves \num{620.0} kW and \num{0.61}\%. S3 reaches \num{644.0} kW and \num{0.74}\%, while S4 reaches \num{2017.1} kW and \num{2.19}\%. S4 reproduces the absolute tuned RF result in \cref{tab:test24}; it is not the selected SVR's test score. \Cref{fig:leakage_settings} plots MAPE and unexplained variance, $1-R^2$, for these same rows.
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{F16_leakage_settings.png}
+\caption{RF diagnostic results under four evaluation settings (F16). The original image title attributes score inflation to leakage; the experiment changes split, features, target resolution and forecast horizon, so the bars do not isolate a leakage effect.}\label{fig:leakage_settings}
+\end{figure}
+
+\subsection{What the diagnostic comparisons establish}
+Shuffled training can contain dates later than an evaluated target, including temporally nearby observations. This violates a past-only fitting protocol for prospective forecasting and favors interpolation within an observed year. S2 additionally has a concrete route by which held-out responses enter fitting inputs: its lag is constructed before splitting, so a held-out $y_t$ becomes \code{lag_10min} in the training row at $t+10$ minutes whenever that successor is assigned to training. Reconstructing only the saved seed-42 row split verifies \num{9834} such held-out responses among \num{13104} test rows. This is a dependency across the shuffled holdout boundary, not evidence that the main chronological model was fitted on December responses. Legitimately updating past observations during chronological forecasting has a different information ordering.
+
+S1--S4 do not estimate how much of their score difference is caused by either leakage mechanism. S1 versus S2 changes one feature within the shared shuffled setting, but that added lag introduces both useful recent history and the cross-boundary response dependency; its accuracy benefit cannot be assigned to history alone. S2 versus S3 changes split, calendar inputs, training size and test population. S3 versus S4 changes resolution, historical inputs and the effective forecasting task. All settings also use contemporaneous observed weather.
+
+A ten-minute-ahead forecast with an available lag is a legitimate shorter-horizon task. Month and day of year are known at prediction time, although a model trained on shuffled dates may learn within-year patterns that do not transfer to future periods. S1's absence of load lags does not alone rule out forecasting if suitable future covariates are available. The critical issues are predictor availability and whether the fitted/evaluated distributions match intended use.
+
+RMSE and MAE retain the same kW unit across settings, but their targets represent different averaging intervals and test observations. MAPE and R$^2$ remove a common multiplicative scale; they do not equalize temporal resolution, target variation, forecast horizon or test difficulty. Consequently, neither the low ten-minute errors nor their ratios to S4 support a causal ``price of leakage'' or a universal correction factor for published scores.
+
+\subsection{Shuffled KFold versus temporal model selection}
+The supplementary RF experiment is more closely controlled: the h24 development data, feature set, seed, sampled search space and 20-candidate budget are common. It compares shuffled five-fold KFold with the existing expanding temporal folds, refits each selected configuration on development data, and evaluates December. This is a separate diagnostic search, not the main 30-candidate RF tuning result.
+\input{report/tables/kfold.tex}
+
+As \cref{tab:kfold} shows, KFold selects a configuration with CV RMSE \num{2007.6} kW and December RMSE \num{2173.6} kW. The temporal search gives \num{3012.4} and \num{2044.2} kW. The table's signed discrepancy is
+\begin{equation}
+O=100\left(\frac{\mathrm{RMSE}_{\mathrm{December}}}{\overline{\mathrm{RMSE}}_{\mathrm{CV}}}-1\right),
+\label{eq:optimism}
+\end{equation}
+giving $+\num{8.27}\%$ for KFold and $-\num{32.14}\%$ for temporal CV. In this realization, KFold is optimistic relative to December and selects a model with worse December RMSE. Temporal CV includes difficult summer windows and is more pessimistic for this test month. The fold strategies also differ in training sizes and validation populations; this is not repeated evidence of a universal bias magnitude.
+
+The selected KFold RF has 300 trees, depth 20, minimum leaf size one and square-root feature sampling. The temporal counterpart has 500 trees, depth ten, minimum leaf size two and feature fraction 0.8. Their different test results illustrate that validation can change the selected estimator, not just the reported score. Because these diagnostics reuse December after final analysis, they are explanatory follow-up experiments and do not provide an additional independent holdout.
+
+\subsection{Implications for trustworthy reporting}
+The GitHub survey in \cref{tab:survey} documents heterogeneous practices and seven shuffled evaluations among ten entries. It is a repository-authored survey, not an independent reproduction of each project, and it cannot establish the prevalence of leakage across the wider literature. The present evidence supports documenting issuance, target resolution, covariate availability, temporal fitting and selection history alongside every accuracy result. A controlled future study would vary one factor at a time on matched targets and evaluate forecasts with an issuance-time weather archive. Such a study is not implemented here.
+\evidence{Notebook 08 cells 4--17; T11, T12 and T12b; notebook 02 history checks; \code{src/features.py}; \code{docs/kaggle_survey.csv}; \code{report/evidence/peer_review_checks.json} for the index-only S2 dependency check. No model was refitted for this verification.}

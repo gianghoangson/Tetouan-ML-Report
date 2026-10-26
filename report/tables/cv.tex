@@ -1,0 +1,17 @@
+\begin{table}[tbp]\centering\small
+\caption{Default-model development CV, h24 (T05). SD is the sample standard deviation over five folds, not a confidence interval. Errors in kW; MAPE in percent.}\label{tab:cv}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\toprule
+Model & RMSE mean $\pm$ SD & MAE & MAPE & R$^2$ \\
+\midrule
+LR & \num{2792.3} $\pm$ \num{623.3} & \num{2101.0} & \num{2.95} & \num{0.9651} \\
+RF & \num{3069.5} $\pm$ \num{1488.8} & \num{2168.6} & \num{2.82} & \num{0.9582} \\
+XGB & \num{3264.8} $\pm$ \num{1815.8} & \num{2328.0} & \num{2.99} & \num{0.9510} \\
+Naive-24h & \num{3392.4} $\pm$ \num{421.5} & \num{2371.7} & \num{3.28} & \num{0.9497} \\
+SVR & \num{3968.7} $\pm$ \num{2891.5} & \num{2753.4} & \num{3.44} & \num{0.9224} \\
+DT & \num{4048.2} $\pm$ \num{1410.4} & \num{2915.3} & \num{3.87} & \num{0.9294} \\
+Naive-168h & \num{4892.6} $\pm$ \num{2297.1} & \num{3655.4} & \num{4.92} & \num{0.8887} \\
+MeanProfile & \num{12005.1} $\pm$ \num{5972.6} & \num{10845.5} & \num{13.83} & \num{0.3746} \\
+\bottomrule\end{tabular}
+\end{table}

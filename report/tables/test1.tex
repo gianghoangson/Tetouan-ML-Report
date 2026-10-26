@@ -1,0 +1,18 @@
+\begin{table}[tbp]\centering\small
+\caption{December h1 evaluation (T08), ordered by observed RMSE. The CV-selected model is SVR-tuned. This ordering does not redefine selection. RMSE/MAE in kW; skill is RMSE reduction against Naive-24h.}\label{tab:test1}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & RMSE & MAE & MAPE (\%) & R$^2$ & Skill (\%) \\
+\midrule
+SVR-tuned & \num{1195.8} & \num{861.8} & \num{1.41} & \num{0.9929} & \num{63.72} \\
+XGB $\Delta$-tuned & \num{1256.6} & \num{826.6} & \num{1.37} & \num{0.9921} & \num{61.88} \\
+RF $\Delta$-tuned & \num{1394.1} & \num{918.4} & \num{1.53} & \num{0.9903} & \num{57.71} \\
+LR $\Delta$-tuned & \num{1997.2} & \num{1481.5} & \num{2.42} & \num{0.9801} & \num{39.41} \\
+DT $\Delta$-tuned & \num{2595.1} & \num{1458.0} & \num{2.46} & \num{0.9665} & \num{21.27} \\
+Naive-168h & \num{2619.8} & \num{1775.4} & \num{2.87} & \num{0.9658} & \num{20.52} \\
+Naive-24h & \num{3296.3} & \num{2071.5} & \num{3.39} & \num{0.9459} & \num{0.00} \\
+Persistence & \num{5475.3} & \num{3946.6} & \num{6.23} & \num{0.8508} & \num{-66.11} \\
+MeanProfile & \num{9581.7} & \num{8947.1} & \num{14.63} & \num{0.5431} & \num{-190.68} \\
+\bottomrule\end{tabular}
+\end{table}

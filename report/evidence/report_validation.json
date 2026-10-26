@@ -1,0 +1,994 @@
+{
+  "scope": "Complete integrated report; no ML experiments executed",
+  "passed": 223,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "All transitive LaTeX inputs exist",
+      "passed": true
+    },
+    {
+      "check": "Exactly thirteen main section files integrated",
+      "passed": true
+    },
+    {
+      "check": "Supplementary appendix integrated",
+      "passed": true
+    },
+    {
+      "check": "No duplicate labels in include graph",
+      "passed": true
+    },
+    {
+      "check": "Every explicit reference label is defined",
+      "passed": true
+    },
+    {
+      "check": "Bibliography has unique keys",
+      "passed": true
+    },
+    {
+      "check": "All citation keys resolve",
+      "passed": true
+    },
+    {
+      "check": "All bibliography entries are cited",
+      "passed": true
+    },
+    {
+      "check": "Bibliography braces balance",
+      "passed": true
+    },
+    {
+      "check": "Declared bibliography resource exists",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/main.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/main.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/main.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/01_introduction.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/01_introduction.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/01_introduction.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/02_related_work.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/02_related_work.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/02_related_work.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/03_dataset_eda.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/03_dataset_eda.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/03_dataset_eda.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/descriptive.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/descriptive.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/descriptive.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/04_preprocessing_features.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/04_preprocessing_features.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/04_preprocessing_features.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/05_methodology.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/05_methodology.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/05_methodology.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/splits.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/splits.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/splits.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/folds.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/06_baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/06_baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/06_baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/07_cross_validation.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/07_cross_validation.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/07_cross_validation.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/08_hyperparameter_tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/08_hyperparameter_tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/08_hyperparameter_tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/09_ablation_horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/09_ablation_horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/09_ablation_horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/10_final_evaluation.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/10_final_evaluation.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/10_final_evaluation.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/test24.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/test24.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/test24.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/test1.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/test1.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/test1.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/worst_days.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/worst_days.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/worst_days.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/11_leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/11_leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/11_leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/kfold.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/kfold.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/kfold.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/12_discussion.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/12_discussion.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/12_discussion.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/runtime.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/runtime.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/runtime.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/sections/13_conclusion.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/sections/13_conclusion.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/sections/13_conclusion.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/appendices/supplementary.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/appendices/supplementary.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/appendices/supplementary.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/dependencies.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/dependencies.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/dependencies.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/cv_variability.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/cv_variability.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/cv_variability.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/parameters.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/parameters.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/parameters.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/search_inventory.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/search_inventory.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/search_inventory.tex",
+      "passed": true
+    },
+    {
+      "check": "Balanced unescaped braces: report/tables/survey.tex",
+      "passed": true
+    },
+    {
+      "check": "Matched environments: report/tables/survey.tex",
+      "passed": true
+    },
+    {
+      "check": "No corrupt control characters: report/tables/survey.tex",
+      "passed": true
+    },
+    {
+      "check": "Figure 1: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 2: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F02_zones_daily.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 3: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 4: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F04_heatmap_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 5: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F05_ramadan_profile.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 6: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F06a_temperature_vs_total.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 7: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F06b_correlation.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 8: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F07_acf_total.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 9: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F10_split_and_folds.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 10: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 11: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F11b_week_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 12: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 13: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 14: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 15: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F15b_horizon.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 16: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F17_test_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 17: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F17b_residuals.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 18: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F18_error_by_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 19: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F19a_feature_importance.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 20: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F19b_shap_summary.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 21: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F16_leakage_settings.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 22: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: DQ01_zone_transfer_20170420.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 23: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: DQ02_windspeed_bimodal.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 24: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F08_weekday_holiday.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 25: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F17c_scatter.png",
+      "passed": true
+    },
+    {
+      "check": "Figure 26: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure asset exists: F19c_shap_dependence.png",
+      "passed": true
+    },
+    {
+      "check": "Table 1: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 2: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 3: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 4: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 5: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 6: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 7: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 8: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 9: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 10: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 11: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 12: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 13: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 14: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 15: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 16: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 17: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 18: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 19: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 20: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 21: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 22: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 23: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Table 24: caption, label, in-text reference",
+      "passed": true
+    },
+    {
+      "check": "All 22 generated evidence tables are included",
+      "passed": true
+    },
+    {
+      "check": "Abstract is approximately 200--250 words",
+      "passed": true
+    },
+    {
+      "check": "All saved detailed numerical checks passed",
+      "passed": true
+    },
+    {
+      "check": "CV-selected h24 variant remains absolute SVR",
+      "passed": true
+    },
+    {
+      "check": "Observed h24 test-best variant is residual SVR",
+      "passed": true
+    },
+    {
+      "check": "h24 selected-SVR narrative RMSE",
+      "passed": true
+    },
+    {
+      "check": "h24 selected-SVR narrative MAE",
+      "passed": true
+    },
+    {
+      "check": "h24 selected-SVR narrative MAPE",
+      "passed": true
+    },
+    {
+      "check": "h24 selected-SVR narrative R2",
+      "passed": true
+    },
+    {
+      "check": "h1 selected-SVR narrative RMSE",
+      "passed": true
+    },
+    {
+      "check": "h1 selected-SVR narrative MAE",
+      "passed": true
+    },
+    {
+      "check": "h1 selected-SVR narrative MAPE",
+      "passed": true
+    },
+    {
+      "check": "h1 selected-SVR narrative R2",
+      "passed": true
+    },
+    {
+      "check": "Residual SVR test narrative RMSE",
+      "passed": true
+    },
+    {
+      "check": "h24 selected daily-naive skill is 50.71 percent",
+      "passed": true
+    },
+    {
+      "check": "h1 selected skills are 63.72 and 78.16 percent",
+      "passed": true
+    },
+    {
+      "check": "Selected h24 test RMSE is 32.60 percent below development mean",
+      "passed": true
+    },
+    {
+      "check": "h1 RMSE and MAE/MAPE winners differ as stated",
+      "passed": true
+    },
+    {
+      "check": "Selected h24 diagnostic: bias",
+      "passed": true
+    },
+    {
+      "check": "Selected h24 diagnostic: minimum error",
+      "passed": true
+    },
+    {
+      "check": "Selected h24 diagnostic: maximum error",
+      "passed": true
+    },
+    {
+      "check": "Selected h24 diagnostic: December mean",
+      "passed": true
+    },
+    {
+      "check": "Worst day and MAE match narrative",
+      "passed": true
+    },
+    {
+      "check": "S4 reproduces absolute RF rather than selected SVR",
+      "passed": true
+    },
+    {
+      "check": "KFold and TSCV signed discrepancies match narrative",
+      "passed": true
+    },
+    {
+      "check": "Original audited artifacts retain their SHA-256 hashes",
+      "passed": true
+    }
+  ],
+  "section_count": 13,
+  "figure_count": 26,
+  "table_count": 24,
+  "bibliography_entries": 12,
+  "cited_entries": 12,
+  "abstract_word_count": 233,
+  "included_files": [
+    "report/main.tex",
+    "report/sections/01_introduction.tex",
+    "report/sections/02_related_work.tex",
+    "report/sections/03_dataset_eda.tex",
+    "report/tables/descriptive.tex",
+    "report/sections/04_preprocessing_features.tex",
+    "report/sections/05_methodology.tex",
+    "report/tables/splits.tex",
+    "report/tables/folds.tex",
+    "report/sections/06_baselines.tex",
+    "report/tables/baselines.tex",
+    "report/sections/07_cross_validation.tex",
+    "report/tables/cv.tex",
+    "report/tables/cv_folds.tex",
+    "report/sections/08_hyperparameter_tuning.tex",
+    "report/tables/search_space.tex",
+    "report/tables/selected_h24.tex",
+    "report/tables/tuning.tex",
+    "report/sections/09_ablation_horizon.tex",
+    "report/tables/ablation.tex",
+    "report/tables/horizon.tex",
+    "report/sections/10_final_evaluation.tex",
+    "report/tables/test24.tex",
+    "report/tables/test1.tex",
+    "report/tables/worst_days.tex",
+    "report/sections/11_leakage.tex",
+    "report/tables/leakage.tex",
+    "report/tables/kfold.tex",
+    "report/sections/12_discussion.tex",
+    "report/tables/runtime.tex",
+    "report/sections/13_conclusion.tex",
+    "report/appendices/supplementary.tex",
+    "report/tables/dependencies.tex",
+    "report/tables/cv_variability.tex",
+    "report/tables/parameters.tex",
+    "report/tables/search_inventory.tex",
+    "report/tables/survey.tex"
+  ],
+  "figure_assets": [
+    "F01_total_hourly_year.png",
+    "F02_zones_daily.png",
+    "F03_profile_by_season.png",
+    "F04_heatmap_hour_weekday.png",
+    "F05_ramadan_profile.png",
+    "F06a_temperature_vs_total.png",
+    "F06b_correlation.png",
+    "F07_acf_total.png",
+    "F10_split_and_folds.png",
+    "F11_level1_vs_baselines.png",
+    "F11b_week_actual_vs_pred.png",
+    "F12_rmse_per_fold.png",
+    "F13_default_vs_tuned.png",
+    "F15_ablation.png",
+    "F15b_horizon.png",
+    "F17_test_actual_vs_pred.png",
+    "F17b_residuals.png",
+    "F18_error_by_hour_weekday.png",
+    "F19a_feature_importance.png",
+    "F19b_shap_summary.png",
+    "F16_leakage_settings.png",
+    "DQ01_zone_transfer_20170420.png",
+    "DQ02_windspeed_bimodal.png",
+    "F08_weekday_holiday.png",
+    "F17c_scatter.png",
+    "F19c_shap_dependence.png"
+  ],
+  "missing_inputs": [],
+  "duplicate_labels": [],
+  "unresolved_source_references": [],
+  "missing_citation_keys": [],
+  "changed_original_artifacts": [],
+  "prior_numerical_checks": 118,
+  "tool_paths": {
+    "pdflatex": "D:\\MiKTeX\\miktex\\bin\\x64\\pdflatex.EXE",
+    "biber": "D:\\MiKTeX\\miktex\\bin\\x64\\biber.EXE",
+    "latexmk": "D:\\MiKTeX\\miktex\\bin\\x64\\latexmk.EXE"
+  },
+  "compilation": {
+    "attempted": true,
+    "pdf_success": false,
+    "missing_packages": [
+      "geometry.sty"
+    ],
+    "unresolved_log_warnings": [],
+    "overfull_box_messages": [],
+    "layout_validated": false,
+    "note": "Compiler was invoked with automatic package installation disabled. A failed early build cannot establish layout or bibliography resolution."
+  }
+}

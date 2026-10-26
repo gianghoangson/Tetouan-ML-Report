@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check": "EDA month 7 mean rounds to narrative",
+      "passed": true
+    },
+    {
+      "check": "EDA month 11 mean rounds to narrative",
+      "passed": true
+    },
+    {
+      "check": "EDA month 12 mean rounds to narrative",
+      "passed": true
+    },
+    {
+      "check": "Raw total mean rounds to 71222.9 kW",
+      "passed": true
+    },
+    {
+      "check": "Wind proportions match narrative",
+      "passed": true
+    },
+    {
+      "check": "Sunday mean difference rounds to -5.9 percent",
+      "passed": true
+    },
+    {
+      "check": "Development ACF agrees at reported precision",
+      "passed": true
+    },
+    {
+      "check": "S2 split counts reproduce saved T12",
+      "passed": true
+    },
+    {
+      "check": "S2 contains held-out targets in successor training-row lag inputs",
+      "passed": true
+    },
+    {
+      "check": "S2 count in the reviewed report is 9834 of 13104",
+      "passed": true
+    },
+    {
+      "check": "Identified successor features equal their held-out predecessor targets",
+      "passed": true
+    },
+    {
+      "check": "Monday selected/naive MAEs round to 1007/5294",
+      "passed": true
+    },
+    {
+      "check": "Wednesday selected/naive MAEs round to 710/562",
+      "passed": true
+    },
+    {
+      "check": "Tuned CV RMSE/MAE/MAPE winners match audit",
+      "passed": true
+    }
+  ],
+  "passed": 14,
+  "failed": 0,
+  "S2_test_targets_in_training_lags": 9834,
+  "S2_fraction_of_test_targets_in_training_lags": 0.7504578754578755,
+  "h24_tuned_cv_metric_winners": {
+    "RMSE": "SVR",
+    "MAE": "RF_delta",
+    "MAPE": "RF_delta"
+  },
+  "development_acf": {
+    "24": 0.9770493217208852,
+    "168": 0.947011684238497
+  },
+  "weekday_mae": {
+    "0": {
+      "SVR-tuned": 1006.747402654854,
+      "Naive-24h": 5294.268227498264
+    },
+    "2": {
+      "SVR-tuned": 709.603501962746,
+      "Naive-24h": 561.6591035694445
+    }
+  },
+  "note": "Index-only split and saved-data calculations; no training or performance re-estimation."
+}

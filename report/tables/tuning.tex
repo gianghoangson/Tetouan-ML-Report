@@ -1,0 +1,19 @@
+\begin{table}[tbp]\centering\small
+\caption{Tuned h24 development CV (T07). RMSE and its SD are in kW. Improvement compares each row with the absolute default model of that family; $\Delta$ rows combine tuning with a target change.}\label{tab:tuning}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\toprule
+Variant & Default RMSE & Tuned RMSE $\pm$ SD & Gain (\%) & MAPE (\%) \\
+\midrule
+SVR & \num{3968.7} & \num{2410.6} $\pm$ \num{766.3} & \num{39.26} & \num{2.42} \\
+SVR $\Delta$ & \num{3968.7} & \num{2427.1} $\pm$ \num{773.7} & \num{38.84} & \num{2.41} \\
+RF $\Delta$ & \num{3069.5} & \num{2429.3} $\pm$ \num{800.7} & \num{20.86} & \num{2.36} \\
+XGB $\Delta$ & \num{3264.8} & \num{2441.0} $\pm$ \num{785.5} & \num{25.23} & \num{2.38} \\
+DT $\Delta$ & \num{4048.2} & \num{2524.9} $\pm$ \num{851.9} & \num{37.63} & \num{2.40} \\
+LR $\Delta$ & \num{2792.3} & \num{2770.0} $\pm$ \num{591.6} & \num{0.80} & \num{2.87} \\
+LR & \num{2792.3} & \num{2792.3} $\pm$ \num{623.3} & \num{0.00} & \num{2.95} \\
+XGB & \num{3264.8} & \num{3009.9} $\pm$ \num{1470.2} & \num{7.81} & \num{2.80} \\
+RF & \num{3069.5} & \num{3010.4} $\pm$ \num{1588.7} & \num{1.93} & \num{2.75} \\
+DT & \num{4048.2} & \num{3589.7} $\pm$ \num{1756.1} & \num{11.33} & \num{3.34} \\
+\bottomrule\end{tabular}
+\end{table}

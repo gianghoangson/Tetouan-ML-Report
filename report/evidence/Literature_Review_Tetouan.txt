@@ -1,0 +1,1503 @@
+--- PDF PAGE 1 ---
+Literature Review of Machine-Learning-Based
+Power Consumption Forecasting in Tetouan City
+Machine Learning Project Literature Analysis
+1
+Introduction
+Electricity-demand forecasting is an important component of modern energy-management systems.
+Accurate forecasts can support generation planning, load balancing, resource allocation, demand
+management, and efficient electricity distribution.
+This literature review focuses on studies using the Power Consumption of Tetouan City dataset.
+Since the present project is conducted in the context of a Machine Learning course, conventional
+machine-learning studies are treated as the primary sources for algorithm selection and model devel-
+opment.
+Studies based on deep learning, statistical forecasting, or other specialized time-series models are
+included only when they provide useful methodological ideas related to:
+• data preprocessing,
+• target construction,
+• temporal feature engineering,
+• lag construction,
+• train–validation–test splitting,
+• time-series cross-validation,
+• leakage prevention,
+• scaling,
+• hyperparameter optimization,
+• realistic forecasting evaluation.
+Therefore, the objective of this review is not only to identify which algorithms have previously been
+applied, but also to understand how different studies process the data, construct their features, divide
+the time series, train their models, and evaluate forecasting performance.
+2
+Dataset
+The Power Consumption of Tetouan City dataset contains electricity-consumption measurements
+collected from three electricity distribution networks in Tetouan, Morocco.
+The three electricity-consumption zones are:
+• Zone 1: Quads,
+• Zone 2: Smir,
+• Zone 3: Boussafou.
+1
+
+
+--- PDF PAGE 2 ---
+Measurements were recorded at 10-minute intervals throughout 2017.
+The dataset contains:
+52, 417 observations.
+The main explanatory variables are:
+• DateTime,
+• Temperature,
+• Humidity,
+• Wind Speed,
+• General Diffuse Flows,
+• Diffuse Flows.
+The three power-consumption variables are:
+• Zone 1 Power Consumption,
+• Zone 2 Power Consumption,
+• Zone 3 Power Consumption.
+According to the UCI Machine Learning Repository, the published dataset contains no missing values.
+Dataset link:
+https://archive-beta.ics.uci.edu/dataset/849/power+consumption+of+tetouan+city
+Dataset DOI:
+https://doi.org/10.24432/C5B034
+3
+Overview of Relevant Literature
+Table 1 summarizes the principal studies considered in this review.
+Journal rankings are reported using the SJR quartile where a verified journal ranking is available.
+Conference papers are not assigned a journal quartile.
+Table 1: Overview of selected studies using the Tetouan City dataset.
+ID
+Paper
+Year
+Venue
+Ranking
+P1
+Comparison of Machine Learning
+Algorithms for the Power Con-
+sumption Prediction: Case Study
+of Tetouan City
+2018
+6th International Re-
+newable and Sustainable
+Energy Conference (IR-
+SEC), IEEE
+Conference
+P2
+A Novel Optimized Variant of Ma-
+chine Learning Algorithm for Ac-
+curate Energy Demand Prediction
+for Tetouan City, Morocco
+2023
+ICACECS 2023, Atlantis
+Highlights in Computer
+Sciences
+Conference
+Continued on next page
+2
+
+
+--- PDF PAGE 3 ---
+ID
+Paper
+Year
+Venue
+Ranking
+P3
+Comparing Long Short-Term Mem-
+ory (LSTM) and Bidirectional
+LSTM Deep Neural Networks for
+Power Consumption Prediction
+2023
+Energy Reports
+SJR Q1
+P4
+Forecasting Tetouan Energy De-
+mand Employing Shift Approach
+in Machine-Learning: Comple-
+menting Econometric Insights
+2025
+Quality & Quantity
+SJR Q1
+P5
+A Hybrid Time Series Forecast-
+ing Approach Integrating Fuzzy
+Clustering and Machine Learning
+for Enhanced Power Consumption
+Prediction
+2025
+Scientific Reports
+SJR Q1
+P6
+Electricity Demand Forecasting for
+Tetouan, Morocco Using Darts in
+Machine-Learning: A Comparative
+Study of Forecasting Models
+2026
+Results in Engineering
+SJR Q1
+Key Insights and Implications
+The literature shows a clear evolution in the use of the Tetouan City dataset.
+Earlier work, particularly P1, mainly focused on conventional regression algorithms such as Linear
+Regression, Decision Tree, Random Forest, and Support Vector Regression.
+Later studies gradually introduced:
+• more sophisticated feature engineering,
+• historical electricity-demand features,
+• systematic hyperparameter optimization,
+• improved temporal validation,
+• more recent ensemble-learning methods such as XGBoost.
+An important implication for the current project is that a meaningful contribution does not neces-
+sarily require a deep-learning model.
+Instead, conventional ML algorithms can be retained while improving the overall experimental
+methodology through:
+better features + temporal validation + systematic tuning.
+The continued appearance of the Tetouan dataset in recent journal publications also indicates that
+the dataset remains useful for benchmarking electricity-demand forecasting methodologies.
+3
+
+
+--- PDF PAGE 4 ---
+4
+Algorithms Used in Previous Studies
+The conventional machine-learning studies are particularly important for determining which algo-
+rithms should be used as baselines in the current project.
+4
+
+
+--- PDF PAGE 5 ---
+Table 2: Algorithms and methodological roles of the selected studies.
+ID
+Algorithms
+Method Summary
+Main Relevance
+P1
+Linear Regression,
+Decision Tree,
+Random Forest,
+SVR with RBF kernel,
+Feedforward Neural Network
+Five regression approaches were com-
+pared under a common preprocessing
+framework.
+Hyperparameters were optimized using
+Grid Search and cross-validation.
+Random-Forest-based feature importance
+was also investigated.
+Random Forest produced the strongest re-
+ported performance.
+P1 therefore provides the original conven-
+tional ML baseline for the Tetouan dataset.
+P2
+26 ML variants including:
+Linear Regression,
+Decision Trees,
+SVM,
+Ensemble Trees,
+Gaussian Process Regression,
+ANN,
+kernel-based regression
+A large collection of regression models
+was first compared.
+Fine Tree was subsequently selected and
+optimized using Bayesian Optimization,
+Grid Search, and Random Search.
+Shows that the optimization strategy can
+significantly influence the performance of the
+same underlying ML model.
+However, its reported best-model interpreta-
+tion contains an internal inconsistency.
+P4
+FB-Prophet,
+Neural Prophet
+Uses a shift-based forecasting design in
+which the current power-consumption
+value contributes to prediction of the
+following time step.
+Predictions can subsequently be fed re-
+cursively into later forecasts.
+The algorithms themselves are outside the
+main scope of the current project.
+However, the lag/shift idea and final fore-
+casting procedure are useful.
+P5
+Random Forest,
+SVR,
+KNN,
+XGBoost,
+MLP,
+Fuzzy C-Means
+Fuzzy C-Means is used to enrich the in-
+put representation.
+The resulting features are combined with
+lagged power consumption and meteoro-
+logical information before regression.
+Especially useful for understanding how his-
+torical load features can be incorporated
+into conventional ML models.
+RF and XGBoost are directly relevant to the
+current project.
+Continued on next page
+5
+
+
+--- PDF PAGE 6 ---
+ID
+Algorithms
+Method Summary
+Main Relevance
+P6
+Linear Regression,
+Random Forest,
+XGBoost,
+Prophet,
+TiDE,
+TSMixer
+Classical ML and more advanced fore-
+casting models are compared under a
+common Darts pipeline.
+Both 10-minute and hourly forecasting
+are investigated.
+Linear Regression, Random Forest, and XG-
+Boost are directly relevant.
+The paper also provides a strong chronologi-
+cal evaluation design.
+6
+
+
+--- PDF PAGE 7 ---
+Key Insights and Implications
+Tree-based models appear consistently important throughout the literature.
+Random Forest was the strongest model in the original benchmark, while later studies continued to
+include:
+Decision Trees,
+Random Forest,
+XGBoost.
+Another important observation is that model performance depends not only on the algorithm.
+The surrounding pipeline also matters:
+Model + Features + Validation + Tuning.
+Therefore, the current project does not need to compare a very large number of algorithms.
+A compact but representative model set is more appropriate:
+LR →DT →RF →SV R →XGBoost
+where:
+• Linear Regression provides a simple baseline,
+• Decision Tree represents a basic nonlinear model,
+• Random Forest provides an ensemble-tree baseline,
+• SVR represents kernel-based nonlinear regression,
+• XGBoost provides a modern boosted-tree model.
+This allows the project to focus more strongly on methodology and feature engineering rather than
+simply increasing the number of algorithms.
+5
+Detailed Data Preparation and Feature Engineering
+Feature construction is particularly important in electricity-demand forecasting because electricity
+usage depends on both external conditions and historical consumption.
+7
+
+
+--- PDF PAGE 8 ---
+Table 3: Detailed data preprocessing and feature-engineering procedures.
+ID
+Target Construction
+Raw Data Processing
+Feature Engineering
+Scaling
+Special Feature
+P1
+Power consumption
+was investigated at dif-
+ferent temporal resolu-
+tions using the Tetouan
+electricity zones.
+In the original data-collection
+process, weather observations
+were available every 5 min-
+utes while electricity mea-
+surements occurred every 10
+minutes.
+Pairs of consecutive weather
+measurements were averaged
+to align both sources.
+The UCI version currently
+distributed is already avail-
+able at 10-minute resolution.
+DateTime was decomposed into
+variables including:
+month,
+day of month,
+hour,
+day of year,
+week of year,
+day of week,
+quarter,
+minute.
+These were combined with meteo-
+rological variables.
+Min–Max normal-
+ization:
+x′ =
+x −xmin
+xmax −xmin
+.
+Random-Forest fea-
+ture importance was
+examined.
+Hour and tempera-
+ture appeared partic-
+ularly influential.
+Explicit autoregres-
+sive load lags were
+not reported.
+P2
+A city-level target was
+created by summing
+the three zones:
+yt = Z1,t + Z2,t + Z3,t.
+The methodology reports
+checking/filtering missing
+observations, combining elec-
+tricity zones, and processing
+the DateTime variable.
+Date and time information was
+transformed into additional tempo-
+ral predictors.
+No extensive historical load-lag
+design was reported.
+Not clearly docu-
+mented.
+Combining the zones
+produces a single
+city-level forecast-
+ing problem but re-
+moves zone-specific
+behaviour.
+Continued on next page
+8
+
+
+--- PDF PAGE 9 ---
+ID
+Target Construction
+Raw Data Processing
+Feature Engineering
+Scaling
+Special Feature
+P4
+Current consumption
+becomes an input:
+yt,
+while the next obser-
+vation becomes the
+target:
+yt+1.
+Thus,
+yt+1 = f(Xt, yt).
+The dataset is treated se-
+quentially rather than as in-
+dependent, randomly ordered
+observations.
+DateTime-derived variables in-
+clude:
+hour,
+minute,
+day of week,
+day of month.
+Previous power consumption is
+explicitly used as a predictor.
+Three scaling ap-
+proaches are inves-
+tigated:
+Min–Max,
+MaxAbs,
+StandardScaler.
+During final recur-
+sive forecasting:
+ˆyt+1 →input for predicting ˆyt+2.
+Actual future target
+values are not fed
+into the forecasting
+process.
+P5
+Zone 3 Power Con-
+sumption is used as
+the main target.
+Lag construction introduces
+missing rows at the begin-
+ning of the time series.
+These rows are removed be-
+fore model fitting.
+Three historical target features are
+constructed:
+yt−1,
+yt−2,
+yt−3.
+At a 10-minute sampling interval,
+these represent:
+10 minutes,
+20 minutes,
+30 minutes into the past.
+Fuzzy C-Means additionally gener-
+ates cluster-membership informa-
+tion.
+StandardScaler and
+Min–Max scaling
+are investigated.
+Fuzzy C-Means uses
+three clusters:
+c = 3
+with fuzziness pa-
+rameter:
+m = 2.
+Continued on next page
+9
+
+
+--- PDF PAGE 10 ---
+ID
+Target Construction
+Raw Data Processing
+Feature Engineering
+Scaling
+Special Feature
+P6
+Forecasting is evalu-
+ated at:
+10-minute
+and
+1-hour
+temporal resolutions.
+A common Darts preprocess-
+ing pipeline is applied across
+competing models.
+The original 10-minute series
+is additionally aggregated for
+hourly experiments.
+Predictors include:
+historical electricity demand,
+temperature,
+humidity,
+wind information,
+radiation,
+hour,
+weekday,
+month.
+Min–Max,
+MaxAbs,
+StandardScaler.
+Using the same pre-
+processing frame-
+work across models
+improves compara-
+bility between algo-
+rithms.
+10
+
+
+--- PDF PAGE 11 ---
+Key Insights and Implications
+The preprocessing comparison shows a clear development in feature engineering.
+The original study mainly follows:
+Weather + Calendar →Prediction.
+Later studies increasingly follow:
+Weather + Calendar + Historical Consumption →Prediction.
+This is important because electricity demand is strongly dependent on its recent and periodic his-
+torical behaviour.
+P5 demonstrates the usefulness of even simple lag variables:
+yt−1,
+yt−2,
+yt−3.
+However, these cover only 30 minutes of historical demand.
+Because the Tetouan dataset is sampled every 10 minutes, the current project can construct more
+meaningful multi-scale features:
+yt−1
+(10 minutes),
+yt−6
+(1 hour),
+yt−144
+(1 day),
+yt−1008
+(1 week).
+This creates a promising extension:
+Weather + Calendar + Short-term Lag + Daily Lag + Weekly Lag
+The literature also suggests that scaling should be model dependent.
+For example:
+• SVR is highly sensitive to feature scales,
+• Linear Regression may benefit from standardized features,
+• Random Forest generally does not require feature scaling,
+• XGBoost generally does not require feature scaling.
+Therefore, preprocessing should ideally be placed inside model-specific pipelines rather than applying
+exactly the same scaling transformation to every model.
+11
+
+
+--- PDF PAGE 12 ---
+6
+Train–Validation–Test Strategies
+Temporal evaluation is particularly important because electricity observations are not independent.
+Randomly shuffling observations can allow future information to affect model development and there-
+fore produce overly optimistic results.
+Table 4: Train–validation–test strategies used in previous studies.
+ID
+Training
+Validation / Testing
+Temporal Handling
+Main Observa-
+tion
+P1
+75%
+25% test
+The paper does not ex-
+plicitly state whether
+chronological ordering is
+preserved.
+Potential temporal-
+leakage risk if ran-
+dom splitting is
+used.
+P2
+70%
+30% test
+Chronological order-
+ing is not clearly docu-
+mented.
+A separate validation
+period is also not clearly
+defined.
+Less transparent
+for hyperparameter
+tuning.
+P3
+January–
+November:
+48,096 observa-
+tions,
+91.76%
+December:
+4,320 observations,
+8.24%
+Time-Series Cross Val-
+idation is performed
+within the January–
+November development
+period.
+December remains un-
+touched.
+One of the
+strongest temporal
+evaluation designs
+in the reviewed lit-
+erature.
+P4
+75%
+15% validation/test
++
+10% final forecast
+Observations are pre-
+served in temporal or-
+der.
+The last 10% simulates
+genuinely future data.
+Clearly separates
+model development
+and final forecast-
+ing.
+P5
+70%
+30% test
+The study states that
+temporal relationships
+are maintained, al-
+though an exact date
+boundary is not clearly
+documented.
+Useful design, but
+less reproducible
+than explicit date-
+based splitting.
+P6
+Earlier time pe-
+riod
+Later time period
+Strict chronological
+splitting is explicitly
+used to prevent tempo-
+ral leakage.
+Strong evaluation
+protocol for elec-
+tricity forecasting.
+Key Insights and Implications
+The evaluation strategy is one of the clearest methodological differences across the literature.
+Early ML studies typically report percentage splits such as:
+12
+
+
+--- PDF PAGE 13 ---
+75/25
+or
+70/30.
+However, the papers do not always clearly explain whether temporal ordering is preserved.
+For electricity forecasting, a more realistic structure is:
+Past →Development →Future Test.
+P3 provides a particularly useful design in which January–November is used for model development
+while the complete month of December remains unseen.
+Therefore, the current project should avoid:
+train test split(..., shuffle=True).
+A suitable strategy is:
+January–October = Training
+November = Validation
+December = Final Test
+Alternatively:
+January–November = Time-Series CV Development
+and
+December = Untouched Final Test
+This directly improves upon the unclear temporal splitting found in some earlier conventional ML
+studies.
+7
+Training and Hyperparameter Optimization
+Hyperparameter optimization is an important component of the reviewed machine-learning studies.
+However, the studies differ considerably in both their search strategies and the level of detail reported.
+Table 5 summarizes the main training strategies. Detailed configurations that are particularly rele-
+vant to the current project are discussed separately after the table.
+13
+
+
+--- PDF PAGE 14 ---
+Table 5: Training and hyperparameter-optimization strategies used in the core ML studies.
+ID
+Training Strategy
+Optimization Approach
+Main Observation
+P1
+Grid Search combined with
+cross-validation was used for
+model selection.
+The authors also reported the
+median performance across nine
+implementations.
+Hyperparameters were optimized sepa-
+rately for Random Forest, Decision Tree,
+and SVR.
+The neural network was trained using a pre-
+defined architecture and training configura-
+tion.
+This study provides one of the most de-
+tailed optimization procedures among
+the early ML studies.
+However, the paper does not clearly in-
+dicate whether the cross-validation folds
+preserve temporal ordering.
+P2
+A two-stage model-selection
+procedure was used.
+First, 26 machine-learning vari-
+ants were compared.
+Fine Tree was then selected for
+additional optimization.
+Three optimization methods were com-
+pared:
+• Bayesian Optimization,
+• Grid Search,
+• Random Search.
+The study demonstrates that tuning
+strategy can substantially affect model
+performance.
+However, the validation procedure is not
+completely transparent, and the reported
+numerical and textual conclusions are
+inconsistent.
+P5
+Models were trained both with
+and without Fuzzy C-Means
+features.
+Model-specific hyperparameters were opti-
+mized for:
+• Random Forest,
+• SVR,
+• KNN,
+• XGBoost,
+• MLP.
+The MLP additionally used early stopping.
+The paper shows that feature engineer-
+ing and model tuning should be consid-
+ered together rather than independently.
+Continued on next page
+14
+
+
+--- PDF PAGE 15 ---
+Table 5 – continued from previous page
+ID
+Training Strategy
+Optimization Approach
+Main Observation
+P6
+All competing models were
+trained under a common Darts
+forecasting pipeline.
+The conventional ML models most relevant
+to the present project are:
+• Linear Regression,
+• Random Forest,
+• XGBoost.
+Using a common preprocessing and eval-
+uation framework improves the fairness
+of the comparison among algorithms.
+15
+
+
+--- PDF PAGE 16 ---
+7.1
+Detailed Hyperparameter Settings Reported in P1
+P1 provides sufficiently detailed hyperparameter information to serve as a useful reference for the
+present project.
+7.1.1
+Random Forest
+The number of trees was searched over:
+nestimators ∈{10, 20, 30, 50, 100, 200, 300}.
+The best reported Random Forest configuration was:
+nestimators = 30,
+max features = 7,
+max depth = None,
+min samples split = 2,
+min samples leaf = 1.
+This configuration indicates that a relatively small forest of 30 trees was sufficient to obtain the
+strongest result in the original study.
+7.1.2
+Decision Tree
+The best reported Decision Tree configuration included:
+max depth = None,
+min samples split = 10,
+min samples leaf = 10,
+max features = 9.
+The larger minimum number of samples required for splitting and leaf construction acts as a form of
+regularization and helps reduce overfitting.
+16
+
+
+--- PDF PAGE 17 ---
+7.1.3
+Support Vector Regression
+An RBF kernel was used.
+The search space included:
+C ∈{1, 10, 100, 1000},
+and
+γ ∈{0.01, 0.001, 0.0001}.
+The best reported configuration was:
+C = 10,
+γ = 0.01.
+Because SVR is sensitive to the scale of input variables, the normalization step used in P1 is partic-
+ularly important for this model.
+7.1.4
+Feedforward Neural Network
+Although the neural network is not a principal model for the current project, P1 used the following
+configuration:
+• one hidden layer,
+• 10 hidden neurons,
+• SELU activation,
+• Adam optimizer,
+• 100 training epochs,
+• learning rate of 0.001,
+• Glorot uniform initialization,
+• no dropout.
+The neural-network configuration is included for completeness, but the present project primarily
+focuses on conventional machine-learning models.
+Key Insights and Implications
+The reviewed studies show that hyperparameter optimization can substantially affect forecasting
+performance.
+P1 demonstrates that even conventional models such as Random Forest, Decision Tree, and SVR
+benefit from systematic hyperparameter search. P2 further shows that different search strategies can
+produce different results for the same underlying model.
+However, conventional shuffled cross-validation is potentially problematic for time-series forecasting.
+Even when the final test set is chronological, information leakage can occur during model selec-
+tion if future observations are included in validation folds used to tune a model trained on earlier
+observations.
+17
+
+
+--- PDF PAGE 18 ---
+Therefore, the current project should combine hyperparameter optimization with a time-series-aware
+validation method.
+A suitable approach is:
+GridSearchCV + TimeSeriesSplit
+or:
+RandomizedSearchCV + TimeSeriesSplit
+Randomized Search may be preferable for Random Forest and XGBoost when the hyperparameter
+space becomes large.
+Most importantly, the final test period should remain completely untouched during:
+• feature selection,
+• preprocessing selection,
+• scaler selection,
+• hyperparameter optimization,
+• model selection.
+Only after the entire modelling pipeline has been selected should the final model be evaluated on the
+holdout period.
+8
+Useful Methodological Ideas from Non-Core Models
+Some studies use models outside the main scope of the present Machine Learning project.
+Nevertheless, their experimental strategies can still be reused.
+Table 6: Useful methodological ideas from non-core forecasting studies.
+Study
+Original
+Method
+Useful Methodological
+Feature
+Application to Current
+Project
+da Silva and
+Meneses (2023)
+LSTM / BiL-
+STM
+January–November:
+48,096 observations,
+91.76%
+are used for time-series
+model development.
+December:
+4,320 observations,
+8.24%
+is preserved as an unseen
+final holdout.
+Use the same chronological
+evaluation strategy with
+Random Forest, XGBoost,
+SVR, and other conventional
+ML models.
+Continued on next page
+18
+
+
+--- PDF PAGE 19 ---
+Study
+Original
+Method
+Useful Methodological
+Feature
+Application to Current
+Project
+Islam et al. (2025)
+Prophet / Neu-
+ral Prophet
+Uses a shifted target:
+yt →yt+1.
+Uses a:
+75/15/10
+train–validation–forecast de-
+sign.
+Predictions can be recur-
+sively fed into future fore-
+casting steps.
+Transfer the lag/shift con-
+cept to Random Forest and
+XGBoost.
+Potentially compare:
+one-step forecasting
+versus
+recursive multi-step forecast-
+ing.
+Key Insights and Implications
+A paper does not need to use the same prediction algorithm as the current project in order to provide
+useful methodological information.
+For example, the chronological holdout strategy used in the LSTM study is independent of the model
+architecture.
+It can be directly applied to:
+RF,
+SV R,
+XGBoost.
+Similarly, the shift-based forecasting strategy demonstrates an important distinction between:
+one-step prediction
+and
+multi-step recursive forecasting.
+In one-step forecasting, the true previous consumption may be known when predicting the next
+observation.
+In recursive forecasting, future true observations are unavailable.
+Therefore:
+ˆyt+1
+may need to become the input for predicting:
+ˆyt+2.
+This distinction is important when interpreting apparently excellent results in electricity-demand
+forecasting.
+19
+
+
+--- PDF PAGE 20 ---
+9
+Evaluation Metrics
+Five principal regression metrics are found across the selected literature.
+9.1
+Root Mean Squared Error
+RMSE =
+v
+u
+u
+t 1
+n
+n
+X
+i=1
+(yi −ˆyi)2
+RMSE gives greater penalty to large prediction errors.
+Lower values are better.
+9.2
+Mean Absolute Error
+MAE = 1
+n
+n
+X
+i=1
+|yi −ˆyi|
+MAE represents the average absolute prediction error.
+Lower values are better.
+9.3
+Mean Squared Error
+MSE = 1
+n
+n
+X
+i=1
+(yi −ˆyi)2
+Lower values are better.
+9.4
+Mean Absolute Percentage Error
+MAPE = 100
+n
+n
+X
+i=1
+
+yi −ˆyi
+yi
+
+MAPE represents error as a percentage of the actual electricity consumption.
+Lower values are better.
+9.5
+Coefficient of Determination
+R2 = 1 −
+P
+i(yi −ˆyi)2
+P
+i(yi −¯y)2
+Values closer to 1 indicate that the model explains a larger proportion of variation in electricity
+consumption.
+10
+Reported Forecasting Performance
+The results reported by different papers should not be interpreted as a direct leaderboard.
+Different studies use different:
+20
+
+
+--- PDF PAGE 21 ---
+• target variables,
+• combinations of electricity zones,
+• temporal resolutions,
+• forecasting horizons,
+• data partitions,
+• preprocessing procedures.
+Therefore, bold values in Table 7 represent the strongest reported result within the corresponding
+selected study or experimental setup rather than the globally best value across all papers.
+21
+
+
+--- PDF PAGE 22 ---
+Table 7: Reported forecasting performance in the selected studies.
+ID
+Best / Representative Setup
+RMSE
+MAE
+MSE
+MAPE
+R2
+P1
+Random Forest in the original ML
+benchmark
+4481.1
+3595.3
+–
+–
+–
+P2
+Best numerical Fine Tree result re-
+ported in the comparison table
+2680
+1690
+7.17 × 106
+–
+0.976
+P4
+10-minute forecasting using the
+shift-based methodology
+1826.3
+1333.1
+–
+6.3%
+0.853
+P5
+MLP + Fuzzy C-Means for Zone 3
+using three historical lag features
+355.42
+246.43
+–
+–
+0.9889
+P6
+Random Forest on hourly citywide
+mean electricity consumption
+N/R
+224.2
+–
+1.04%
+N/R
+22
+
+
+--- PDF PAGE 23 ---
+Note:
+“–” indicates that the corresponding metric was not reported for the selected configuration.
+“N/R” indicates that an exact configuration-specific numerical result is not included in the current
+comparison.
+Key Insights and Implications
+The reported results should not be compared as if they represented a single benchmark leaderboard.
+For example, P5 predicts Zone 3, whereas other studies may use an aggregated target based on all
+three electricity zones.
+Therefore:
+RMSEZone 3
+cannot be directly compared with:
+RMSEsum of Zones 1–3.
+The literature nevertheless suggests two important patterns.
+First, more recent studies increasingly use historical electricity consumption as an input variable.
+Second, strong classical ML models remain competitive when combined with appropriate feature
+engineering.
+Therefore, all models in the current project should be evaluated under exactly the same experimental
+conditions:
+• same target,
+• same input features,
+• same training period,
+• same validation period,
+• same final test period,
+• same forecasting horizon,
+• same evaluation metrics.
+The recommended common metrics are:
+RMSE,
+MAE,
+MAPE,
+R2
+The objective should therefore be a fair within-project comparison, rather than claiming superiority
+over numerical values obtained under different experimental settings in previous studies.
+11
+Strengths, Limitations, and Potential Improvements
+23
+
+
+--- PDF PAGE 24 ---
+Table 8: Main strengths, limitations, and potential improvements.
+ID
+Main Strength
+Main Limitation
+Most Relevant Improvement
+P1
+Strong original ML benchmark in-
+cluding several conventional models,
+Grid Search, and feature-importance
+analysis.
+Chronological ordering of the train–test
+split is unclear.
+Historical electricity-demand lags are not
+explicitly included.
+Use chronological validation and introduce
+short-term, hourly, daily, and weekly lag
+variables.
+P2
+Broad comparison of 26 ML
+variants together with several
+hyperparameter-search techniques.
+Temporal splitting and independent vali-
+dation are not clearly documented.
+The numerical table and textual discus-
+sion are also inconsistent.
+Use explicit chronological
+train/validation/test periods and Time-
+SeriesSplit for optimization.
+P3
+Provides a strong time-series evalua-
+tion design with time-series cross-
+validation and a completely un-
+touched December holdout.
+The models are LSTM and BiLSTM,
+which are outside the primary scope of
+a conventional Machine Learning project.
+Reuse the evaluation protocol while re-
+placing the algorithms with RF, SVR, XG-
+Boost, and other classical ML models.
+P4
+Introduces previous electricity de-
+mand into the prediction process
+and uses a separate final forecasting
+period.
+Recursive forecasting can accumulate pre-
+diction error over longer horizons.
+Transfer the shift/lag strategy to conven-
+tional ML and compare one-step with re-
+cursive forecasting.
+P5
+Combines explicit historical load
+features with several conventional
+ML algorithms and reports strong
+performance.
+Only three 10-minute lag values are used,
+representing only 30 minutes of demand
+history.
+Add one-hour, one-day, and one-week lag
+variables together with rolling statistics.
+P6
+Combines modern conventional ML
+baselines with strict chronological
+evaluation and consistent prepro-
+cessing.
+Classical ML and more advanced forecast-
+ing models are mixed in the same bench-
+mark.
+Reproduce the conventional ML subset us-
+ing a controlled common pipeline.
+24
+
+
+--- PDF PAGE 25 ---
+Key Insights and Implications
+No single previous study combines all of the desirable properties identified across the literature.
+The original ML benchmark provides:
+Conventional ML + Systematic Tuning.
+P4 and P5 provide:
+Historical Consumption Features.
+P3 and P6 provide:
+Strong Chronological Evaluation.
+These complementary strengths can be combined:
+Conventional ML
+|
+{z
+}
+P1, P2, P5, P6
++ Lag Features
+|
+{z
+}
+P4, P5
++ Temporal Validation
+|
+{z
+}
+P3, P4, P6
++ Hyperparameter Tuning
+|
+{z
+}
+P1, P2, P5
+This suggests that the project does not necessarily need to propose a new learning algorithm.
+Instead, the contribution can come from constructing a more rigorous and leakage-safe ML forecasting
+pipeline.
+12
+Cross-Paper Methodological Comparison
+The literature demonstrates a gradual shift from purely exogenous forecasting toward autoregressive
+machine learning.
+The original structure is approximately:
+Weather + Calendar →Power Forecast.
+A stronger modern design is:
+Weather + Calendar + Historical Power →Power Forecast.
+Because the Tetouan data are sampled every 10 minutes:
+6 samples = 1 hour,
+144 samples = 1 day,
+1008 samples = 1 week.
+Therefore, useful candidate lag variables include:
+25
+
+
+--- PDF PAGE 26 ---
+yt−1,
+yt−6,
+yt−144,
+yt−1008.
+These represent:
+• previous 10 minutes,
+• previous hour,
+• same time approximately one day earlier,
+• same time approximately one week earlier.
+13
+Identified Research Gaps
+Based on the reviewed studies, several methodological gaps can be identified.
+13.1
+Unclear Temporal Validation in Earlier ML Studies
+Some conventional ML studies report percentage-based splitting without clearly specifying whether
+observations are kept in chronological order.
+This creates the possibility of temporal data leakage.
+A better structure is:
+Past Training Data →Validation →Future Test Data.
+13.2
+Limited Historical Demand Features
+The original ML benchmark does not explicitly use strong autoregressive electricity-demand features.
+P5 introduces:
+yt−1,
+yt−2,
+yt−3,
+but these describe only 30 minutes of historical demand.
+Longer periodic patterns remain available for exploration.
+13.3
+Inconsistent Target Definitions
+Different studies predict:
+• individual zones,
+• Zone 3 only,
+• the sum of all three zones,
+• the mean of all three zones.
+Therefore, direct numerical comparison across papers is difficult.
+The current project should select a single primary target before model comparison.
+26
+
+
+--- PDF PAGE 27 ---
+13.4
+Limited Explainability
+Many papers primarily emphasize predictive accuracy.
+Additional interpretation methods could help determine whether forecasting performance is mainly
+driven by:
+• previous consumption,
+• hour of day,
+• weekday,
+• temperature,
+• humidity,
+• diffuse radiation.
+Potential methods include:
+• Random-Forest feature importance,
+• permutation importance,
+• SHAP.
+14
+Proposed Direction for the Current ML Project
+The literature suggests the following general pipeline:
+Raw Tetouan Dataset
+↓
+Chronological Sorting
+↓
+Weather + Calendar + Historical Demand
+↓
+Chronological Train / Validation / Test
+↓
+LR, DT, RF, SV R, XGBoost
+27
+
+
+--- PDF PAGE 28 ---
+↓
+Time-Series-Aware Hyperparameter Tuning
+↓
+RMSE, MAE, MAPE, R2
+↓
+Feature Importance Analysis
+14.1
+Suggested Feature Set
+Meteorological variables:
+• Temperature,
+• Humidity,
+• Wind Speed,
+• General Diffuse Flows,
+• Diffuse Flows.
+Calendar variables:
+• hour,
+• minute,
+• weekday,
+• weekend indicator,
+• month.
+Hour can additionally be encoded cyclically:
+Hoursin = sin
+
+2πHour
+24
+
+,
+Hourcos = cos
+
+2πHour
+24
+
+.
+Historical electricity-demand variables:
+yt−1,
+yt−6,
+28
+
+
+--- PDF PAGE 29 ---
+yt−144,
+yt−1008.
+Potential rolling variables:
+RollingMean6,
+RollingMean144,
+RollingStd144.
+14.2
+Suggested Models
+The following models provide a compact and representative ML benchmark.
+1. Linear Regression
+Provides a simple and interpretable baseline.
+2. Decision Tree Regression
+Provides a nonlinear single-tree baseline.
+3. Random Forest Regression
+Represents the strongest model in the original benchmark and is an important literature baseline.
+4. Support Vector Regression
+Represents kernel-based nonlinear regression.
+5. XGBoost
+Provides a modern boosted-tree model capable of modelling complex nonlinear feature interac-
+tions.
+An optional additional model may be:
+• Gradient Boosting Regressor,
+• LightGBM, if external packages are permitted.
+14.3
+Suggested Data Split
+A simple and interpretable chronological design is:
+January–October = Training
+November = Validation
+December = Final Test
+29
+
+
+--- PDF PAGE 30 ---
+Alternatively:
+January–November
+|
+{z
+}
+Time-Series Cross Validation
+
+December
+|
+{z
+}
+Final Holdout
+can be used.
+The final holdout must not be used during model selection.
+14.4
+Suggested Hyperparameter Tuning
+Hyperparameter tuning should use temporal folds.
+For example:
+RandomizedSearchCV + TimeSeriesSplit
+or:
+GridSearchCV + TimeSeriesSplit
+A conceptual TimeSeriesSplit sequence is:
+Train1 →V alidation1,
+Train1 + V alidation1 →V alidation2,
+Train1 + V alidation1 + V alidation2 →V alidation3.
+Training data therefore always occur earlier in time than the corresponding validation period.
+14.5
+Suggested Ablation Study
+A useful experiment is to investigate how different feature groups contribute to forecasting accuracy.
+Experiment A: Weather Only
+XA = Weather.
+Experiment B: Weather + Calendar
+XB = Weather + Calendar.
+Experiment C: Weather + Calendar + Short-Term Lag
+XC = Weather + Calendar + yt−1 + yt−6.
+Experiment D: Full Multi-Scale Features
+XD = Weather + Calendar + yt−1 + yt−6 + yt−144 + yt−1008.
+30
+
+
+--- PDF PAGE 31 ---
+The difference:
+PerformanceD −PerformanceB
+can provide direct evidence of how much historical electricity demand contributes to prediction.
+A second optional experiment can compare:
+10-minute forecasting
+with:
+1-hour forecasting.
+This can determine whether temporal aggregation reduces noise and improves classical ML perfor-
+mance.
+15
+Recommended Research Questions
+A suitable main research question is:
+How effectively can conventional machine-learning algorithms forecast short-term elec-
+tricity consumption in Tetouan City when meteorological, calendar, and multi-scale his-
+torical load features are combined under a strict chronological evaluation framework?
+A secondary research question is:
+To what extent do historical lag features representing short-term, daily, and weekly
+electricity-consumption patterns improve forecasting accuracy compared with meteorolog-
+ical and calendar features alone?
+A third optional question is:
+Which conventional machine-learning model provides the best trade-off between predic-
+tive accuracy, computational complexity, and interpretability for Tetouan City electricity-
+demand forecasting?
+16
+Conclusion
+The reviewed literature demonstrates that the Tetouan City dataset has been used with a broad
+range of electricity-demand forecasting methods.
+The original study establishes conventional ML baselines and identifies Random Forest as a strong
+model.
+Later studies introduce:
+• more systematic model optimization,
+• lagged electricity-demand features,
+• fuzzy feature enrichment,
+31
+
+
+--- PDF PAGE 32 ---
+• XGBoost,
+• more rigorous chronological evaluation.
+However, several limitations remain.
+Earlier ML studies do not always clearly document temporal splitting, while later studies using strong
+chronological evaluation often rely on deep-learning or specialized forecasting architectures.
+The current project can therefore combine complementary ideas from different studies:
+Conventional ML + Multi-Scale Historical Features + Chronological Validation + Time-Series-Aware Tuning
+This approach remains fully appropriate for a Machine Learning course while addressing method-
+ological limitations identified in the previous literature.
+17
+References
+References
+[1] UCI Machine Learning Repository,
+Power Consumption of Tetouan City.
+Dataset DOI:
+https://doi.org/10.24432/C5B034
+Dataset:
+https://archive-beta.ics.uci.edu/dataset/849/power+consumption+of+tetouan+city
+[2] A. Salam and A. El Hibaoui,
+“Comparison of Machine Learning Algorithms for the Power Consumption Prediction: Case
+Study of Tetouan City,”
+2018 6th International Renewable and Sustainable Energy Conference (IRSEC),
+2018.
+DOI:
+https://doi.org/10.1109/IRSEC.2018.8703007
+[3] N. RoSe, O. Osbourne, N. Williams, and S. S. H. Rizvi,
+“A Novel Optimized Variant of Machine Learning Algorithm for Accurate Energy Demand
+Prediction for Tetouan City, Morocco,”
+Proceedings of ICACECS 2023,
+pp. 62–73,
+2023.
+DOI:
+https://doi.org/10.2991/978-94-6463-314-6 7
+[4] D. G. da Silva and A. A. M. Meneses,
+“Comparing Long Short-Term Memory (LSTM) and Bidirectional LSTM Deep Neural Networks
+for Power Consumption Prediction,”
+32
+
+
+--- PDF PAGE 33 ---
+Energy Reports,
+vol. 10,
+pp. 3315–3334,
+2023.
+DOI:
+https://doi.org/10.1016/j.egyr.2023.09.175
+[5] M. T. Islam, S. A. Turja, M. T. Islam, M. M. Rahman, and A. Habib,
+“Forecasting Tetouan Energy Demand Employing Shift Approach in Machine-Learning: Com-
+plementing Econometric Insights,”
+Quality & Quantity,
+vol. 59,
+pp. 1833–1860,
+2025.
+DOI:
+https://doi.org/10.1007/s11135-024-02043-0
+[6] K. Alsalem,
+“A Hybrid Time Series Forecasting Approach Integrating Fuzzy Clustering and Machine Learn-
+ing for Enhanced Power Consumption Prediction,”
+Scientific Reports,
+vol. 15,
+Article 6447,
+2025.
+DOI:
+https://doi.org/10.1038/s41598-025-91123-8
+[7] N. Biswas, M. A. Mahdi, and M. Das Gupta,
+“Electricity Demand Forecasting for Tetouan, Morocco Using Darts in Machine-Learning: A
+Comparative Study of Forecasting Models,”
+Results in Engineering,
+vol. 30,
+Article 110289,
+2026.
+DOI:
+https://doi.org/10.1016/j.rineng.2026.110289
+33

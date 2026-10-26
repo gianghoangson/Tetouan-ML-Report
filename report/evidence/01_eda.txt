@@ -1,0 +1,619 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 01 – Exploratory data analysis
+
+Guideline section 3. Load the data, check its quality, and produce table **T01** and figures **F01–F08**.
+
+**December rule.** December is the test set and must not influence any decision. Figures F01–F02 describe the whole year (December shaded grey); every figure used to choose features (F03–F08) uses **January–November only**.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable and load the helpers and the figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.graphics.tsaplots import plot_acf
+from statsmodels.tsa.stattools import acf
+
+from src.config import TABLES
+from src.config import TABLES
+from src.config import TABLES
+from src.data import load_raw, load_hourly
+from src.features import HOLIDAYS_2017, RAMADAN_2017
+from src.evaluate import VAL_END
+from src.viz import (set_style, savefig, shade_test, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, SURFACE, NEUTRAL, SEQ_CMAP, DIV_CMAP)
+
+set_style()
+pd.set_option('display.float_format', '{:,.2f}'.format)
+
+--- CELL 3 (markdown; execution=None) ---
+## 1. Load data
+
+Read the 10-minute CSV and the hourly file (built on first use), and keep a `dev` copy (Jan–Nov) for decision-making figures.
+
+--- CELL 4 (code; execution=2) ---
+df = load_raw()      # 10-minute data
+dh = load_hourly()   # hourly mean (kW)
+dev = dh[dh.index < VAL_END]   # Jan–Nov, used for every decision-making figure
+
+holidays = pd.to_datetime(HOLIDAYS_2017)
+print(f'10-min: {len(df):,} rows | hourly: {len(dh):,} rows | dev (Jan–Nov): {len(dev):,} rows')
+df.head()
+OUTPUT: 10-min: 52,416 rows | hourly: 8,736 rows | dev (Jan–Nov): 8,016 rows
+
+OUTPUT:                      Temperature  Humidity  WindSpeed  GenDiffuse  Diffuse  \
+DateTime                                                                     
+2017-01-01 00:00:00         6.56     73.80       0.08        0.05     0.12   
+2017-01-01 00:10:00         6.41     74.50       0.08        0.07     0.09   
+2017-01-01 00:20:00         6.31     74.50       0.08        0.06     0.10   
+2017-01-01 00:30:00         6.12     75.00       0.08        0.09     0.10   
+2017-01-01 00:40:00         5.92     75.70       0.08        0.05     0.09   
+
+                           Z1        Z2        Z3     Total  
+DateTime                                                     
+2017-01-01 00:00:00 34,055.70 16,128.88 20,240.96 70,425.54  
+2017-01-01 00:10:00 29,814.68 19,375.08 20,131.08 69,320.84  
+2017-01-01 00:20:00 29,128.10 19,006.69 19,668.43 67,803.22  
+2017-01-01 00:30:00 28,228.86 18,361.09 18,899.28 65,489.23  
+2017-01-01 00:40:00 27,335.70 17,872.34 18,442.41 63,650.45  
+
+--- CELL 5 (markdown; execution=None) ---
+## 2. Data quality
+
+Check the claims of the UCI page (no missing values) and the usual time-series problems: duplicated or missing timestamps, impossible values, stuck sensors. Saved as `T01_data_quality.csv`.
+
+--- CELL 6 (code; execution=3) ---
+raw = pd.read_csv(ROOT / 'data' / 'raw' / 'Tetuan City power consumption.csv')
+
+def longest_constant_run(s):
+    return s.groupby((s != s.shift()).cumsum()).size().max()
+
+quality = pd.Series({
+    'Rows (10-min)': len(df),
+    'Rows (hourly)': len(dh),
+    'First timestamp': df.index.min(),
+    'Last timestamp': df.index.max(),
+    'Months covered': df.index.month.nunique(),
+    'Missing values': int(raw.isna().sum().sum()),
+    'Duplicate timestamps': int(df.index.duplicated().sum()),
+    'Duplicate rows': int(raw.duplicated().sum()),
+    'Irregular 10-min steps': int((df.index.to_series().diff().dropna() != pd.Timedelta('10min')).sum()),
+    'Irregular hourly steps': int((dh.index.to_series().diff().dropna() != pd.Timedelta('1h')).sum()),
+    'Non-positive values': int((df <= 0).sum().sum()),
+    'Longest constant run (10-min steps)': int(df.apply(longest_constant_run).max()),
+}, name='value').to_frame()
+quality.to_csv(TABLES / 'T01_data_quality.csv')
+quality
+OUTPUT:                                                    value
+Rows (10-min)                                      52416
+Rows (hourly)                                       8736
+First timestamp                      2017-01-01 00:00:00
+Last timestamp                       2017-12-30 23:50:00
+Months covered                                        12
+Missing values                                         0
+Duplicate timestamps                                   0
+Duplicate rows                                         0
+Irregular 10-min steps                                 0
+Irregular hourly steps                                 0
+Non-positive values                                    0
+Longest constant run (10-min steps)                    9
+
+--- CELL 7 (markdown; execution=None) ---
+### T01 – Descriptive statistics
+
+Mean, standard deviation and quartiles of every variable (10-minute data, whole year).
+
+--- CELL 8 (code; execution=4) ---
+units = {'Temperature': '°C', 'Humidity': '%', 'WindSpeed': '', 'GenDiffuse': '', 'Diffuse': '',
+         'Z1': 'kW', 'Z2': 'kW', 'Z3': 'kW', 'Total': 'kW'}
+t01 = df.describe().T.drop(columns='count')
+t01.insert(0, 'unit', pd.Series(units))
+t01.to_csv(TABLES / 'T01_descriptive_stats.csv')
+t01
+OUTPUT:             unit      mean       std       min       25%       50%       75%  \
+Temperature   °C     18.81      5.82      3.25     14.41     18.78     22.89   
+Humidity       %     68.26     15.55     11.34     58.31     69.86     81.40   
+WindSpeed             1.96      2.35      0.05      0.08      0.09      4.92   
+GenDiffuse          182.70    264.40      0.00      0.06      5.04    319.60   
+Diffuse              75.03    124.21      0.01      0.12      4.46    101.00   
+Z1            kW 32,344.97  7,130.56 13,895.70 26,310.67 32,265.92 37,309.02   
+Z2            kW 21,042.51  5,201.47  8,560.08 16,980.77 20,823.17 24,713.72   
+Z3            kW 17,835.41  6,622.17  5,935.17 13,129.33 16,415.12 21,624.10   
+Total         kW 71,222.89 17,143.14 36,785.04 56,499.07 69,788.79 83,749.17   
+
+                   max  
+Temperature      40.01  
+Humidity         94.80  
+WindSpeed         6.48  
+GenDiffuse    1,163.00  
+Diffuse         936.00  
+Z1           52,204.40  
+Z2           37,408.86  
+Z3           47,598.33  
+Total       134,208.15  
+
+--- CELL 9 (markdown; execution=None) ---
+### 2.1 A load transfer between zones (20 April)
+
+The largest 10-minute jump in Zone 1 happens at noon on 20 April. Plot the three zones around it (`DQ01`).
+
+--- CELL 10 (code; execution=5) ---
+w = df.loc['2017-04-20 10:00':'2017-04-20 15:00']
+fig, ax = plt.subplots(figsize=(9, 3.4))
+for i, z in enumerate(['Z1', 'Z2', 'Z3']):
+    ax.plot(w.index, w[z], color=SERIES[i], marker='o', ms=3)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.set(title='Load transfer between zones, 20 Apr 2017 (10-min data)', ylabel='Load (kW)')
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%H:%M'))
+label_line_ends(ax, w.index[-1], w.iloc[-1][['Z1', 'Z2', 'Z3']], ['Zone 1', 'Zone 2', 'Zone 3'],
+                dx=pd.Timedelta('5min'))
+ax.set_xlim(right=w.index[-1] + pd.Timedelta('35min'))
+savefig(fig, 'DQ01_zone_transfer_20170420')
+plt.show()
+
+print('Total (hourly) around the event:')
+print(dh.loc['2017-04-20 10:00':'2017-04-20 14:00', ['Z1', 'Z2', 'Total']].round(0))
+OUTPUT: <Figure size 990x374 with 1 Axes>
+OUTPUT: Total (hourly) around the event:
+                           Z1        Z2     Total
+DateTime                                         
+2017-04-20 10:00:00 33,793.00 20,553.00 72,078.00
+2017-04-20 11:00:00 35,945.00 21,218.00 75,922.00
+2017-04-20 12:00:00 25,136.00 23,687.00 68,418.00
+2017-04-20 13:00:00 26,646.00 30,071.00 76,337.00
+2017-04-20 14:00:00 26,328.00 29,640.00 75,407.00
+
+
+--- CELL 11 (markdown; execution=None) ---
+**Observations.** At 12:10 Zone 1 drops from about 36,000 to 17,000 kW and recovers to about 27,000, while Zone 2 rises from 21,500 to 30,000 kW from 12:40; Zone 3 does not move. Load was switched from Zone 1 to Zone 2, with roughly 20 minutes of lost load. The following days return to normal, so the event is temporary. On the hourly total the effect is a single hour about 10% low. Because the target is the **total**, transfers between zones cancel out; the data are kept as they are.
+
+--- CELL 12 (markdown; execution=None) ---
+### 2.2 Wind speed takes two values
+
+Histogram of wind speed and the monthly share of high readings (`DQ02`).
+
+--- CELL 13 (code; execution=6) ---
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.4), gridspec_kw={'width_ratios': [1, 1.3]})
+axes[0].hist(df['WindSpeed'], bins=80, color=SERIES[0], edgecolor=SURFACE, linewidth=0.3)
+axes[0].yaxis.set_major_formatter(kw_fmt)
+axes[0].set(title='Wind speed distribution (10-min)', xlabel='Wind speed', ylabel='Count')
+
+share_high = (df['WindSpeed'] > 2).resample('ME').mean() * 100
+axes[1].bar(share_high.index.strftime('%b'), share_high, color=SERIES[0], width=0.7)
+axes[1].set(title='Share of samples with wind speed > 2, by month', ylabel='% of samples', ylim=(0, 100))
+savefig(fig, 'DQ02_windspeed_bimodal')
+plt.show()
+
+print(pd.cut(df['WindSpeed'], [0, 0.1, 1, 4, 4.8, 5.1, 7]).value_counts(normalize=True).sort_index().mul(100).round(1))
+OUTPUT: <Figure size 1210x374 with 2 Axes>
+OUTPUT: WindSpeed
+(0.0, 0.1]   57.00
+(0.1, 1.0]    4.20
+(1.0, 4.0]    0.20
+(4.0, 4.8]    0.10
+(4.8, 5.1]   38.60
+(5.1, 7.0]    0.00
+Name: proportion, dtype: float64
+
+
+--- CELL 14 (markdown; execution=None) ---
+**Observations.** Wind speed is almost binary: 57% of samples are ≤ 0.1 and 38.6% lie between 4.8 and 5.1, with fewer than 5% in between. The share of high readings goes from 94% in July to 3–4% in April and December. It behaves like an on/off instrument signal rather than a continuous wind speed. It is kept (tree models handle it) and reported as a limitation.
+
+--- CELL 15 (markdown; execution=None) ---
+**Data-quality conclusion.** The data are structurally clean: no missing values, duplicates, gaps or impossible values. **No row is removed or modified.** The only processing is renaming columns, parsing dates, computing `Total = Z1 + Z2 + Z3` and averaging to hourly values (`src/data.py`).
+
+--- CELL 16 (markdown; execution=None) ---
+## 3. EDA figures
+
+### F01 – Hourly total load over the year
+
+Thin line = hourly load, thick line = 7-day rolling mean; December is shaded.
+
+--- CELL 17 (code; execution=7) ---
+fig, ax = plt.subplots(figsize=(11, 3.8))
+ax.plot(dh.index, dh['Total'], color=BLUE[200], lw=0.5, label='Hourly')
+ax.plot(dh.index, dh['Total'].rolling(168, center=True).mean(), color=BLUE[600], lw=2,
+        label='7-day rolling mean')
+shade_test(ax, end=dh.index[-1])
+ax.set_xlim(dh.index[0], dh.index[-1])
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%b'))
+ax.set(title='Total power consumption, Tetouan 2017', ylabel='Total load (kW)')
+ax.legend(loc='upper left', ncol=2)
+savefig(fig, 'F01_total_hourly_year')
+plt.show()
+
+monthly = dh['Total'].resample('ME').mean()
+print(monthly.set_axis(monthly.index.strftime('%b')).round(0).to_string())
+OUTPUT: <Figure size 1210x418 with 1 Axes>
+OUTPUT: DateTime
+Jan   68,173.00
+Feb   67,109.00
+Mar   66,561.00
+Apr   67,397.00
+May   69,994.00
+Jun   75,707.00
+Jul   88,174.00
+Aug   85,740.00
+Sep   68,500.00
+Oct   67,561.00
+Nov   65,105.00
+Dec   63,751.00
+
+
+--- CELL 18 (markdown; execution=None) ---
+**Observations.** The load is flat around 65,000–70,000 kW from January to May, rises from June, peaks in July (88,200 kW monthly mean) and August (85,700 kW), about 30% above the base level, and falls quickly in early September. The daily swing is also larger in summer. The dip at the end of June matches Eid al-Fitr (26–27 June). December (63,800 kW) is close to November (65,100 kW), so the test month is not a different regime, although it is the lowest month of the year.
+
+--- CELL 19 (markdown; execution=None) ---
+### F02 – The three zones
+
+Daily mean load of each zone.
+
+--- CELL 20 (code; execution=8) ---
+daily = dh[['Z1', 'Z2', 'Z3']].resample('D').mean()
+fig, ax = plt.subplots(figsize=(11, 3.8))
+for i, z in enumerate(['Z1', 'Z2', 'Z3']):
+    ax.plot(daily.index, daily[z], color=SERIES[i], lw=1.6, label=f'Zone {z[1]}')
+shade_test(ax, end=daily.index[-1])
+ax.set_xlim(daily.index[0], daily.index[-1] + pd.Timedelta(days=22))
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%b'))
+ax.set(title='Daily mean load by zone', ylabel='Load (kW)')
+label_line_ends(ax, daily.index[-1], daily.iloc[-1], ['Zone 1', 'Zone 2', 'Zone 3'], dx=pd.Timedelta(days=2))
+ax.legend(loc='upper left', ncol=3)
+savefig(fig, 'F02_zones_daily')
+plt.show()
+
+zm = dh[['Z1', 'Z2', 'Z3']].resample('ME').mean()
+print((zm.set_axis(zm.index.strftime('%b')).T / 1000).round(1).to_string())
+OUTPUT: <Figure size 1210x418 with 1 Axes>
+OUTPUT: DateTime   Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
+Z1       31.00 31.00 31.20 31.20 32.40 34.60 35.80 36.40 33.40 32.80 29.00 29.00
+Z2       19.40 18.80 18.50 17.60 20.00 20.70 24.10 24.70 20.20 21.50 23.20 23.70
+Z3       17.70 17.30 16.90 18.60 17.60 20.40 28.20 24.60 14.90 13.30 12.90 11.00
+
+
+--- CELL 21 (markdown; execution=None) ---
+**Observations.** Zone 1 is the largest (29,000–36,000 kW per month). Zone 3 has the strongest seasonality: 28,200 kW in July against 11,000 kW in December (×2.6). The zones also change structurally: from September to November Zone 2 rises (20,200 → 23,200 kW) while Zone 3 falls, and Zone 3 jumps for a few days in mid-November, consistent with load transfers in the network. This is another reason to forecast the **total**, which is not affected by transfers.
+
+--- CELL 22 (markdown; execution=None) ---
+### F03 – Daily profile by season (Jan–Nov)
+
+Average load for each hour of the day, one line per season.
+
+--- CELL 23 (code; execution=9) ---
+season_of = {1: 'Winter (Jan–Feb)', 2: 'Winter (Jan–Feb)', 3: 'Spring (Mar–May)', 4: 'Spring (Mar–May)',
+             5: 'Spring (Mar–May)', 6: 'Summer (Jun–Aug)', 7: 'Summer (Jun–Aug)', 8: 'Summer (Jun–Aug)',
+             9: 'Autumn (Sep–Nov)', 10: 'Autumn (Sep–Nov)', 11: 'Autumn (Sep–Nov)'}
+seasons = ['Winter (Jan–Feb)', 'Spring (Mar–May)', 'Summer (Jun–Aug)', 'Autumn (Sep–Nov)']
+prof = dev.groupby([dev.index.month.map(season_of), dev.index.hour])['Total'].mean().unstack(0)[seasons]
+
+fig, ax = plt.subplots(figsize=(9, 4))
+for i, s in enumerate(seasons):
+    ax.plot(prof.index, prof[s], color=SERIES[i], marker='o', ms=3, label=s)
+ax.set_xticks(range(0, 24, 2))
+ax.set_xlim(-0.5, 26.5)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.set(title='Average daily load profile by season (Jan–Nov)', xlabel='Hour of day', ylabel='Total load (kW)')
+label_line_ends(ax, 23, prof.loc[23], [s.split(' ')[0] for s in seasons])
+ax.legend(loc='upper left')
+savefig(fig, 'F03_profile_by_season')
+plt.show()
+
+print(pd.DataFrame({'min hour': prof.idxmin(), 'min (kW)': prof.min().round(0),
+                    'peak hour': prof.idxmax(), 'peak (kW)': prof.max().round(0),
+                    'peak/min': (prof.max() / prof.min()).round(2)}))
+OUTPUT: <Figure size 990x440 with 1 Axes>
+OUTPUT:                   min hour  min (kW)  peak hour  peak (kW)  peak/min
+DateTime                                                            
+Winter (Jan–Feb)         7 48,099.00         19  94,385.00      1.96
+Spring (Mar–May)         6 46,757.00         20  95,913.00      2.05
+Summer (Jun–Aug)         6 53,789.00         20 113,296.00      2.11
+Autumn (Sep–Nov)         6 48,751.00         19  92,096.00      1.89
+
+
+--- CELL 24 (markdown; execution=None) ---
+**Observations.** All seasons share the same shape: minimum at 6–7 h, a daytime plateau and an evening peak at 19–20 h (peak/minimum ≈ 1.9–2.1). Summer is higher at every hour, especially at night (88,000 vs about 62,000 kW at midnight) and in the afternoon, consistent with cooling demand. The evening peak is at 19 h in winter/autumn and 20 h in spring/summer, consistent with later sunsets and possibly daylight saving time. Lags `lag_24` and `lag_168` carry this seasonal shape, so no `month` feature is needed.
+
+--- CELL 25 (markdown; execution=None) ---
+### F04 – Hour × weekday heatmaps (Jan–Nov)
+
+Left: mean load. Right: % difference from the Monday–Friday mean **of the same hour**, which removes the daily cycle and reveals the weekday effect.
+
+--- CELL 26 (code; execution=10) ---
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+hw = dev.groupby([dev.index.hour, dev.index.dayofweek])['Total'].mean().unstack()
+
+# Right panel: % difference vs the Mon–Fri mean of the same hour, so weekday effects are not hidden by the daily cycle
+rel = (hw.div(hw[[0, 1, 2, 3, 4]].mean(axis=1), axis=0) - 1) * 100
+lim = np.ceil(rel.abs().max().max())
+
+fig, axes = plt.subplots(1, 2, figsize=(12.5, 6.8), layout='constrained')
+panels = [(axes[0], hw, SEQ_CMAP, {}, kw_fmt, 'Mean total load (kW)', 'Mean load by hour and weekday'),
+          (axes[1], rel, DIV_CMAP, {'vmin': -lim, 'vmax': lim}, None, '% vs Mon–Fri mean of the same hour',
+           'Difference vs weekday average')]
+for ax, data, cmap, lims, fmt, cb_label, title in panels:
+    mesh = ax.pcolormesh(np.arange(8), np.arange(25), data.values, cmap=cmap, edgecolors=SURFACE, linewidth=1, **lims)
+    ax.set_xticks(np.arange(7) + 0.5, days)
+    ax.set_yticks(np.arange(0, 24, 2) + 0.5, range(0, 24, 2))
+    ax.invert_yaxis()
+    ax.grid(False)
+    ax.tick_params(length=0)
+    for s in ax.spines.values():
+        s.set_visible(False)
+    cb = fig.colorbar(mesh, ax=ax, shrink=0.8, format=fmt)
+    cb.set_label(cb_label, color=INK_2)
+    cb.outline.set_visible(False)
+    ax.set_title(title)
+axes[0].set_ylabel('Hour of day')
+fig.suptitle('Hour × weekday (Jan–Nov)', x=0.02, ha='left', fontweight='bold', color=INK)
+savefig(fig, 'F04_heatmap_hour_weekday')
+plt.show()
+
+wk = dev.groupby(dev.index.dayofweek)['Total'].mean()
+print(((wk / wk.loc[0:4].mean() - 1) * 100).set_axis(days).round(1).rename('% vs Mon–Fri mean').to_string())
+OUTPUT: <Figure size 1375x748 with 4 Axes>
+OUTPUT: Mon   -0.50
+Tue    0.00
+Wed    0.40
+Thu    0.70
+Fri   -0.60
+Sat   -1.30
+Sun   -5.90
+
+
+--- CELL 27 (markdown; execution=None) ---
+**Observations.** The weekday effect is invisible on the left because the daily cycle dominates. On the right: Sundays are 5.9% lower on average and about 15% lower at 7–8 h (late wake-up), Saturday mornings 4–6% lower, Friday midday (12–18 h) about 2% lower, while Saturday and Sunday nights are 1–2% higher. Consequences: `dayofweek` / `is_weekend` are needed, the weekday effect interacts with the hour, and Naive-24h will be systematically wrong on Mondays (it copies Sunday) and Sundays (it copies Saturday).
+
+--- CELL 28 (markdown; execution=None) ---
+### F05 – Ramadan vs the four weeks before
+
+Hourly profile during Ramadan and during the four preceding weeks (public holidays removed).
+
+--- CELL 29 (code; execution=11) ---
+r0, r1 = pd.Timestamp(RAMADAN_2017[0]), pd.Timestamp(RAMADAN_2017[1])
+periods = {'4 weeks before (29 Apr–26 May)': dev.loc[r0 - pd.Timedelta(days=28): r0 - pd.Timedelta(hours=1)],
+           'Ramadan (27 May–25 Jun)': dev.loc[r0: r1 - pd.Timedelta(hours=1)]}
+periods = {k: v[~v.index.normalize().isin(holidays)] for k, v in periods.items()}  # drop public holidays
+rp = pd.DataFrame({k: v.groupby(v.index.hour)['Total'].mean() for k, v in periods.items()})
+
+fig, ax = plt.subplots(figsize=(9, 4))
+for i, c in enumerate(rp):
+    ax.plot(rp.index, rp[c], color=SERIES[i], marker='o', ms=3, label=c)
+ax.set_xticks(range(0, 24, 2))
+ax.set_xlim(-0.5, 26.5)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.set(title='Daily load profile: Ramadan vs the 4 weeks before', xlabel='Hour of day', ylabel='Total load (kW)')
+label_line_ends(ax, 23, rp.loc[23], ['Before', 'Ramadan'])
+ax.legend(loc='upper left')
+savefig(fig, 'F05_ramadan_profile')
+plt.show()
+
+print('Mean temperature (°C):', {k: round(v['Temperature'].mean(), 1) for k, v in periods.items()})
+print(pd.DataFrame({'peak hour': rp.idxmax(), 'peak (kW)': rp.max().round(0),
+                    'min hour': rp.idxmin(), 'min (kW)': rp.min().round(0)}))
+print('\nDifference Ramadan − before, by hour (kW):')
+print((rp.iloc[:, 1] - rp.iloc[:, 0]).round(0).to_frame('diff').T.to_string())
+OUTPUT: <Figure size 990x440 with 1 Axes>
+OUTPUT: Mean temperature (°C): {'4 weeks before (29 Apr–26 May)': np.float64(19.9), 'Ramadan (27 May–25 Jun)': np.float64(21.8)}
+                                peak hour  peak (kW)  min hour  min (kW)
+4 weeks before (29 Apr–26 May)         20  98,420.00         5 45,610.00
+Ramadan (27 May–25 Jun)                20 100,886.00         6 47,096.00
+
+Difference Ramadan − before, by hour (kW):
+DateTime        0         1         2         3        4        5       6         7         8         9         10        11        12      13       14       15       16       17        18       19       20       21       22        23
+diff     22,681.00 27,376.00 32,142.00 18,923.00 7,025.00 3,073.00 -595.00 -3,675.00 -6,241.00 -7,446.00 -7,103.00 -5,468.00 -3,072.00 -661.00 1,902.00 4,006.00 5,482.00 8,590.00 12,273.00 8,507.00 2,466.00 2,712.00 8,959.00 17,153.00
+
+
+--- CELL 30 (markdown; execution=None) ---
+**Observations.** Ramadan changes the shape of the profile. From 0 to 3 h the load is 19,000–32,000 kW higher (the pre-dawn suhoor meal), 3,700–7,400 kW lower at 7–11 h, and 4,000–12,000 kW higher at 15–18 h (iftar preparation). Mean temperature is only 1.9 °C higher, which cannot explain a 50% increase at 2 h, so `is_ramadan` is justified.
+
+--- CELL 31 (markdown; execution=None) ---
+### F06a – Temperature vs total load (Jan–Nov)
+
+Scatter of hourly load against temperature, coloured by period of the day.
+
+--- CELL 32 (code; execution=12) ---
+period = pd.cut(dev.index.hour, [-1, 6, 17, 23], labels=['Night (0–6h)', 'Day (7–17h)', 'Evening (18–23h)'])
+fig, ax = plt.subplots(figsize=(8, 5))
+for i, p in enumerate(period.categories):
+    m = period == p
+    ax.scatter(dev.loc[m, 'Temperature'], dev.loc[m, 'Total'], s=7, alpha=0.4, color=SERIES[i],
+               linewidths=0, label=p)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.grid(axis='x')
+ax.set(title='Temperature vs total load (hourly, Jan–Nov)', xlabel='Temperature (°C)', ylabel='Total load (kW)')
+ax.legend(loc='upper left', markerscale=2.5)
+savefig(fig, 'F06a_temperature_vs_total')
+plt.show()
+
+print('Pearson r(Temperature, Total) by period:')
+print(pd.Series({p: dev.loc[period == p, ['Temperature', 'Total']].corr().iloc[0, 1] for p in period.categories}).round(3))
+OUTPUT: <Figure size 880x550 with 1 Axes>
+OUTPUT: Pearson r(Temperature, Total) by period:
+Night (0–6h)       0.55
+Day (7–17h)        0.66
+Evening (18–23h)   0.47
+dtype: float64
+
+
+--- CELL 33 (markdown; execution=None) ---
+**Observations.** The relation is positive but non-linear: below about 22 °C the load hardly depends on temperature (no heating effect), above 22–25 °C it rises quickly, especially in the evening (cooling). The three periods of the day form three parallel bands, so the hour explains more variance than temperature. Pearson r by period: night 0.55, day 0.66, evening 0.47. Non-linear, interacting relations favour tree models and SVR over linear regression.
+
+--- CELL 34 (markdown; execution=None) ---
+### F06b – Correlation matrix (Jan–Nov)
+
+--- CELL 35 (code; execution=13) ---
+cols = ['Temperature', 'Humidity', 'WindSpeed', 'GenDiffuse', 'Diffuse', 'Z1', 'Z2', 'Z3', 'Total']
+corr = dev[cols].corr()
+
+fig, ax = plt.subplots(figsize=(7.5, 6.5))
+im = ax.imshow(corr, cmap=DIV_CMAP, vmin=-1, vmax=1)
+ax.set_xticks(range(len(cols)), cols, rotation=45, ha='right')
+ax.set_yticks(range(len(cols)), cols)
+ax.grid(False)
+ax.tick_params(length=0)
+for s in ax.spines.values():
+    s.set_visible(False)
+for i in range(len(cols)):
+    for j in range(len(cols)):
+        v = corr.iloc[i, j]
+        ax.text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=8,
+                color='white' if abs(v) > 0.6 else INK)
+cb = fig.colorbar(im, ax=ax, shrink=0.8)
+cb.set_label('Pearson correlation', color=INK_2)
+cb.outline.set_visible(False)
+ax.set_title('Correlation matrix (hourly, Jan–Nov)')
+savefig(fig, 'F06b_correlation')
+plt.show()
+
+corr['Total'].drop('Total').sort_values(key=abs, ascending=False).round(3)
+OUTPUT: <Figure size 825x715 with 2 Axes>
+OUTPUT: Z1             0.96
+Z2             0.91
+Z3             0.89
+Temperature    0.49
+Humidity      -0.30
+WindSpeed      0.21
+GenDiffuse     0.15
+Diffuse        0.02
+Name: Total, dtype: float64
+
+--- CELL 36 (markdown; execution=None) ---
+**Observations.** Among weather variables, temperature has the strongest correlation with the total (0.49), followed by humidity (−0.30), wind speed (0.21), general diffuse flows (0.15) and diffuse flows (0.02). A low Pearson value does not mean useless: solar radiation is zero at night and high at noon, so its effect goes through the hour of day. Zones are strongly correlated with each other (0.66–0.87), but **zones at the same timestamp must not be features**: they are components of the target (leakage); only their lags are allowed.
+
+--- CELL 37 (markdown; execution=None) ---
+### F07 – Autocorrelation of the total load up to 200 hours (Jan–Nov)
+
+--- CELL 38 (code; execution=14) ---
+fig, ax = plt.subplots(figsize=(11, 3.8))
+plot_acf(dev['Total'], lags=200, ax=ax, zero=False, color=SERIES[0], markersize=2.5,
+         vlines_kwargs={'colors': SERIES[0], 'linewidth': 0.8}, title=None)
+for c in ax.collections:
+    if isinstance(c, plt.matplotlib.collections.PolyCollection):
+        c.set_facecolor(BLUE[100])
+for lag in (24, 168):
+    ax.axvline(lag, color=MUTED, lw=0.8, ls='--', zorder=0)
+    ax.text(lag + 1.5, 1.02, f'lag {lag} h', fontsize=8.5, color=INK_2)
+ax.set(title='Autocorrelation of hourly total load (Jan–Nov)', xlabel='Lag (hours)', ylabel='ACF',
+       ylim=(-0.6, 1.1), xlim=(0, 201))
+savefig(fig, 'F07_acf_total')
+plt.show()
+
+a = acf(dev['Total'], nlags=200)
+print(pd.Series({f'lag {k}': a[k] for k in (1, 2, 3, 12, 24, 48, 72, 144, 167, 168, 169)}).round(3).to_string())
+OUTPUT: <Figure size 1210x418 with 1 Axes>
+OUTPUT: lag 1      0.93
+lag 2      0.77
+lag 3      0.58
+lag 12    -0.23
+lag 24     0.98
+lag 48     0.96
+lag 72     0.95
+lag 144    0.94
+lag 167    0.88
+lag 168    0.95
+lag 169    0.88
+
+
+--- CELL 39 (markdown; execution=None) ---
+**Observations.** A very strong daily cycle: ACF = 0.98 at lag 24, 0.96 at 48, 0.95 at 72, decaying slowly. A weekly cycle as well: lag 168 = 0.95, higher than its neighbours (lags 167 and 169: 0.88) and than lag 144 (0.94). Lag 12 is negative (−0.23): day and night are in opposite phase. This motivates `lag_24`, `lag_48` (and `lag_168`) for the day-ahead problem and `lag_1..3` (0.93, 0.77, 0.58) for the 1-hour problem. Such a high ACF at lag 24 also means Naive-24h will be a hard baseline.
+
+--- CELL 40 (markdown; execution=None) ---
+### F08 – Weekdays and public holidays (Jan–Nov)
+
+Daily means vary strongly with the season, so the right panel uses the **% deviation from the surrounding 15-day median** to compare weekdays and holidays fairly.
+
+--- CELL 41 (code; execution=15) ---
+dd = dev['Total'].resample('D').mean().to_frame('daily_mean')
+dd['deviation_%'] = (dd['daily_mean'] / dd['daily_mean'].rolling(15, center=True, min_periods=7).median() - 1) * 100
+dd['weekday'] = dd.index.dayofweek.map(dict(enumerate(days)))
+dd['is_holiday'] = dd.index.isin(holidays)
+dd['group'] = np.where(dd['is_holiday'], 'Holiday', dd['weekday'])
+groups = days + ['Holiday']
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4), gridspec_kw={'width_ratios': [1, 1.15]})
+box_style = dict(patch_artist=True, widths=0.6, medianprops={'color': INK, 'lw': 1.4},
+                 whiskerprops={'color': MUTED}, capprops={'color': MUTED},
+                 flierprops={'marker': 'o', 'ms': 3, 'mfc': MUTED, 'mec': 'none'})
+
+data_a = [dd.loc[(dd['weekday'] == d) & ~dd['is_holiday'], 'daily_mean'] for d in days]
+bp = axes[0].boxplot(data_a, tick_labels=days, **box_style)
+for b in bp['boxes']:
+    b.set(facecolor=BLUE[200], edgecolor=BLUE[500])
+axes[0].yaxis.set_major_formatter(kw_fmt)
+axes[0].set(title='Daily mean load by weekday', ylabel='Daily mean total load (kW)')
+
+data_b = [dd.loc[dd['group'] == g, 'deviation_%'].dropna() for g in groups]
+bp = axes[1].boxplot(data_b, tick_labels=groups, **box_style)
+for b, g in zip(bp['boxes'], groups):
+    if g == 'Holiday':
+        b.set(facecolor=SERIES[1], edgecolor='#b34a1f')
+    else:
+        b.set(facecolor=BLUE[200], edgecolor=BLUE[500])
+axes[1].axhline(0, color=MUTED, lw=0.8)
+axes[1].set(title='Deviation from surrounding 15-day median', ylabel='Deviation (%)')
+savefig(fig, 'F08_weekday_holiday')
+plt.show()
+
+print(dd.groupby('group')['deviation_%'].agg(['count', 'median', 'mean']).loc[groups].round(2))
+OUTPUT: <Figure size 1320x440 with 2 Axes>
+OUTPUT:          count  median  mean
+group                       
+Mon         43    0.13  0.47
+Tue         47    0.59  0.78
+Wed         47    0.97  1.07
+Thu         48    1.13  1.29
+Fri         45    0.00  0.14
+Sat         45   -0.67 -0.76
+Sun         45   -5.91 -5.37
+Holiday     14   -4.56 -5.15
+
+
+--- CELL 42 (markdown; execution=None) ---
+Check the holiday list of `src/features.py` against the data: real holidays should be clearly below the surrounding days.
+
+--- CELL 43 (code; execution=16) ---
+dd.loc[dd['is_holiday'], ['weekday', 'daily_mean', 'deviation_%']].round(1)
+OUTPUT:            weekday  daily_mean  deviation_%
+DateTime                                   
+2017-01-01     Sun   64,071.80        -5.80
+2017-01-11     Wed   67,082.80        -1.40
+2017-05-01     Mon   64,415.00        -6.20
+2017-06-26     Mon   71,989.80        -8.10
+2017-06-27     Tue   68,513.90       -12.50
+2017-07-30     Sun   88,216.10        -3.50
+2017-08-14     Mon   86,208.80        -3.40
+2017-08-20     Sun   83,684.60        -1.50
+2017-08-21     Mon   84,333.50        -0.70
+2017-09-01     Fri   61,623.60       -13.40
+2017-09-02     Sat   64,747.90        -7.60
+2017-09-22     Fri   66,813.30        -3.00
+2017-11-06     Mon   62,288.50        -5.70
+2017-11-18     Sat   65,126.80         0.70
+
+--- CELL 44 (markdown; execution=None) ---
+**Observations.** After removing the seasonal trend: Sundays are clearly lower (median −5.9%), Saturdays slightly lower (−0.7%), Monday–Thursday slightly higher (+0.1% to +1.1%). Holidays have a median of −4.6% but vary a lot: religious holidays fall the most (mean about −9%; Eid al-Fitr 26–27 June: −8.1% and −12.5%; Eid al-Adha 1–2 September: −13.4% and −7.6%), whereas civil holidays are weaker and uneven (mean about −3%): 1 May and 6 November drop about 6%, while 11 Jan, 20–21 Aug and 18 Nov look like normal days. The data confirm the Eid dates of the holiday list and motivate splitting the holiday flag into religious and civil holidays.
+
+--- CELL 45 (markdown; execution=None) ---
+## 4. Summary and consequences for feature engineering
+
+| Finding | Evidence | Consequence |
+|---|---|---|
+| Clean data | Section 2, T01 | No deletion or imputation; hourly resampling only |
+| Very strong daily cycle | F03, F07 (lag 24 = 0.98) | `hour`, `hour_sin/cos`, `lag_24`, `lag_48`; Naive-24h is a hard baseline |
+| Weekly cycle | F04, F07 (lag 168 = 0.95) | `dayofweek`, `is_weekend` |
+| Sundays −6%, Sunday mornings −15% | F04, F08 | Weekday effect interacts with the hour |
+| Religious holidays about −9%, civil holidays about −3% (uneven) | F08 | Separate `is_religious_holiday` and `is_civil_holiday` |
+| Ramadan reshapes the night profile | F05 | `is_ramadan` |
+| Summer +30%, non-linear in temperature | F01, F03, F06a | Non-linear models; no `month` feature (December is unseen in training) |
+| Load transfers between zones | DQ01, F02 | Target = total; same-time zones are not features |
+| Near-binary wind speed | DQ02 | Kept, reported as a limitation |

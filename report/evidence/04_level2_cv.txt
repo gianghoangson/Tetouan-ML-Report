@@ -1,0 +1,223 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 04 – Level 2: TimeSeriesSplit cross-validation
+
+Guideline section 8. Are the Level 1 results stable, or specific to November? The models keep their **default** hyperparameters and feature set D; only the evaluation changes: five expanding-window folds on January–November, each validating 30 days (`make_tscv()`). The baselines run through exactly the same folds. Outputs: **T05** and **F12**.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable, load the shared helpers and the common figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+import json
+import time
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from src.config import TABLES, SMOKE
+from src.data import load_hourly
+from src.features import make_features, FEATURE_SETS, MODEL_FEATURES
+from src.evaluate import (metrics, log_result, save_results, split_masks, make_tscv, cross_val_log,
+                          cv_summary, CV_SCORING, RESULTS, RANDOM_STATE)
+from src.models import (default_models, search_spaces, tuned_model, baselines, NaiveLag, MeanProfile,
+                        p1_random_forest, split_name, DeltaTarget, N_JOBS, MODEL_NAMES, DELTA_SUFFIX, DELTA_BASE)
+from src.viz import (set_style, savefig, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, NEUTRAL, SURFACE, GRID, MODEL_COLORS, BASELINE_STYLE)
+
+set_style()
+pd.set_option('display.float_format', '{:,.3f}'.format)
+pd.set_option('display.width', 200)
+MF = MODEL_FEATURES[24]    # columns every model is trained on (baselines read lags from the full X)
+SCORING = CV_SCORING
+if SMOKE:
+    print('SMOKE MODE: code check only (dev = Jan–Oct, stand-in test = Nov, tiny models). '
+          'December is never touched. Outputs → results/smoke/')
+
+--- CELL 3 (markdown; execution=None) ---
+**Data and folds.** Development set (Jan–Nov) and the validation period of each fold.
+
+--- CELL 4 (code; execution=2) ---
+dh = load_hourly()
+X, y = make_features(dh, horizon=24)
+tr, va, dev, te = split_masks(X.index)          # te is NOT used here
+Xd, yd = X[dev], y[dev]
+tscv = make_tscv()
+folds = [(Xd.index[i_va[0]], Xd.index[i_va[-1]]) for _, i_va in tscv.split(Xd)]
+fold_labels = [f'fold{k}\n{a:%d/%m}–{b:%d/%m}' for k, (a, b) in enumerate(folds)]
+for k, (a, b) in enumerate(folds):
+    print(f'fold{k}: validate {a:%Y-%m-%d} → {b:%Y-%m-%d}')
+OUTPUT: fold0: validate 2017-07-04 → 2017-08-02
+fold1: validate 2017-08-03 → 2017-09-01
+fold2: validate 2017-09-02 → 2017-10-01
+fold3: validate 2017-10-02 → 2017-10-31
+fold4: validate 2017-11-01 → 2017-11-30
+
+
+--- CELL 5 (markdown; execution=None) ---
+## 1. Cross-validate the baselines and the five default models
+
+`cross_val_log()` runs `cross_validate` with RMSE, MAE, MAPE and R² and logs one row per fold (including the training RMSE).
+
+--- CELL 6 (code; execution=3) ---
+RESULTS.clear()
+t0 = time.time()
+for name, est in baselines().items():
+    cross_val_log(est, Xd, yd, tscv, level='L2', model=name)
+models = default_models()
+for name in MODEL_NAMES:
+    t1 = time.time()
+    cross_val_log(models[name], Xd[MF], yd, tscv, level='L2', model=name)
+    print(f'{name:4s} 5 folds in {time.time() - t1:6.1f}s')
+long = save_results(TABLES / 'T05_level2_cv.csv')
+print(f'total {time.time() - t0:.1f}s')
+OUTPUT: LR   5 folds in    0.0s
+
+OUTPUT: DT   5 folds in    0.2s
+
+OUTPUT: RF   5 folds in    1.5s
+
+OUTPUT: SVR  5 folds in    2.4s
+
+OUTPUT: XGB  5 folds in    0.4s
+total 4.6s
+
+
+--- CELL 7 (markdown; execution=None) ---
+## 2. T05 – Mean ± standard deviation over the five folds
+
+`skill_mean` is the RMSE improvement over Naive-24h computed **within each fold** and then averaged, which is fairer than comparing two averages because folds differ in difficulty.
+
+--- CELL 8 (code; execution=4) ---
+t05 = cv_summary(long)
+t05.to_csv(TABLES / 'T05_level2_summary.csv')
+t05[['RMSE_mean', 'RMSE_std', 'MAE_mean', 'MAPE_mean', 'MAPE_std', 'R2_mean', 'skill_mean', 'skill_std',
+     'train_RMSE_mean', 'fit_time_mean']]
+OUTPUT:              RMSE_mean  RMSE_std   MAE_mean  MAPE_mean  MAPE_std  R2_mean  skill_mean  skill_std  train_RMSE_mean  fit_time_mean
+model                                                                                                                           
+LR           2,792.315   623.251  2,100.970      2.949     0.538    0.965       0.180      0.139        2,655.338          0.003
+RF           3,069.544 1,488.752  2,168.620      2.824     0.820    0.958       0.126      0.313          797.228          0.252
+XGB          3,264.766 1,815.766  2,327.959      2.992     0.967    0.951       0.076      0.391          697.796          0.083
+Naive-24h    3,392.372   421.547  2,371.736      3.285     0.318    0.950       0.000      0.000        3,542.405          0.001
+SVR          3,968.670 2,891.482  2,753.391      3.445     1.591    0.922      -0.106      0.657        1,541.543          0.229
+DT           4,048.179 1,410.391  2,915.313      3.873     0.768    0.929      -0.168      0.261            0.000          0.034
+Naive-168h   4,892.615 2,297.105  3,655.364      4.923     1.888    0.889      -0.405      0.584        4,486.510          0.001
+MeanProfile 12,005.062 5,972.597 10,845.473     13.830     5.454    0.375      -2.433      1.285        9,083.878          0.001
+
+--- CELL 9 (markdown; execution=None) ---
+**Observations.** Over five folds **LR is the best default model** (2,792 ± 623 kW), followed by RF (3,070 ± 1,489) and XGB (3,265 ± 1,816); Naive-24h reaches 3,392 ± 422. Default SVR and DT **lose to Naive-24h**. The large standard deviations of the tree models and SVR come almost entirely from fold 0 (F12).
+
+--- CELL 10 (markdown; execution=None) ---
+## 3. One split (Level 1) vs cross-validation (Level 2)
+
+The last fold is the Level 1 split, so `single_split_RMSE` is the Level 1 result. A large change of rank between the two columns means November alone is not representative.
+
+--- CELL 11 (code; execution=5) ---
+last = long[long['split'] == f'fold{len(folds) - 1}'].set_index('model')['RMSE']
+cmp = pd.DataFrame({'single_split_RMSE': last, 'cv_RMSE_mean': t05['RMSE_mean'], 'cv_RMSE_std': t05['RMSE_std']})
+cmp['rank_single'] = cmp['single_split_RMSE'].rank().astype(int)
+cmp['rank_cv'] = cmp['cv_RMSE_mean'].rank().astype(int)
+cmp.sort_values('cv_RMSE_mean')
+OUTPUT:              single_split_RMSE  cv_RMSE_mean  cv_RMSE_std  rank_single  rank_cv
+model                                                                          
+LR                   2,288.732     2,792.315      623.251            4        1
+RF                   2,227.512     3,069.544    1,488.752            3        2
+XGB                  2,161.413     3,264.766    1,815.766            1        3
+Naive-24h            3,076.399     3,392.372      421.547            6        4
+SVR                  2,195.220     3,968.670    2,891.482            2        5
+DT                   2,992.432     4,048.179    1,410.391            5        6
+Naive-168h           3,202.923     4,892.615    2,297.105            7        7
+MeanProfile          9,369.583    12,005.062    5,972.597            8        8
+
+--- CELL 12 (markdown; execution=None) ---
+Consistency check: the last fold must reproduce Level 1 exactly (same data, model and seed).
+
+--- CELL 13 (code; execution=6) ---
+# Consistency check: the last fold must reproduce Level 1 exactly (same data, same model, same seed)
+t04 = TABLES / 'T04_level0_level1_wide.csv'
+same_split = folds[-1] == (X.index[va][0], X.index[va][-1])
+if not same_split:
+    print(f'Last fold ({folds[-1][0]:%d/%m}–{folds[-1][1]:%d/%m}) differs from the Level 1 validation period '
+          f'({X.index[va][0]:%d/%m}–{X.index[va][-1]:%d/%m}) → check skipped (expected in smoke mode only)')
+elif t04.exists():
+    l1 = pd.read_csv(t04).set_index('model')['val_RMSE']
+    common = [m for m in last.index if m in l1.index]
+    diff = (last[common] - l1[common]).abs()
+    print(pd.DataFrame({'Level 1 (T04)': l1[common], 'last fold (L2)': last[common], 'abs diff': diff}).round(3))
+    assert np.allclose(last[common], l1[common], rtol=1e-6), 'last fold does not reproduce Level 1!'
+    print('OK: last fold reproduces Level 1')
+else:
+    print('T04 not found – run notebook 03 first to enable this check')
+OUTPUT:              Level 1 (T04)  last fold (L2)  abs diff
+model                                               
+Naive-24h        3,076.399       3,076.399     0.000
+Naive-168h       3,202.923       3,202.923     0.000
+MeanProfile      9,369.583       9,369.583     0.000
+LR               2,288.732       2,288.732     0.000
+DT               2,992.432       2,992.432     0.000
+RF               2,227.512       2,227.512     0.000
+SVR              2,195.220       2,195.220     0.000
+XGB              2,161.413       2,161.413     0.000
+OK: last fold reproduces Level 1
+
+
+--- CELL 14 (markdown; execution=None) ---
+**Observations.** **The ranking changes:** XGB is first on November but third on CV, SVR drops from second to fifth, LR rises from fourth to first. The check confirms that the last fold reproduces Level 1 exactly. Lesson: evaluating on a single month can be misleading.
+
+--- CELL 15 (markdown; execution=None) ---
+## 4. F12 – RMSE per fold
+
+One line per model (baselines in grey); MeanProfile is omitted (several times larger).
+
+--- CELL 16 (code; execution=7) ---
+pivot = long.pivot(index='split', columns='model', values='RMSE').loc[[f'fold{k}' for k in range(len(folds))]]
+x = np.arange(len(folds))
+fig, ax = plt.subplots(figsize=(11, 4.6))
+for name in ['Naive-24h', 'Naive-168h']:
+    ax.plot(x, pivot[name], marker='o', ms=5, lw=1.4, label=name, **BASELINE_STYLE[name])
+for name in [m for m in MODEL_NAMES if m in pivot]:
+    ax.plot(x, pivot[name], marker='o', ms=6, lw=2, color=MODEL_COLORS[name], label=name)
+ax.set_xticks(x, fold_labels)
+ax.set_xlim(-0.3, len(folds) - 0.7)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.set(title='Level 2: RMSE per validation fold (default models, day-ahead)', ylabel='RMSE (kW)')
+ax.legend(loc='upper right', ncol=4)
+savefig(fig, 'F12_rmse_per_fold')
+plt.show()
+print('MeanProfile is left out of the plot (its RMSE is several times larger); see T05.')
+OUTPUT: <Figure size 1210x506 with 1 Axes>
+OUTPUT: MeanProfile is left out of the plot (its RMSE is several times larger); see T05.
+
+
+--- CELL 17 (markdown; execution=None) ---
+**Observations.** Fold 0 (4 July–2 August) is by far the hardest for tree models and SVR: RF 5,397, XGB 6,230, SVR 8,775, DT 6,111 kW, against LR 3,071 and Naive-24h 4,024. The cause is **extrapolation**: 12% of the fold-0 hours exceed the highest load seen in training (133,130 vs 110,711 kW), and tree models (and an RBF-kernel SVR) cannot predict outside the range seen in training. From fold 2 on, RF and XGB beat LR. This motivates the **relative target** tested in notebook 05.
+
+--- CELL 18 (markdown; execution=None) ---
+## 5. Overfitting over the five folds
+
+--- CELL 19 (code; execution=8) ---
+ovf = t05[['train_RMSE_mean', 'RMSE_mean']].copy()
+ovf['overfit_ratio'] = (ovf['RMSE_mean'] / ovf['train_RMSE_mean'].where(ovf['train_RMSE_mean'] >= 1)).fillna(np.inf)
+ovf.loc[[m for m in MODEL_NAMES if m in ovf.index]]
+OUTPUT:        train_RMSE_mean  RMSE_mean  overfit_ratio
+model                                           
+LR           2,655.338  2,792.315          1.052
+DT               0.000  4,048.179            inf
+RF             797.228  3,069.544          3.850
+SVR          1,541.543  3,968.670          2.574
+XGB            697.796  3,264.766          4.679
+
+--- CELL 20 (markdown; execution=None) ---
+**Observations.** Default RF, XGB and SVR have validation/training ratios of about 2.6–4.7 and DT memorises the training set (`inf`); LR is close to 1. Much of the gap of the non-linear models comes from fold 0 (extrapolation), not only from memorisation.
+
+--- CELL 21 (markdown; execution=None) ---
+## 6. Summary
+
+- With default hyperparameters **LR is the most stable** model; non-linear models are better in ordinary months but fail in July.
+- The single-month ranking differs from the CV ranking, so model selection must use CV.
+- Next (notebook 05): tune the hyperparameters and try the relative target `y − lag_24`.

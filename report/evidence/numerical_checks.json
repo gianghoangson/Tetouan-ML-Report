@@ -1,0 +1,704 @@
+{
+  "raw_rows": 52416,
+  "hourly_rows": 8736,
+  "first": "2017-01-01 00:00:00",
+  "last": "2017-12-30 23:50:00",
+  "h24_cv_ranking": {
+    "SVR": 2410.5927997971403,
+    "SVR_delta": 2427.1163609401738,
+    "RF_delta": 2429.333272442103,
+    "XGB_delta": 2441.00369124826,
+    "DT_delta": 2524.854964952224,
+    "LR_delta": 2769.9783611928096,
+    "LR": 2792.3154060132715,
+    "XGB": 3009.8580812169544,
+    "RF": 3010.367717893086,
+    "DT": 3589.676609760589
+  },
+  "h1_cv_ranking": {
+    "SVR": 1866.4229506635834,
+    "SVR_delta": 1874.06251941255,
+    "XGB_delta": 2111.7386063998047,
+    "RF_delta": 2183.4784701028084,
+    "LR_delta": 2420.4997513410863,
+    "LR": 2420.500245195965,
+    "DT_delta": 2489.575829821165,
+    "XGB": 2515.113390935981,
+    "RF": 2650.8339985262346,
+    "DT": 3273.104003896764,
+    "Naive-24h": 3392.3715480968553,
+    "Naive-168h": 4892.614852603391,
+    "Persistence": 6332.87179972861,
+    "MeanProfile": 11997.40274928169
+  },
+  "h24_test_ranking": {
+    "SVR_delta-tuned": 1419.059364255119,
+    "SVR-tuned": 1624.6401034814437,
+    "XGB-tuned": 1711.537237601845,
+    "XGB_delta-tuned": 1719.2365973629774,
+    "RF_delta-tuned": 1761.9084477912486,
+    "XGB-default": 1891.0067379554323,
+    "DT_delta-tuned": 2005.219393747514,
+    "RF-tuned": 2017.0915775382848,
+    "RF-default": 2044.314417692483,
+    "SVR-default": 2063.695498077531,
+    "LR-tuned": 2169.5591105541557,
+    "LR-default": 2169.559476560694,
+    "LR_delta-tuned": 2217.262819918269,
+    "Naive-168h": 2619.8490899383137,
+    "DT-tuned": 2846.576509479925,
+    "DT-default": 2989.6276369678208,
+    "Naive-24h": 3296.29170246824,
+    "MeanProfile": 9596.283785135707
+  },
+  "dayahead_improvement_percent": 50.7130967121349,
+  "cv_horizon_improvement_percent": 22.5741091228411,
+  "residual_bias": -202.10186361683648,
+  "residual_min": -9362.118604626405,
+  "residual_max": 6514.244081652636,
+  "december_mean_load": 63750.82716709121,
+  "fold0_train_max": 110710.546885,
+  "fold0_val_max": 133129.82608,
+  "fold0_above_train_max_percent": 12.222222222222221,
+  "hourly_dev_correlations": {
+    "Temperature": 0.48622898268932635,
+    "Humidity": -0.30390042323368577,
+    "WindSpeed": 0.21035534898580627,
+    "GenDiffuse": 0.14630662012729467,
+    "Diffuse": 0.021655535034299313,
+    "Z1": 0.9564080809885517,
+    "Z2": 0.9050776016323274,
+    "Z3": 0.8869552424862988,
+    "Total": 1.0
+  },
+  "monthly_total_means": {
+    "1": 68173.03360066914,
+    "2": 67108.5488815248,
+    "3": 66560.78889612791,
+    "4": 67396.90228146434,
+    "5": 69994.39797877017,
+    "6": 75707.41099823912,
+    "7": 88173.55171136424,
+    "8": 85740.30088110462,
+    "9": 68499.91244943264,
+    "10": 67560.74866908423,
+    "11": 65105.0675059743,
+    "12": 63750.82716709121
+  },
+  "searches": [
+    {
+      "file": "search_LR.csv",
+      "candidates": 20,
+      "best_row_zero_based": 10,
+      "RMSE_mean": 2792.315406013272,
+      "RMSE_population_std": 557.4528736700951
+    },
+    {
+      "file": "search_LR_delta.csv",
+      "candidates": 20,
+      "best_row_zero_based": 12,
+      "RMSE_mean": 2769.978361192809,
+      "RMSE_population_std": 529.1043822620838
+    },
+    {
+      "file": "search_DT.csv",
+      "candidates": 40,
+      "best_row_zero_based": 17,
+      "RMSE_mean": 3589.676609760589,
+      "RMSE_population_std": 1570.702495865513
+    },
+    {
+      "file": "search_DT_delta.csv",
+      "candidates": 40,
+      "best_row_zero_based": 26,
+      "RMSE_mean": 2524.854964952224,
+      "RMSE_population_std": 761.9944108437202
+    },
+    {
+      "file": "search_RF.csv",
+      "candidates": 30,
+      "best_row_zero_based": 25,
+      "RMSE_mean": 3010.367717893086,
+      "RMSE_population_std": 1420.9573249984878
+    },
+    {
+      "file": "search_RF_delta.csv",
+      "candidates": 30,
+      "best_row_zero_based": 14,
+      "RMSE_mean": 2429.3332724421034,
+      "RMSE_population_std": 716.1397332944036
+    },
+    {
+      "file": "search_SVR.csv",
+      "candidates": 30,
+      "best_row_zero_based": 12,
+      "RMSE_mean": 2410.5927997971403,
+      "RMSE_population_std": 685.4357330496961
+    },
+    {
+      "file": "search_SVR_delta.csv",
+      "candidates": 30,
+      "best_row_zero_based": 10,
+      "RMSE_mean": 2427.1163609401738,
+      "RMSE_population_std": 692.0546630895482
+    },
+    {
+      "file": "search_XGB.csv",
+      "candidates": 50,
+      "best_row_zero_based": 23,
+      "RMSE_mean": 3009.858081216954,
+      "RMSE_population_std": 1314.992245759326
+    },
+    {
+      "file": "search_XGB_delta.csv",
+      "candidates": 50,
+      "best_row_zero_based": 48,
+      "RMSE_mean": 2441.00369124826,
+      "RMSE_population_std": 702.5293328041256
+    },
+    {
+      "file": "search_h1_LR.csv",
+      "candidates": 20,
+      "best_row_zero_based": 10,
+      "RMSE_mean": 2420.5002451959645,
+      "RMSE_population_std": 352.1924912684305
+    },
+    {
+      "file": "search_h1_LR_delta.csv",
+      "candidates": 20,
+      "best_row_zero_based": 10,
+      "RMSE_mean": 2420.499751341086,
+      "RMSE_population_std": 352.189881194588
+    },
+    {
+      "file": "search_h1_DT.csv",
+      "candidates": 40,
+      "best_row_zero_based": 34,
+      "RMSE_mean": 3273.104003896764,
+      "RMSE_population_std": 1537.9639529395058
+    },
+    {
+      "file": "search_h1_DT_delta.csv",
+      "candidates": 40,
+      "best_row_zero_based": 29,
+      "RMSE_mean": 2489.5758298211654,
+      "RMSE_population_std": 408.73237951817583
+    },
+    {
+      "file": "search_h1_RF.csv",
+      "candidates": 30,
+      "best_row_zero_based": 21,
+      "RMSE_mean": 2650.8339985262346,
+      "RMSE_population_std": 1639.6942845063013
+    },
+    {
+      "file": "search_h1_RF_delta.csv",
+      "candidates": 30,
+      "best_row_zero_based": 22,
+      "RMSE_mean": 2183.478470102809,
+      "RMSE_population_std": 818.8960873298644
+    },
+    {
+      "file": "search_h1_SVR.csv",
+      "candidates": 30,
+      "best_row_zero_based": 12,
+      "RMSE_mean": 1866.4229506635836,
+      "RMSE_population_std": 450.2496649322832
+    },
+    {
+      "file": "search_h1_SVR_delta.csv",
+      "candidates": 30,
+      "best_row_zero_based": 18,
+      "RMSE_mean": 1874.06251941255,
+      "RMSE_population_std": 424.3516291656359
+    },
+    {
+      "file": "search_h1_XGB.csv",
+      "candidates": 50,
+      "best_row_zero_based": 10,
+      "RMSE_mean": 2515.113390935981,
+      "RMSE_population_std": 1554.0685972545723
+    },
+    {
+      "file": "search_h1_XGB_delta.csv",
+      "candidates": 50,
+      "best_row_zero_based": 16,
+      "RMSE_mean": 2111.738606399805,
+      "RMSE_population_std": 776.8817164518124
+    }
+  ],
+  "checks": [
+    {
+      "check": "Raw count 52416; hourly count 8736",
+      "passed": true
+    },
+    {
+      "check": "No missing cells, duplicate timestamps or irregular raw intervals",
+      "passed": true
+    },
+    {
+      "check": "720 saved predictions aligned with raw hourly December Total",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: Naive-24h",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: Naive-168h",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: MeanProfile",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: LR-default",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: LR-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: LR_delta-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: DT-default",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: DT-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: DT_delta-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: RF-default",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: RF-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: RF_delta-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: SVR-default",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: SVR-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: SVR_delta-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: XGB-default",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: XGB-tuned",
+      "passed": true
+    },
+    {
+      "check": "Saved h24 prediction metrics: XGB_delta-tuned",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: DT",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: LR",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: MeanProfile",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: Naive-168h",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: Naive-24h",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: RF",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: SVR",
+      "passed": true
+    },
+    {
+      "check": "Level 1 = final Level 2 fold: XGB",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: DT",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: LR",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: MeanProfile",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: Naive-168h",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: Naive-24h",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: RF",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: SVR",
+      "passed": true
+    },
+    {
+      "check": "Level 2 summary: XGB",
+      "passed": true
+    },
+    {
+      "check": "search_LR.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_LR.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_LR.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_LR_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_LR_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_LR_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_DT.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_DT.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_DT.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_DT_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_DT_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_DT_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_RF.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_RF.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_RF.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_RF_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_RF_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_RF_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_SVR.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_SVR.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_SVR.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_SVR_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_SVR_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_SVR_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_XGB.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_XGB.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_XGB.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_XGB_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_XGB_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_XGB_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_LR_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_DT_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_RF_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_SVR_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB_delta.csv: chosen parameters",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB_delta.csv: all selected fold metrics",
+      "passed": true
+    },
+    {
+      "check": "search_h1_XGB_delta.csv: candidate count and finite scores",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary A RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary A XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary B RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary B XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary C RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary C XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary D RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary D RF_delta",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary D XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary D XGB_delta",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary E RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary E RF_delta",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary E XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary E XGB_delta",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary F RF",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary F RF_delta",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary F XGB",
+      "passed": true
+    },
+    {
+      "check": "Ablation summary F XGB_delta",
+      "passed": true
+    },
+    {
+      "check": "Survey copy matches documentation",
+      "passed": true
+    },
+    {
+      "check": "S4 reproduces absolute tuned RF test result",
+      "passed": true
+    },
+    {
+      "check": "Worst-day table matches saved predictions",
+      "passed": true
+    }
+  ]
+}

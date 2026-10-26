@@ -1,0 +1,45 @@
+\section{Hyperparameter Optimization}\label{sec:tuning}
+\subsection{Search design and optimization objective}
+Notebook 05 applies \code{RandomizedSearchCV} to five model families, each with absolute and lag-relative targets. Random search allocates a finite budget across joint parameter configurations rather than enumerating a Cartesian grid\cite{bergstra2012}. Each configuration is evaluated on the same five expanding development folds with RMSE, MAE, MAPE and R$^2$ scorers. The selected configuration minimizes mean fold RMSE:
+\begin{equation}
+\theta^*_{m,q}=\underset{\theta\in\mathcal S_{m,q}}{\operatorname{arg\,min}}\;
+\frac{1}{5}\sum_{k=0}^{4}\mathrm{RMSE}_{k}(m,q,\theta),
+\label{eq:search_objective}
+\end{equation}
+where $m$ is the family, $q$ the target formulation, and $\mathcal S_{m,q}$ the sampled configurations. The implementation retrieves the smallest \code{rank_test_RMSE}; it does not select by MAE or MAPE. Negative sklearn error scores are converted back to positive errors for reporting.
+
+Searches use seed 42 and \code{refit=False}. Thus the search stage stores results and chosen parameters without fitting a final estimator on the entire development set. Final refitting belongs to notebook 07. Outer search parallelism follows \code{TETOUAN_N_JOBS}, while inner estimators are configured with one job where supported. No Bayesian optimization, grid-search refinement or early-stopping stage is implemented.
+
+\Cref{tab:search_space} records the actual distributions and discrete choices. LR has 20 candidates per formulation, DT 40, RF 30, SVR 30 and XGB 50. With two formulations, this gives 340 sampled configurations and \num{1700} CV fits for h24. The independent h1 searches add the same budget, giving \num{3400} fits across both horizons, excluding baselines, ablations and subsequent refits. These counts describe the saved experiment design; no searches were rerun for this report.
+\input{report/tables/search_space.tex}
+
+The tuned LR implementation is Ridge, whereas the default LR is ordinary least squares. Accordingly, its comparison includes a change in regularization family. SVR standardizes both predictors and the response inside training-fitted wrappers, so its $C$ and $\epsilon$ are interpreted on the standardized target scale. Integer endpoints in \cref{tab:search_space} reflect the exclusive upper limits in the Python distributions. For example, the XGB tree-count support is 200--1499.
+
+\subsection{Absolute and residual formulations}
+For h24, the residual version learns $r_t=y_t-y_{t-24}$ and returns $y_{t-24}+\widehat r_t$, as defined in \cref{eq:delta}. The available lag remains among the inputs. This allows the known recent level to be carried directly into a prediction, leaving the estimator to model a correction. It can help an absolute tree model facing levels outside its fitted response range, but it does not ensure that future corrections are represented in training.
+
+Absolute and residual searches use the same parameter distributions, budgets and random seed, and therefore sample matching underlying configurations within a family. Each formulation selects its own minimum-RMSE candidate. Consequently, a residual-versus-absolute comparison includes any change in the selected parameters as well as the change in response formulation. It is not a fixed-parameter causal estimate of the target transformation alone.
+
+\subsection{Selected configurations and development results}
+\Cref{tab:selected_h24} gives all ten selected h24 configurations, generated from the saved JSON. For the ultimately selected absolute SVR, $C=\num{26.926469}$, $\epsilon=\num{0.01}$ and $\gamma=\num{0.006339}$ after rounding. The JSON retains full precision. The absolute DT selects depth eight, while its residual version selects depth four. The residual RF uses 100 trees, minimum leaf size ten and square-root feature sampling; its absolute counterpart uses 200 trees, minimum leaf size two and a feature fraction of 0.8. These examples show that the best configurations depend on the response formulation.
+\input{report/tables/selected_h24.tex}
+
+\Cref{tab:tuning,fig:tuning} compares these candidates with each family's absolute default. Define the displayed improvement as
+\begin{equation}
+G_{m,q}=100\left(1-\frac{\overline R_{m,q,\mathrm{tuned}}}{\overline R_{m,\mathrm{default}}}\right).
+\label{eq:tuning_gain}
+\end{equation}
+For residual rows, $G_{m,q}$ combines parameter selection with a target change. The tuned absolute SVR has the lowest mean CV RMSE, \num{2410.6} kW with sample SD \num{766.3} kW, a \num{39.26}\% reduction from its default. Its residual counterpart follows at \num{2427.1} kW. RF residual and XGB residual reach \num{2429.3} and \num{2441.0} kW. The four leading means span only \num{30.4} kW, or \num{1.26}\% of the best mean, which is small relative to their temporal SDs. This does not establish equivalence or statistical significance.
+\input{report/tables/tuning.tex}
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{F13_default_vs_tuned.png}
+\caption{Default, tuned absolute and tuned residual h24 CV RMSE by model family (F13). Error bars are sample SDs over five temporal folds. Bar percentages compare against the absolute default, so residual improvements include both tuning and target reformulation.}\label{fig:tuning}
+\end{figure}
+
+Within the tuned comparisons, residual targets improve mean RMSE for LR, DT, RF and XGB; absolute SVR remains slightly better than residual SVR. RF residual also has the lowest displayed mean MAPE, \num{2.36}\%, whereas absolute SVR has \num{2.42}\%. Model selection nevertheless follows mean RMSE. Absolute DT still exceeds Naive-24h in mean CV RMSE, \num{3589.7} against \num{3392.4} kW. Thus tuning does not make every individual variant superior to the baseline. The absolute Ridge result is effectively unchanged from default OLS; its tiny numerical deterioration is not a meaningful improvement.
+
+\subsection{Search interpretation and selection boundary}
+All ten h24 search CSVs and ten h1 counterparts were checked in the prior audit for candidate counts, selected rows, parameters and fold metrics. The searches support comparison within their sampled budgets; they do not establish global optima. F14, the saved five-panel search diagnostic, varies multiple parameters across its plotted configurations. Its apparent associations with a single horizontal-axis parameter therefore cannot be interpreted as controlled sensitivity effects.
+
+The same folds are used both to choose parameters and to report the selected CV means. Feature and target choices also reuse development data. No nested assessment or repeated-seed search is stored, so the magnitude of selection bias remains unquantified. The model identity passed to final h24 analysis is the absolute SVR because it minimizes development mean RMSE. A lower December error from a different variant must remain a test observation, rather than a reason to revise this selection retrospectively.
+\evidence{Notebook 05 cells 4--23; \code{src/models.py::search_spaces}; T06/T07; \code{best_params.json}; ten h24 \code{search_*.csv} files. Notebook 06 supplies the ten separate h1 searches; selected configurations and fold scores were checked in the completed audit.}

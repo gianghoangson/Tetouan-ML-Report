@@ -1,0 +1,892 @@
+--- PDF PAGE 1 ---
+Guideline thực hiện ML Project – Tetouan
+Power Consumption
+​Oct 3, 2026  · ​@Minh
+1. Tổng quan và nguyên tắc
+Mục tiêu giai đoạn này là có một bộ bảng kết quả đáng tin cho 5 model (LR, DT, RF, SVR,
+XGBoost), so sánh qua 3 cấp độ, kèm đủ biểu đồ. Chỉ khi có những thứ đó mới bắt đầu viết
+report.
+Bài toán chính: dự báo phụ tải tổng của thành phố (Zone 1 + Zone 2 + Zone 3) theo từng
+giờ, trước 24 giờ (day-ahead). Đây là loại dự báo đơn vị phân phối điện cần để lên kế hoạch
+mua điện và điều độ cho ngày hôm sau.
+Bài toán phụ: cùng target, nhưng dự báo trước 1 giờ. Bài toán này dùng để so với literature
+và để cho thấy horizon ảnh hưởng đến độ khó như thế nào.
+Thang so sánh. Mỗi bậc là một bảng kết quả riêng trong report:
+0. Baseline naive: seasonal naive 24h, seasonal naive 168h, mean profile.
+1. Level 1 (model thuần): hyperparameter mặc định, train trên tháng 1–10, đánh giá trên
+tháng 11.
+2. Level 2 (CV): cùng các model mặc định, đánh giá bằng TimeSeriesSplit 5 fold trên tháng
+1–11, báo cáo mean ± std.
+3. Level 3 (tuning): RandomizedSearchCV kết hợp TimeSeriesSplit trên tháng 1–11.
+4. Final: refit cấu hình tốt nhất trên tháng 1–11, test đúng một lần trên tháng 12.
+Ngoài ra có hai thí nghiệm phụ: ablation theo nhóm feature (mục 10) và thí nghiệm leakage
+để so với cách làm phổ biến trên Kaggle (mục 11).
+5 nguyên tắc không được vi phạm:
+Không dùng tháng 12 cho bất kỳ quyết định nào (chọn feature, scaler, hyperparameter,
+model) cho đến bước Final.
+Mọi feature lấy từ lịch sử điện năng phải lùi ít nhất bằng horizon. Với day-ahead, nghĩa là
+lag ≥ 24 giờ.
+Mọi model được so trên cùng target, cùng feature, cùng split và cùng metric (RMSE,
+MAE, MAPE, R²).
+Một model ML chỉ đáng báo cáo khi thắng baseline naive.
+Mọi kết quả lưu ra CSV, mọi biểu đồ lưu ra PNG ngay lúc chạy, để khi viết report chỉ việc
+lấy ra dùng.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 1 of 21
+
+
+--- PDF PAGE 2 ---
+2. Giai đoạn 0 – Chuẩn bị
+Giai đoạn này có ba việc: tạo repo Github, chốt target và split với các nhóm dùng cùng
+dataset, rồi dựng cấu trúc thư mục.
+Repo. Đặt tên theo mẫu DS66A_group_x  (x là số nhóm). Thêm thầy và trợ giảng làm
+collaborator theo email trong bảng yêu cầu. Commit đều đặn mỗi tuần, vì điểm quá trình
+được tính theo tiến độ hằng tuần.
+Chốt split với các nhóm khác (dòng 12 trong bảng yêu cầu). Đề xuất chia theo ngày,
+không chia theo %:
+Nếu nhóm khác muốn chia khác, tối thiểu phải thống nhất được tháng 12 là tập test.
+Cấu trúc thư mục:
+DS66A_group_x/
+├── data/
+│   ├── raw/            # file csv gốc từ UCI
+│   └── processed/      # dữ liệu hourly + features
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   ├── 02_features.ipynb
+│   ├── 03_baselines_level1.ipynb
+│   ├── 04_level2_cv.ipynb
+│   ├── 05_level3_tuning.ipynb
+│   ├── 06_ablation_horizon.ipynb
+│   ├── 07_final_test_analysis.ipynb
+│   └── 08_leakage_experiment.ipynb
+├── src/
+│   ├── data.py         # load + resample
+│   ├── features.py     # make_features()
+│   └── evaluate.py     # metrics(), log_result()
+├── results/
+Tập
+Khoảng thời gian
+Dùng để
+Train
+01/01 – 31/10/2017
+Fit model ở Level 1
+Validation
+01/11 – 30/11/2017
+Đánh giá Level 1
+Development (Train + Val)
+01/01 – 30/11/2017
+TimeSeriesSplit CV, tuning, refit cuối
+Test
+01/12/2017 – hết dữ liệu
+Đánh giá Final, chỉ một lần
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 2 of 21
+
+
+--- PDF PAGE 3 ---
+│   ├── tables/         # mọi bảng kết quả .csv
+│   └── figures/        # mọi biểu đồ .png
+├── requirements.txt
+└── README.md
+Môi trường: Python ≥ 3.10 với pandas , numpy , scikit-learn  ≥ 1.2, xgboost ,
+matplotlib , seaborn , statsmodels  (để vẽ ACF) và shap . Đặt RANDOM_STATE = 42  cho
+mọi model có tính ngẫu nhiên.
+Bảng contribution. Bắt đầu ghi lại ai làm gì từ tuần đầu tiên (dòng 5 trong yêu cầu). Ghi
+dần thì cuối kỳ không phải ngồi nhớ lại.
+3. Giai đoạn 1 – Load data và EDA
+Giai đoạn này có hai mục tiêu: hiểu dữ liệu, và tạo sẵn khoảng 8 biểu đồ cho phần Data của
+report.
+import pandas as pd
+df = pd.read_csv('data/raw/Tetuan City power consumption.csv')
+# Tên cột gốc có khoảng trắng không đều, nên đặt lại tên theo vị trí
+df.columns = ['DateTime', 'Temperature', 'Humidity', 'WindSpeed',
+              'GenDiffuse', 'Diffuse', 'Z1', 'Z2', 'Z3']
+df['DateTime'] = pd.to_datetime(df['DateTime'])  # dạng '1/1/2017 0:00' 
+(tháng/ngày)
+df = df.set_index('DateTime').sort_index()
+df['Total'] = df[['Z1', 'Z2', 'Z3']].sum(axis=1)
+# Đổi sang dữ liệu theo giờ: trung bình 6 mẫu 10 phút = phụ tải trung bình 
+của giờ đó (kW)
+dh = df.resample('1h').mean()
+dh.to_csv('data/processed/hourly.csv')
+Kiểm tra trước khi đi tiếp và ghi lại các con số cho report:
+Số dòng: khoảng 52.416 ở mức 10 phút và khoảng 8.736 ở mức giờ.
+Ngày đầu và ngày cuối của dữ liệu. Có thể dữ liệu chỉ đến 30/12, khi đó tập test có 30
+ngày.
+Không có missing value: dh.isna().sum() .
+Timestamp liên tục, không bị đứt: dh.index.to_series().diff().value_counts()  chỉ
+được ra đúng một giá trị là 1 giờ.
+Ngày/tháng được parse đúng (không bị đảo): kiểm tra
+df.index.month.value_counts()  có đủ 12 tháng.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 3 of 21
+
+
+--- PDF PAGE 4 ---
+8 biểu đồ EDA cần làm. Nhãn trục và tiêu đề viết bằng tiếng Anh, lưu
+results/figures/eda_XX.png  với dpi 200.
+1. Đường Total theo giờ cả năm, kèm rolling mean 7 ngày. Mục đích: thấy xu hướng theo
+mùa.
+2. Ba zone vẽ riêng trên cùng một hình. Mục đích: so sánh hình dạng; Zone 3 có biểu hiện
+mùa hè khác hẳn hai zone còn lại không?
+3. Profile trung bình theo giờ trong ngày (24 điểm), mỗi đường một mùa. Mục đích: xác
+định giờ cao điểm và giờ thấp điểm.
+4. Heatmap giờ × thứ trong tuần. Mục đích: cuối tuần có khác ngày thường không.
+5. Profile theo giờ của tháng Ramadan so với vài tuần trước Ramadan. Mục đích: lý do để
+tạo feature is_ramadan .
+6. Scatter Temperature với Total (tô màu theo giờ), cộng correlation heatmap của mọi
+biến.
+7. ACF của Total đến lag 200 giờ ( statsmodels.graphics.tsaplots.plot_acf ). Đỉnh ở
+lag 24 và lag 168 là căn cứ để chọn lag.
+8. Boxplot Total theo thứ trong tuần, và so sánh ngày lễ với ngày thường.
+Sau mỗi biểu đồ, viết 1–2 câu nhận xét ngay trong notebook. Gộp các nhận xét này lại là có
+phần EDA của report.
+4. Giai đoạn 2 – Định nghĩa bài toán
+Cần chốt 4 thứ trước khi tạo feature: target, độ phân giải, horizon và split. Viết 4 lựa chọn
+này vào README để cả nhóm dùng chung.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 4 of 21
+
+
+--- PDF PAGE 5 ---
+Vì sao mọi lag ≥ 24 đều hợp lệ cho day-ahead. Giả sử dự báo phát hành lúc 00:00 ngày D.
+Với giờ h bất kỳ của ngày D, giá trị cùng giờ h của ngày D−1 (lag 24) đã đo xong. Vì vậy mọi
+lag từ 24 trở lên đều đã biết tại thời điểm dự báo, với cả 24 giờ. Nhờ đó chỉ cần một model
+duy nhất (chiến lược direct), không cần dự báo đệ quy.
+Giả định về thời tiết. Ta dùng giá trị thời tiết đo thực tế của giờ cần dự báo, tức là coi như
+có "perfect weather forecast". Trong thực tế đó là giá trị dự báo và có sai số, nên kết quả
+của ta sẽ hơi lạc quan. Hãy ghi rõ giả định này trong phần Limitations. Thí nghiệm F ở mục
+10 sẽ đo xem model phụ thuộc vào weather đến mức nào.
+Câu hỏi nghiên cứu (chỉnh nhẹ so với bản literature review):
+RQ1: Conventional ML với feature weather, calendar và multi-scale lag dự báo day-
+ahead tốt đến đâu so với baseline naive, dưới đánh giá chronological nghiêm ngặt?
+RQ2: Mỗi nhóm feature (weather, calendar, ngày đặc biệt, lag ngày, lag tuần) đóng góp
+bao nhiêu?
+RQ3: Tuning với TimeSeriesSplit cải thiện bao nhiêu so với hyperparameter mặc định,
+và model nào cân bằng tốt nhất giữa accuracy và chi phí tính toán?
+5. Giai đoạn 3 – Feature engineering
+Quy tắc: tạo feature trên toàn bộ chuỗi (đã sort theo thời gian) trước, rồi mới cắt split. Mọi
+feature lịch sử phải shift ít nhất horizon  bước trước khi tính.
+Thành phần
+Lựa chọn
+Lý do
+Target
+Total = Z1 + Z2 + Z3, phụ tải trung
+bình mỗi giờ (kW)
+Có ý nghĩa business ở cấp thành phố;
+chỉ một target nên mọi model so được
+với nhau
+Độ phân
+giải
+1 giờ
+Đúng đơn vị lập kế hoạch thực tế; ít
+nhiễu hơn; SVR chạy được (khoảng
+8.700 dòng thay vì 52.000)
+Horizon
+chính
+24 giờ (day-ahead)
+Dự báo phát hành lúc 00:00 cho cả 24
+giờ của ngày hôm đó
+Horizon
+phụ
+1 giờ
+Để so với literature và cho thấy bài
+toán dễ hơn nhiều khi có lag gần
+Split
+Theo ngày, như bảng ở mục 2
+Không có leakage theo thời gian
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 5 of 21
+
+
+--- PDF PAGE 6 ---
+# src/features.py
+import numpy as np
+import pandas as pd
+# Ngày lễ Maroc 2017. Ngày lễ tôn giáo có thể lệch ±1 ngày: kiểm tra lại!
+HOLIDAYS_2017 = ['2017-01-01', '2017-01-11', '2017-05-01', '2017-06-26', 
+'2017-06-27',
+                 '2017-07-30', '2017-08-14', '2017-08-20', '2017-08-21', 
+'2017-09-01',
+                 '2017-09-02', '2017-09-22', '2017-11-06', '2017-11-18', 
+'2017-12-01']
+RAMADAN_2017 = ('2017-05-27', '2017-06-26')  # [bắt đầu, kết thúc), cũng cần 
+kiểm tra lại
+WEATHER = ['Temperature', 'Humidity', 'WindSpeed', 'GenDiffuse', 'Diffuse']
+def make_features(dh, horizon=24, target='Total'):
+    X = dh[WEATHER].copy()
+    idx = dh.index
+    # Calendar
+    X['hour'] = idx.hour
+    X['dayofweek'] = idx.dayofweek
+    X['is_weekend'] = (idx.dayofweek >= 5).astype(int)
+    X['hour_sin'] = np.sin(2 * np.pi * idx.hour / 24)
+    X['hour_cos'] = np.cos(2 * np.pi * idx.hour / 24)
+    X['dow_sin'] = np.sin(2 * np.pi * idx.dayofweek / 7)
+    X['dow_cos'] = np.cos(2 * np.pi * idx.dayofweek / 7)
+    # Special days
+    X['is_holiday'] = 
+idx.normalize().isin(pd.to_datetime(HOLIDAYS_2017)).astype(int)
+Nhóm
+Feature (day-ahead)
+Feature (1 giờ)
+Weather
+Temperature, Humidity, WindSpeed,
+GenDiffuse, Diffuse
+Giống day-ahead
+Calendar
+hour, dayofweek, is_weekend, hour_sin/cos,
+dow_sin/cos
+Giống day-ahead
+Special
+days
+is_holiday, is_ramadan
+Giống day-ahead
+Lag
+lag_24, lag_48, lag_168
+lag_1, lag_2, lag_3, lag_24,
+lag_168
+Rolling
+roll_mean_24, roll_std_24, roll_mean_168,
+tính trên y.shift(24)
+Tương tự nhưng tính trên
+y.shift(1)
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 6 of 21
+
+
+--- PDF PAGE 7 ---
+    X['is_ramadan'] = ((idx >= RAMADAN_2017[0]) & (idx < 
+RAMADAN_2017[1])).astype(int)
+    # Lag: chỉ được dùng lag >= horizon
+    y = dh[target]
+    lags = [1, 2, 3, 24, 168] if horizon == 1 else [24, 48, 168]
+    for lag in lags:
+        assert lag >= horizon, f'lag {lag} < horizon {horizon}: leakage!'
+        X[f'lag_{lag}'] = y.shift(lag)
+    # Rolling: SHIFT TRƯỚC, rồi mới rolling
+    past = y.shift(horizon)
+    X['roll_mean_24'] = past.rolling(24).mean()
+    X['roll_std_24'] = past.rolling(24).std()
+    X['roll_mean_168'] = past.rolling(168).mean()
+    data = X.join(y.rename('y')).dropna()
+    return data.drop(columns='y'), data['y']
+Kiểm tra leakage bằng code (đặt ngay dưới hàm, chạy mỗi lần sửa feature):
+X, y = make_features(dh, horizon=24)
+full_y = dh['Total']
+t = X.index[500]
+assert X.loc[t, 'lag_24'] == full_y.loc[t - pd.Timedelta(hours=24)]
+assert np.isclose(X.loc[t, 'roll_mean_24'],
+                  full_y.loc[t - pd.Timedelta(hours=47): t - 
+pd.Timedelta(hours=24)].mean())
+Những điểm cần chú ý:
+Không dùng month, dayofyear hoặc chỉ số thời gian tuyệt đối. Tháng 12 không xuất
+hiện trong dữ liệu train. Gặp month = 12, tree sẽ xử lý như tháng 11, còn LR sẽ ngoại suy
+tuyến tính và cho kết quả sai. Mức nền theo mùa đã được lag và rolling mean nắm bắt.
+dropna()  sẽ xoá khoảng 8 ngày đầu tháng 1, do lag_168 và roll_mean_168 trên chuỗi đã
+shift 24. Ghi con số này vào report.
+Các nhóm feature nên định nghĩa thành dict FEATURE_SETS  ngay từ đầu, để mục 10
+(ablation) chỉ cần chọn cột.
+6. Giai đoạn 4 – Baseline naive và hàm đánh giá chung
+Làm baseline trước mọi model. Đây là mốc tối thiểu mà mọi model phải vượt qua, và cũng
+là phần mà đa số notebook trên mạng bỏ qua.
+Baseline
+Công thức
+Ý nghĩa
+Seasonal naive 24h
+ŷ(t) = y(t−24)
+Ngày mai giống hôm nay
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 7 of 21
+
+
+--- PDF PAGE 8 ---
+# src/evaluate.py
+import numpy as np
+import pandas as pd
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+def metrics(y_true, y_pred):
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    return {'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
+            'MAE': mean_absolute_error(y_true, y_pred),
+            'MAPE': np.mean(np.abs((y_true - y_pred) / y_true)) * 100,
+            'R2': r2_score(y_true, y_pred)}
+RESULTS = []
+def log_result(scenario='h24', feature_set='full', **kw):
+    RESULTS.append({'scenario': scenario, 'feature_set': feature_set, **kw})
+def save_results(path):
+    pd.DataFrame(RESULTS).to_csv(path, index=False)
+Baseline
+Công thức
+Ý nghĩa
+Seasonal naive 168h
+ŷ(t) = y(t−168)
+Giống cùng giờ tuần trước
+Mean profile
+ŷ(t) = trung bình y trên tập train
+cùng (hour, dayofweek)
+Profile điển hình, không
+dùng lịch sử gần
+Persistence (chỉ cho
+horizon 1h)
+ŷ(t) = y(t−1)
+Giờ tới giống giờ này
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 8 of 21
+
+
+--- PDF PAGE 9 ---
+# notebooks/03_baselines_level1.ipynb
+TRAIN_END, VAL_END = '2017-11-01', '2017-12-01'
+X, y = make_features(dh, horizon=24)
+tr  = X.index < TRAIN_END
+va  = (X.index >= TRAIN_END) & (X.index < VAL_END)
+dev = X.index < VAL_END
+te  = X.index >= VAL_END          # KHÔNG dùng cho đến mục 12
+for name, col in [('Naive-24h', 'lag_24'), ('Naive-168h', 'lag_168')]:
+    log_result(level='L0', model=name, split='val', **metrics(y[va], 
+X.loc[va, col]))
+prof = y[tr].groupby([X.loc[tr, 'hour'], X.loc[tr, 'dayofweek']]).mean()
+pred = [prof[(h, d)] for h, d in zip(X.loc[va, 'hour'], X.loc[va, 
+'dayofweek'])]
+log_result(level='L0', model='MeanProfile', split='val', **metrics(y[va], 
+pred))
+In bảng split (ngày bắt đầu, ngày kết thúc, số dòng của từng tập) và lưu thành
+results/tables/split_summary.csv . Bảng này sẽ dùng trong report.
+Thống nhất cột kết quả từ đầu: scenario, feature_set, level, model, split, RMSE,
+MAE, MAPE, R2, fit_time . Mọi notebook đều ghi đúng các cột này, nhờ vậy cuối cùng gộp
+bảng bằng một lệnh pd.concat  là xong.
+7. Giai đoạn 5 – Level 1: model thuần
+Level 1 trả lời câu hỏi: với hyperparameter mặc định và chỉ một lần chia train/val, mỗi model
+đạt bao nhiêu, và có thắng baseline không?
+import time
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.compose import TransformedTargetRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
+from xgboost import XGBRegressor
+RS = 42
+def default_models(n_jobs=-1):
+    return {
+        'LR':  make_pipeline(StandardScaler(), LinearRegression()),
+        'DT':  DecisionTreeRegressor(random_state=RS),
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 9 of 21
+
+
+--- PDF PAGE 10 ---
+        'RF':  RandomForestRegressor(random_state=RS, n_jobs=n_jobs),
+        'SVR': TransformedTargetRegressor(
+                   regressor=make_pipeline(StandardScaler(), SVR()),
+                   transformer=StandardScaler()),
+        'XGB': XGBRegressor(random_state=RS, n_jobs=n_jobs),
+    }
+for name, model in default_models().items():
+    t0 = time.time()
+    model.fit(X.loc[tr], y.loc[tr])
+    fit_time = time.time() - t0
+    log_result(level='L1', model=name, split='train', fit_time=fit_time,
+               **metrics(y.loc[tr], model.predict(X.loc[tr])))
+    log_result(level='L1', model=name, split='val', fit_time=fit_time,
+               **metrics(y.loc[va], model.predict(X.loc[va])))
+save_results('results/tables/level0_level1.csv')
+Vì sao code được viết như vậy:
+Scaler nằm trong Pipeline, nên nó chỉ được fit trên train và không học được gì từ tháng
+11. Tree-based model (DT, RF, XGB) không bị ảnh hưởng bởi scale nên không cần scaler.
+SVR phải scale cả target. Total có giá trị khoảng vài chục nghìn kW, trong khi SVR mặc
+định dùng epsilon=0.1  và C=1 . Nếu không scale target, SVR gần như không học được
+và dự báo ra gần như một hằng số. TransformedTargetRegressor  giải quyết vấn đề
+này. Chi tiết này đáng ghi vào report.
+Ghi cả error trên train. So sánh train với val sẽ cho thấy overfitting. Ví dụ DT mặc định
+không giới hạn độ sâu, nên error trên train gần bằng 0 còn trên val thì cao. Level 3 sẽ thu
+hẹp khoảng cách này.
+"Model thuần" ở đây vẫn dùng full feature set. Việc so sánh các nhóm feature để ở mục
+10.
+Tuỳ chọn – cấu hình theo literature (Level 1b): chạy thêm RF với cấu hình tốt nhất của P1
+( n_estimators=30, max_features=7, max_depth=None, min_samples_split=2,
+min_samples_leaf=1 ). Đây là một dòng so sánh trực tiếp với paper gốc.
+Output của Level 1:
+Bảng: baseline cộng 5 model, mỗi model có RMSE, MAE, MAPE, R² trên train và val,
+cùng fit_time.
+Bar chart RMSE và MAPE trên val, có đường ngang đánh dấu mức Naive-24h.
+Biểu đồ actual và predicted trong 1 tuần của tháng 11, cho model tốt nhất và Naive-24h.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 10 of 21
+
+
+--- PDF PAGE 11 ---
+8. Giai đoạn 6 – Level 2: TimeSeriesSplit CV
+Level 2 trả lời câu hỏi: kết quả Level 1 có ổn định không, hay chỉ do may hoặc rủi với riêng
+tháng 11? Model vẫn để mặc định; chỉ cách đánh giá thay đổi.
+Thiết lập: TimeSeriesSplit(n_splits=5, test_size=720)  trên tập dev (tháng 1–11). Mỗi
+fold validate 30 ngày liên tiếp, phủ khoảng từ đầu tháng 7 đến hết tháng 11. Phần train của
+mỗi fold là toàn bộ dữ liệu đứng trước nó (expanding window).
+from sklearn.model_selection import TimeSeriesSplit, cross_validate
+Xd, yd = X.loc[dev], y.loc[dev]
+tscv = TimeSeriesSplit(n_splits=5, test_size=720)
+# 1) In khoảng ngày của từng fold, đưa vào report (bảng hoặc hình)
+for k, (i_tr, i_va) in enumerate(tscv.split(Xd)):
+    print(k, Xd.index[i_tr[0]].date(), '→', Xd.index[i_tr[-1]].date(), '| 
+val',
+          Xd.index[i_va[0]].date(), '→', Xd.index[i_va[-1]].date())
+# 2) CV cho 5 model mặc định
+scoring = {'RMSE': 'neg_root_mean_squared_error', 'MAE': 
+'neg_mean_absolute_error',
+           'MAPE': 'neg_mean_absolute_percentage_error', 'R2': 'r2'}
+for name, model in default_models().items():
+    cv = cross_validate(model, Xd, yd, cv=tscv, scoring=scoring, 
+return_train_score=True)
+    for k in range(5):
+        log_result(level='L2', model=name, split=f'fold{k}', 
+fit_time=cv['fit_time'][k],
+                   RMSE=-cv['test_RMSE'][k], MAE=-cv['test_MAE'][k],
+                   MAPE=-cv['test_MAPE'][k] * 100, R2=cv['test_R2'][k],
+                   train_RMSE=-cv['train_RMSE'][k])
+# 3) Baseline cũng chạy qua đúng các fold đó để so sánh công bằng
+for k, (_, i_va) in enumerate(tscv.split(Xd)):
+    for name, col in [('Naive-24h', 'lag_24'), ('Naive-168h', 'lag_168')]:
+        log_result(level='L2', model=name, split=f'fold{k}',
+                   **metrics(yd.iloc[i_va], Xd[col].iloc[i_va]))
+save_results('results/tables/level2_cv.csv')
+Ghi chú:
+Scorer neg_mean_absolute_percentage_error  của sklearn trả về tỉ lệ (0.03), nên phải
+nhân 100 để ra %.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 11 of 21
+
+
+--- PDF PAGE 12 ---
+Không cần gap , vì feature đã lùi ≥ 24h và được tính trước khi chia. Nếu muốn thận
+trọng hơn, đặt gap=24 ; kết quả gần như không đổi.
+Nếu các fold mùa hè (fold 0–1) có error cao hơn hẳn thì std giữa các fold sẽ lớn. Hãy ghi
+nhận điều này và giải thích bằng EDA (nhiệt độ, Zone 3).
+Output của Level 2:
+Bảng mean ± std của 4 metric qua 5 fold, cho 5 model và 2 baseline.
+Bảng so sánh "Level 1 (val tháng 11)" với "Level 2 (CV mean ± std)". Nếu hai cột chênh
+nhau nhiều thì tháng 11 không đại diện, và đó là lý do cần CV.
+Biểu đồ RMSE theo từng fold, mỗi model một đường, để thấy fold nào khó.
+Hình minh hoạ các fold: các thanh ngang thể hiện train và val theo trục thời gian. Hình
+này cũng dùng cho slide.
+9. Giai đoạn 7 – Level 3: hyperparameter tuning
+Level 3 trả lời câu hỏi: tuning cải thiện được bao nhiêu so với mặc định, cho từng model, khi
+đánh giá trên đúng 5 fold như Level 2? Vì cùng fold, sự chênh lệch giữa L2 và L3 chính là
+tác dụng của tuning.
+Model
+Hyperparameter
+Search space
+LR → Ridge
+alpha
+loguniform(1e-3, 1e3)
+DT
+max_depth
+4, 6, 8, 10, 15, 20, None
+DT
+min_samples_leaf
+1, 5, 10, 20, 50
+DT
+min_samples_split
+2, 10, 20, 50
+DT
+max_features
+None, 'sqrt', 0.5, 0.8
+RF
+n_estimators
+100, 200, 300, 500
+RF
+max_depth
+10, 20, 30, None
+RF
+min_samples_leaf
+1, 2, 5, 10
+RF
+max_features
+'sqrt', 0.3, 0.5, 0.8, 1.0
+SVR
+C
+loguniform(0.1, 1000)
+SVR
+gamma
+loguniform(1e-4, 1)
+SVR
+epsilon (thang target đã scale)
+0.01, 0.05, 0.1, 0.2
+XGB
+n_estimators
+randint(200, 1500)
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 12 of 21
+
+
+--- PDF PAGE 13 ---
+import json
+from scipy.stats import loguniform, randint, uniform
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import RandomizedSearchCV
+# Model bên trong để n_jobs=1, vì search đã chạy song song (tránh nested 
+parallelism)
+m = default_models(n_jobs=1)
+spaces = {
+  'LR':  (make_pipeline(StandardScaler(), Ridge()),
+          {'ridge__alpha': loguniform(1e-3, 1e3)}, 20),
+  'DT':  (m['DT'], {'max_depth': [4, 6, 8, 10, 15, 20, None],
+                    'min_samples_leaf': [1, 5, 10, 20, 50],
+                    'min_samples_split': [2, 10, 20, 50],
+                    'max_features': [None, 'sqrt', 0.5, 0.8]}, 40),
+  'RF':  (m['RF'], {'n_estimators': [100, 200, 300, 500],
+                    'max_depth': [10, 20, 30, None],
+                    'min_samples_leaf': [1, 2, 5, 10],
+                    'max_features': ['sqrt', 0.3, 0.5, 0.8, 1.0]}, 30),
+  'SVR': (m['SVR'], {'regressor__svr__C': loguniform(1e-1, 1e3),
+                     'regressor__svr__gamma': loguniform(1e-4, 1),
+                     'regressor__svr__epsilon': [0.01, 0.05, 0.1, 0.2]}, 30),
+  'XGB': (m['XGB'], {'n_estimators': randint(200, 1500),
+                     'learning_rate': loguniform(1e-2, 2e-1),
+                     'max_depth': randint(3, 11),
+                     'subsample': uniform(0.6, 0.4),
+                     'colsample_bytree': uniform(0.6, 0.4),
+                     'min_child_weight': randint(1, 11),
+                     'reg_lambda': loguniform(1e-1, 1e1)}, 50),
+}
+best_params = {}
+for name, (est, space, n_iter) in spaces.items():
+    search = RandomizedSearchCV(est, space, n_iter=n_iter, cv=tscv, 
+scoring=scoring,
+Model
+Hyperparameter
+Search space
+XGB
+learning_rate
+loguniform(0.01, 0.2)
+XGB
+max_depth
+randint(3, 11)
+XGB
+subsample, colsample_bytree
+uniform(0.6, 1.0)
+XGB
+min_child_weight
+randint(1, 11)
+XGB
+reg_lambda
+loguniform(0.1, 10)
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 13 of 21
+
+
+--- PDF PAGE 14 ---
+                                refit='RMSE', random_state=RS, n_jobs=-1,
+                                return_train_score=True)
+    search.fit(Xd, yd)
+    res = pd.DataFrame(search.cv_results_)
+    res.to_csv(f'results/tables/search_{name}.csv', index=False)
+    b = search.best_index_
+    for k in range(5):
+        log_result(level='L3', model=name, split=f'fold{k}',
+                   RMSE=-res.loc[b, f'split{k}_test_RMSE'], MAE=-res.loc[b, 
+f'split{k}_test_MAE'],
+                   MAPE=-res.loc[b, f'split{k}_test_MAPE'] * 100, 
+R2=res.loc[b, f'split{k}_test_R2'],
+                   train_RMSE=-res.loc[b, f'split{k}_train_RMSE'])
+    best_params[name] = {k: (v.item() if hasattr(v, 'item') else v)
+                         for k, v in search.best_params_.items()}
+json.dump(best_params, open('results/tables/best_params.json', 'w'), 
+indent=2)
+save_results('results/tables/level3_tuning.csv')
+Mẹo khi chạy:
+Chạy thử với n_iter=3  trước để đo thời gian. SVR sẽ là model chậm nhất; nếu quá lâu
+thì giảm n_iter  hoặc thu hẹp khoảng C.
+Muốn search kỹ hơn thì làm hai vòng: vòng 1 random search rộng, vòng 2 grid search
+hẹp quanh điểm tốt nhất. Đây là một điểm hay để kể trong report.
+So sánh có thể thêm: GridSearch và RandomizedSearch cho riêng RF (thời gian chạy và
+RMSE). Điều này nối tiếp ý của P2, vốn so sánh các chiến lược tìm kiếm.
+Output của Level 3:
+Bảng search space (bảng trên) và bảng best params của từng model.
+Bảng chính: Default (L2) và Tuned (L3) cho 5 model, gồm CV RMSE mean ± std, % cải
+thiện, và train RMSE so với val RMSE (khoảng cách overfitting).
+Grouped bar chart Default và Tuned, có error bar là std.
+Biểu đồ độ nhạy: CV RMSE theo một hyperparameter quan trọng, lấy từ search_*.csv .
+Ví dụ max_depth của DT, hoặc learning_rate của XGB.
+10. Giai đoạn 8 – Ablation study và so sánh horizon
+Ablation trả lời RQ2: mỗi nhóm feature đóng góp bao nhiêu? Chạy với RF và XGB, giữ
+nguyên hyperparameter đã tune ở Level 3. Nếu còn thời gian thì chạy cả 5 model. Đánh giá
+bằng cùng tscv  trên tập dev.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 14 of 21
+
+
+--- PDF PAGE 15 ---
+CAL = ['hour', 'dayofweek', 'is_weekend', 'hour_sin', 'hour_cos', 'dow_sin', 
+'dow_cos']
+SPECIAL = ['is_holiday', 'is_ramadan']
+LAG_D = ['lag_24', 'lag_48']
+LAG_W = ['lag_168', 'roll_mean_24', 'roll_std_24', 'roll_mean_168']
+FEATURE_SETS = {
+    'A': WEATHER,
+    'B': WEATHER + CAL,
+    'C': WEATHER + CAL + SPECIAL,
+    'D': WEATHER + CAL + SPECIAL + LAG_D,
+    'E': WEATHER + CAL + SPECIAL + LAG_D + LAG_W,
+    'F': CAL + SPECIAL + LAG_D + LAG_W,
+}
+tuned = {'RF': RandomForestRegressor(random_state=RS, n_jobs=-1, 
+**best_params['RF']),
+         'XGB': XGBRegressor(random_state=RS, n_jobs=-1, 
+**best_params['XGB'])}
+for fs, cols in FEATURE_SETS.items():
+    for name, model in tuned.items():
+        cv = cross_validate(model, Xd[cols], yd, cv=tscv, scoring=scoring)
+        for k in range(5):
+            log_result(level='ablation', feature_set=fs, model=name, 
+split=f'fold{k}',
+                       RMSE=-cv['test_RMSE'][k], MAE=-cv['test_MAE'][k],
+                       MAPE=-cv['test_MAPE'][k] * 100, R2=cv['test_R2'][k])
+save_results('results/tables/ablation.csv')
+Ghi rõ trong report rằng hyperparameter được giữ cố định giữa các feature set. Hiệu số E
+− B chính là đóng góp của lịch sử điện năng.
+Thí
+nghiệm
+Feature set
+Câu hỏi
+A
+Weather
+Chỉ thời tiết thì dự báo được đến đâu?
+B
+Weather + Calendar
+Thêm giờ và thứ thì cải thiện bao nhiêu?
+C
+B + Special days
+Ngày lễ và Ramadan có giúp gì không?
+D
+C + lag_24, lag_48
+Lịch sử ngày gần nhất
+E
+D + lag_168 + Rolling (=
+full)
+Lịch sử tuần và mức nền gần đây
+F
+E bỏ Weather
+Model phụ thuộc vào weather (perfect forecast)
+đến mức nào?
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 15 of 21
+
+
+--- PDF PAGE 16 ---
+So sánh horizon (1 giờ và 24 giờ). Tạo lại X, y = make_features(dh, horizon=1) , rồi
+chạy baseline (thêm Persistence) và 5 model với cùng hyperparameter qua cùng tscv .
+Kết quả cho thấy độ khó tăng bao nhiêu khi phải dự báo xa hơn. Nó cũng cho thấy vì sao
+các con số R² ≈ 0.99 trong literature (horizon 10 phút) không thể so trực tiếp với bài toán
+day-ahead.
+Output:
+Bảng và biểu đồ CV RMSE theo các bước A → E, cùng F. Bước nhảy lớn nhất thường
+nằm ở bước thêm lag.
+Bảng h1 và h24 cho baseline và 5 model.
+11. Giai đoạn 9 – Thí nghiệm leakage (chứng minh "làm tốt hơn
+Kaggle")
+Mục tiêu: đo xem cách làm phổ biến trên mạng thổi phồng kết quả bao nhiêu. Đây là luận
+điểm chính cho dòng "chứng minh làm hơn những cái đã có" trong yêu cầu. Vì thí nghiệm
+này có dùng tháng 12, chỉ chạy nó sau khi đã chốt Final ở mục 12.
+Bước 1: khảo sát. Tìm 5–10 notebook trên Kaggle hoặc Github dùng dataset này. Lập bảng
+gồm: link, target, cách chia (có shuffle không), có dùng lag không, có dùng
+month/dayofyear không, model tốt nhất, metric báo cáo. Bảng này đưa vào phần Related
+Work, cạnh bảng literature.
+Bước 2: tái hiện các setting. Dùng cùng một model (RF với cùng hyperparameter) cho cả
+4 setting:
+Setting
+Dữ
+liệu
+Cách chia
+Feature
+Mô phỏng ai
+S1
+10
+phút
+train_test_split
+shuffle 75/25
+Weather +
+Calendar +
+dayofyear
+Kiểu P1 và Kaggle phổ
+biến
+S2
+10
+phút
+Shuffle 75/25
+S1 + lag 10 phút
+Kaggle có thêm lag
+S3
+10
+phút
+Chronological, test tháng
+12
+S1 bỏ dayofyear, +
+lag 10 phút
+Đúng thời gian,
+nhưng horizon chỉ 10
+phút
+S4
+Theo
+giờ
+Chronological, test tháng
+12
+Full day-ahead
+Pipeline của nhóm
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 16 of 21
+
+
+--- PDF PAGE 17 ---
+Điều cần giải thích trong report: khi chia shuffle, model được thấy các điểm cách điểm
+test chỉ 10 phút ở cả hai phía. Nó chỉ cần "nội suy", nên R² rất cao nhưng không phản ánh
+khả năng dự báo tương lai.
+Bước 3: so sánh cách làm CV khi tuning. Tune RF hai lần: một lần với KFold(5,
+shuffle=True) , một lần với tscv . Với mỗi lần, ghi lại (a) CV score ước lượng, (b) best
+params, và (c) score thật trên tháng 12. KFold shuffle nhiều khả năng cho CV score lạc
+quan hơn nhiều so với score thật trên test, và có thể chọn ra cây sâu hơn.
+Output:
+Bảng khảo sát Kaggle/Github.
+Bảng S1–S4 và biểu đồ cột R² và MAPE tụt dần từ S1 đến S4. Đây là hình mạnh nhất để
+đưa vào slide.
+Bảng KFold và TimeSeriesSplit: CV score so với test score thật.
+Cách diễn giải: mục đích không phải "chê" người khác. Mục đích là giải thích vì sao R² của
+nhóm thấp hơn các con số trên mạng nhưng đáng tin hơn, và vì sao đánh giá như vậy mới
+đúng với bài toán business.
+12. Giai đoạn 10 – Final test, error analysis, explainability
+Chỉ chạy giai đoạn này khi mọi lựa chọn đã chốt. Refit trên toàn bộ tập dev (tháng 1–11), rồi
+dự báo tháng 12 đúng một lần.
+final = {}
+for name in ['LR', 'DT', 'RF', 'SVR', 'XGB']:
+    for variant, est in [('default', default_models()[name]),
+                         ('tuned', spaces[name]
+[0].set_params(**best_params[name]))]:
+        t0 = time.time(); est.fit(Xd, yd); fit_time = time.time() - t0
+        t0 = time.time(); pred = est.predict(X.loc[te]); pred_time = 
+time.time() - t0
+        final[(name, variant)] = pred
+        log_result(level='final', model=f'{name}-{variant}', split='test',
+                   fit_time=fit_time, pred_time=pred_time, 
+**metrics(y.loc[te], pred))
+for name, col in [('Naive-24h', 'lag_24'), ('Naive-168h', 'lag_168')]:
+    log_result(level='final', model=name, split='test', **metrics(y.loc[te], 
+X.loc[te, col]))
+save_results('results/tables/final_test.csv')
+(Model LR-tuned  ở đây chính là Ridge.)
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 17 of 21
+
+
+--- PDF PAGE 18 ---
+Bảng Final gồm 5 model × {default, tuned} và các baseline, với 4 metric và thời gian chạy.
+Thêm cột skill score = 1 − RMSE_model / RMSE_Naive-24h. Đây là tỷ lệ cải thiện so với
+cách "ngày mai giống hôm nay", và dễ giải thích cho người làm business.
+Error analysis cho model tốt nhất:
+1. Actual và predicted cho cả tháng 12, cộng một hình zoom vào 1 tuần.
+2. Residual theo thời gian, và histogram của residual.
+3. MAE theo giờ trong ngày: giờ cao điểm có khó hơn không?
+4. MAE theo thứ trong tuần, và riêng ngày lễ (tháng 12 có Mawlid).
+5. Top 5 ngày sai nhiều nhất, kèm giải thích có thể (thời tiết bất thường, ngày lễ, sự kiện).
+6. Scatter actual và predicted, có đường y = x.
+Explainability cho model tốt nhất (thường là RF hoặc XGB):
+feature_importances_  có sẵn của model.
+Permutation importance trên tập test
+( sklearn.inspection.permutation_importance ). Đáng tin hơn built-in importance.
+SHAP với shap.TreeExplainer : một summary plot (beeswarm), và dependence plot
+cho Temperature và lag_24.
+Diễn giải business (cho phần Discussion): quy đổi MAE ra % phụ tải trung bình. Ví dụ: "sai
+số trung bình X kW, tương đương Y% phụ tải". Sau đó nói ý nghĩa đối với việc dự phòng
+công suất. Kết hợp bảng accuracy với fit_time để trả lời RQ3.
+13. Danh sách bảng và biểu đồ cần có
+Khi tick hết danh sách này là đủ "nguyên liệu" để chuyển sang viết report và làm slide. Tên
+file nên đặt theo mã, ví dụ T05_level2_cv.csv  hoặc F13_default_vs_tuned.png .
+Bảng
+T01 – Thống kê mô tả dataset (số dòng, khoảng thời gian, mean/std/min/max của mỗi
+biến)
+T02 – Bảng split: ngày bắt đầu, ngày kết thúc, số dòng của mỗi tập; khoảng ngày của 5
+fold
+T03 – Danh sách feature theo nhóm
+T04 – Level 0 + 1: baseline và 5 model default, error trên train và val
+T05 – Level 2: CV mean ± std
+T06 – Level 3: search space và best params
+T07 – Default và Tuned (CV) cho 5 model, kèm % cải thiện và khoảng cách overfitting
+T08 – Final test tháng 12, kèm skill score và thời gian chạy
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 18 of 21
+
+
+--- PDF PAGE 19 ---
+Biểu đồ
+14. Lịch trình và phân công gợi ý
+Mỗi giai đoạn khoảng một tuần, tổng cộng 6 tuần. Report chỉ bắt đầu khi đã qua
+checkpoint cuối cùng.
+T09 – Ablation A–F
+T10 – Horizon 1h và 24h
+T11 – Khảo sát Kaggle/Github
+T12 – Leakage S1–S4, và KFold so với TimeSeriesSplit
+T13 – Bảng contribution của từng thành viên
+F01–F08 – 8 biểu đồ EDA (mục 3)
+F09 – Sơ đồ pipeline tổng thể
+F10 – Sơ đồ split và các fold TimeSeriesSplit
+F11 – Bar chart Level 1 so với baseline
+F12 – RMSE theo fold (Level 2)
+F13 – Default và Tuned, có error bar
+F14 – Độ nhạy hyperparameter
+F15 – Ablation A → F
+F16 – Leakage S1 → S4
+F17 – Actual và predicted cho tháng 12, kèm hình zoom 1 tuần
+F18 – Error theo giờ trong ngày và theo thứ trong tuần
+F19 – Feature importance, permutation importance, SHAP
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 19 of 21
+
+
+--- PDF PAGE 20 ---
+Thời lượng ở trên chỉ là gợi ý; co giãn theo deadline thật của lớp. Checkpoint thứ hai là
+quan trọng nhất: nếu không model nào thắng Naive-24h, quay lại xem feature trước khi
+tune.
+Lộ trình · 6 giai đoạn, 4 checkpoint
+Vai trò
+Phụ trách chính
+Thành viên A
+Data, EDA, feature engineering, README (mục 2–
+5)
+Thành viên B
+Baseline, Level 1, Level 2, gộp bảng kết quả (mục 6–
+8)
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 20 of 21
+
+
+--- PDF PAGE 21 ---
+Nếu nhóm 3 người thì gộp vai trò C và D. Mỗi thành viên review code của ít nhất một người
+khác trước khi merge. Ghi phân công thực tế vào bảng contribution.
+15. Checklist trước khi chuyển sang viết report
+Rà soát danh sách dưới đây trước khi tin vào bất kỳ con số nào. Mỗi mục là một lỗi rất hay
+gặp trong các project time series.
+Vai trò
+Phụ trách chính
+Thành viên C
+Tuning, ablation, horizon (mục 9–10)
+Thành viên D
+Khảo sát Kaggle, leakage, final test, error analysis
+(mục 11–12)
+Không có shuffle=True  hay KFold  xáo trộn ở bất kỳ đâu trong pipeline chính (thí
+nghiệm leakage ở mục 11 là ngoại lệ có chủ đích).
+Mọi lag ≥ horizon, mọi rolling đều tính trên chuỗi đã shift, và các assert ở mục 5 đều
+chạy qua.
+Không có month, dayofyear hay chỉ số thời gian tuyệt đối trong feature.
+Scaler nằm trong Pipeline; SVR scale cả target.
+Tháng 12 chỉ được predict một lần, ở bước Final.
+MAPE ở dạng % (đã nhân 100 khi lấy từ scorer của sklearn).
+Khi dùng RandomizedSearchCV với n_jobs=-1 , model bên trong để n_jobs=1 .
+Có random_state  ở mọi chỗ cần; chạy lại notebook từ đầu ra đúng các con số cũ.
+Mọi model đều thắng hoặc ít nhất được so với Naive-24h. Model nào thua baseline thì
+báo cáo trung thực và giải thích.
+Biểu đồ có nhãn tiếng Anh và đơn vị (kW, %); tên file khớp với mã ở mục 13.
+Code đã push lên Github; README ghi rõ cách cài môi trường và chạy lại các notebook
+theo thứ tự.
+Bảng contribution đã được cập nhật.
+Guideline thực hiện ML Project – Tetouan Power Consumption
+Page 21 of 21

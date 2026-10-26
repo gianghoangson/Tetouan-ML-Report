@@ -1,0 +1,278 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 08 – Leakage experiment: why do online results look better?
+
+Guideline section 11. Measure how much common practices (shuffled splits, very short horizons) inflate the scores, by running **the same model** under different evaluation set-ups.
+
+> This notebook uses December, so it is **run only after the final step (notebook 07)**. In smoke mode November stands in for December, and December data are dropped.
+
+1. **Survey** of notebooks using this dataset → **T11** (`docs/kaggle_survey.csv`).
+2. **Four set-ups S1–S4** with the same Random Forest → **T12**, **F16**.
+3. **Shuffled KFold vs TimeSeriesSplit for tuning:** CV estimate vs real test score → **T12b**.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable, load the shared helpers and the common figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+import json
+import time
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from src.config import TABLES, SMOKE
+from src.data import load_hourly
+from src.features import make_features, FEATURE_SETS, MODEL_FEATURES
+from src.evaluate import (metrics, log_result, save_results, split_masks, make_tscv, cross_val_log,
+                          cv_summary, CV_SCORING, RESULTS, RANDOM_STATE)
+from src.models import (default_models, search_spaces, tuned_model, baselines, NaiveLag, MeanProfile,
+                        p1_random_forest, split_name, DeltaTarget, N_JOBS, MODEL_NAMES, DELTA_SUFFIX, DELTA_BASE)
+from src.viz import (set_style, savefig, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, NEUTRAL, SURFACE, GRID, MODEL_COLORS, BASELINE_STYLE)
+
+set_style()
+pd.set_option('display.float_format', '{:,.3f}'.format)
+pd.set_option('display.width', 200)
+MF = MODEL_FEATURES[24]    # columns every model is trained on (baselines read lags from the full X)
+SCORING = CV_SCORING
+if SMOKE:
+    print('SMOKE MODE: code check only (dev = Jan–Oct, stand-in test = Nov, tiny models). '
+          'December is never touched. Outputs → results/smoke/')
+
+--- CELL 3 (markdown; execution=None) ---
+**One Random Forest for every set-up**: the Level 3 hyperparameters of the absolute RF (default RF if missing). `TEST_START` / `DATA_END` keep December untouched in smoke mode.
+
+--- CELL 4 (code; execution=2) ---
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import KFold, RandomizedSearchCV, train_test_split
+from src.config import VAL_END, TEST_END
+from src.data import load_raw
+
+# Same Random Forest for every setting: tuned in Level 3 if available, otherwise default
+best_params = json.loads((TABLES / 'best_params.json').read_text())
+RF_PARAMS = best_params.get('RF', {})
+def rf():
+    return tuned_model('RF', RF_PARAMS) if RF_PARAMS else default_models()['RF']
+print('RF hyperparameters used everywhere:', RF_PARAMS or 'default')
+
+TEST_START = VAL_END                     # real: 1 Dec | smoke: 1 Nov
+DATA_END = TEST_END                      # real: None (all data) | smoke: 1 Dec (December dropped)
+OUTPUT: RF hyperparameters used everywhere: {'n_estimators': 200, 'min_samples_leaf': 2, 'max_features': 0.8, 'max_depth': 30}
+
+
+--- CELL 5 (markdown; execution=None) ---
+## 1. T11 – Survey of Kaggle / GitHub notebooks
+
+Read from `docs/kaggle_survey.csv` (filled by hand after reading the code of each repository).
+
+--- CELL 6 (code; execution=3) ---
+survey_path = ROOT / 'docs' / 'kaggle_survey.csv'
+survey = pd.read_csv(survey_path)
+if survey.empty:
+    print(f'{survey_path.relative_to(ROOT)} is still empty. Fill one row per notebook/paper (5–10 rows):')
+    print(', '.join(survey.columns))
+else:
+    survey.to_csv(TABLES / 'T11_kaggle_survey.csv', index=False)
+survey
+OUTPUT:                                                 link                                    author_or_title                            target resolution                                       split  \
+0  https://github.com/Kevinbui16/Electricity-Cons...    Kevinbui16 – Electricity Consumption Prediction            Total (also each zone)     10-min                      train_test_split 75/25   
+1  https://github.com/niharkaria/Tetouan_Power_Co...    niharkaria – Tetouan Power Consumption Analysis                             Total     10-min                      train_test_split 80/20   
+2  https://github.com/nayana142/Power-Consumption...      nayana142 – Power Consumption of Tetouan City                            Zone 3     10-min                      train_test_split 80/20   
+3  https://github.com/Merci93/Electric-Power-Cons...               Merci93 – Electric Power Consumption    Zone 1, 2, 3 (separate models)     10-min                      train_test_split 70/30   
+4  https://github.com/SoukainaBoufousse/ML_predic...  SoukainaBoufousse – predict power consumption ...    Zone 1, 2, 3 (separate models)     10-min  train_test_split 90/10 (Optuna validation)   
+5  https://github.com/ThiagoLevis/Power-consumpti...         ThiagoLevis – Power consumption of Tetouan  Mean of 3 zones (min-max scaled)     10-min                      train_test_split 70/30   
+6  https://github.com/ruwindarowel/Tetouan-City-P...      ruwindarowel – Tetouan City Power Consumption                             Total     10-min          RepeatedKFold 10x3 (CV) + hold-out   
+7  https://github.com/atishk28/electricity-load-f...            atishk28 – electricity load forecasting                             Total     10-min      chronological 80/20 (last 20% as test)   
+8  https://github.com/daniahfarooq/electricity-de...  daniahfarooq – hourly electricity demand forec...    Zone 1, 2, 3 (per-zone models)     hourly                         chronological 80/20   
+9  https://github.com/AtharvaPandey-coder/Power-C...  AtharvaPandey – LSTM power consumption forecas...                            Zone 1     10-min                         chronological 80/20   
+
+  shuffled                                 uses_lag                           uses_month_or_dayofyear                        best_model            reported_metric            reported_value  \
+0      yes                                       no  yes (month, day, dayofyear, weekofyear, quarter)      Random Forest (GridSearchCV)   RMSE / MAE (Total, test)          2,624 / 1,635 kW   
+1      yes                                       no                                  yes (month, day)                     Random Forest           R2 / RMSE (test)         0.9859 / 2,026 kW   
+2      yes                                       no                                                no                     Random Forest           R2 / RMSE (test)          0.956 / 1,384 kW   
+3      yes                                       no                                  yes (month, day)                     Random Forest  R2 (test): Zone 1 / 2 / 3     0.821 / 0.850 / 0.913   
+4      yes                                       no                         yes (month, day, quarter)      XGBoost (Optuna, 100 trials)  RMSE (validation, Zone 3)                  352.7 kW   
+5      yes                                       no                                 no (weather only)  Polynomial regression (degree 4)                  R2 (test)               0.19 – 0.29   
+6      yes                                       no                                  yes (month, day)        ElasticNet / Ridge / Lasso                RMSE (test)                  9,907 kW   
+7       no                                       no                                       yes (month)      Random Forest (max_depth 12)           R2 / RMSE (test)          0.834 / 5,744 kW   
+8       no                  yes (lag 1 h, lag 24 h)                                  yes (month, day)           XGBoost / Random Forest   Zone 1: RMSE / MAPE / R2  1,039 kW / 2.54% / 0.973   
+9       no  yes (144-step input window = last 24 h)                                       yes (month)                              LSTM                  R2 (test)                     0.971   
+
+                                               notes  
+0  Reproduces the P1 set-up: P1 calendar features...  
+1            Weather + hour/day/month/dayofweek only  
+2  LEAKAGE: Zone 1 and Zone 2 at the same timesta...  
+3  Features: month, day of month, time of day (on...  
+4  Competition-style train_data/test_data files; ...  
+5  Weather-only linear/polynomial models: shows w...  
+6  Linear models only; features weather + month/d...  
+7  Only surveyed ML notebook with a chronological...  
+8  Closest to our h1 problem (1-hour ahead, hourl...  
+9  Predicts the next 10 minutes from the previous...  
+
+--- CELL 7 (markdown; execution=None) ---
+**Observations.** Ten GitHub repositories were surveyed by reading their code (Kaggle requires a login). **Seven of ten shuffle the data** before splitting, many use `month` or `dayofyear`, and one uses the other zones at the same timestamp as features (leakage). None addresses day-ahead forecasting. The only chronological repository without lags (atishk28) reaches R² 0.834.
+
+--- CELL 8 (markdown; execution=None) ---
+## 2. Four set-ups S1–S4 (same Random Forest)
+
+| Set-up | Data | Split | Features | Mimics |
+|---|---|---|---|---|
+| S1 | 10-min | shuffled 75/25 | weather + P1-style calendar (with `dayofyear`) | P1 and typical Kaggle notebooks |
+| S2 | 10-min | shuffled 75/25 | S1 + 10-minute lag | Kaggle with a lag |
+| S3 | 10-min | chronological, test = December | S1 without `dayofyear` + 10-minute lag | Correct split, 10-minute horizon |
+| S4 | hourly | chronological, test = December | feature set D, day-ahead | **This project** |
+
+With a shuffled split a test point at 20:10 has its neighbours at 20:00 and 20:20 in the training set: the model only has to **interpolate**, which inflates R².
+
+**10-minute features** (P1-style calendar, weather, previous 10-minute load):
+
+--- CELL 9 (code; execution=4) ---
+raw = load_raw()
+if DATA_END is not None:
+    raw = raw[raw.index < DATA_END]
+
+def calendar_p1(idx):
+    # Calendar features used in the original benchmark (P1), including absolute-time ones
+    return pd.DataFrame({'month': idx.month, 'day': idx.day, 'hour': idx.hour, 'minute': idx.minute,
+                         'dayofyear': idx.dayofyear, 'weekofyear': idx.isocalendar().week.to_numpy(),
+                         'dayofweek': idx.dayofweek, 'quarter': idx.quarter}, index=idx)
+
+W = ['Temperature', 'Humidity', 'WindSpeed', 'GenDiffuse', 'Diffuse']
+X10 = raw[W].join(calendar_p1(raw.index))
+X10['lag_10min'] = raw['Total'].shift(1)
+data10 = X10.join(raw['Total'].rename('y')).dropna()
+S1_cols = W + list(calendar_p1(raw.index[:1]).columns)
+settings = {
+    'S1': dict(data='10-min', split='shuffled 75/25', cols=S1_cols),
+    'S2': dict(data='10-min', split='shuffled 75/25', cols=S1_cols + ['lag_10min']),
+    'S3': dict(data='10-min', split='chronological', cols=[c for c in S1_cols if c != 'dayofyear'] + ['lag_10min']),
+}
+print(f'10-min rows: {len(data10):,} ({data10.index[0]} → {data10.index[-1]})')
+OUTPUT: 10-min rows: 52,415 (2017-01-01 00:10:00 → 2017-12-30 23:50:00)
+
+
+--- CELL 10 (markdown; execution=None) ---
+Fit the Random Forest under S1–S3 (10-minute data) and S4 (the project pipeline) and score each on its test part.
+
+--- CELL 11 (code; execution=5) ---
+rows, preds = [], {}
+for s, cfg in settings.items():
+    Xs, ys = data10[cfg['cols']], data10['y']
+    if cfg['split'].startswith('shuffled'):
+        Xtr_, Xte_, ytr_, yte_ = train_test_split(Xs, ys, test_size=0.25, shuffle=True, random_state=RANDOM_STATE)
+    else:
+        trm = Xs.index < TEST_START
+        Xtr_, Xte_, ytr_, yte_ = Xs[trm], Xs[~trm], ys[trm], ys[~trm]
+    t0 = time.time()
+    model = rf().fit(Xtr_, ytr_)
+    rows.append({'setting': s, **{k: v for k, v in cfg.items() if k != 'cols'}, 'features': len(cfg['cols']),
+                 'train_rows': len(Xtr_), 'test_rows': len(Xte_), **metrics(yte_, model.predict(Xte_)),
+                 'fit_time': time.time() - t0})
+    print(f'{s}: fitted in {rows[-1]["fit_time"]:.1f}s')
+
+# S4 = the project pipeline: hourly, day-ahead features, chronological test
+dh = load_hourly()
+X, y = make_features(dh, horizon=24)
+tr, va, dev, te = split_masks(X.index)
+t0 = time.time()
+MF = MODEL_FEATURES[24]
+model = rf().fit(X[dev][MF], y[dev])
+rows.append({'setting': 'S4', 'data': 'hourly', 'split': 'chronological', 'features': len(MF),
+             'train_rows': int(dev.sum()), 'test_rows': int(te.sum()), **metrics(y[te], model.predict(X[te][MF])),
+             'fit_time': time.time() - t0})
+t12 = pd.DataFrame(rows).set_index('setting')
+t12.to_csv(TABLES / 'T12_leakage_settings.csv')
+t12
+OUTPUT: S1: fitted in 2.3s
+
+OUTPUT: S2: fitted in 2.6s
+
+OUTPUT: S3: fitted in 2.9s
+
+OUTPUT:            data           split  features  train_rows  test_rows      RMSE       MAE  MAPE    R2  fit_time
+setting                                                                                                   
+S1       10-min  shuffled 75/25        13       39311      13104 1,325.295   854.836 1.247 0.994     2.286
+S2       10-min  shuffled 75/25        14       39311      13104   619.978   419.150 0.613 0.999     2.601
+S3       10-min   chronological        13       48095       4320   643.969   443.261 0.738 0.998     2.850
+S4       hourly   chronological        17        7825        720 2,017.092 1,331.675 2.193 0.980     0.523
+
+--- CELL 12 (markdown; execution=None) ---
+RMSE and MAE of S1–S3 (10-minute) and S4 (hourly) are on different scales; compare set-ups with **R²** and **MAPE**. F16 plots R² as **1 − R²** (unexplained variance) because all R² values are close to 1.
+
+--- CELL 13 (markdown; execution=None) ---
+**Observations.** Same model, only the evaluation changes: **S1** (shuffled, `dayofyear`) R² 0.994, MAPE 1.25%; **S2** (+10-minute lag) R² 0.999, MAPE 0.61%; **S3** (chronological, 10-minute horizon) R² 0.998; **S4** (this project, day-ahead) R² 0.980, MAPE 2.19%. S1–S3 look excellent because the model interpolates between points 10 minutes apart or only predicts 10 minutes ahead. This is why R² ≈ 0.99 online says nothing about next-day forecasting.
+
+--- CELL 14 (code; execution=6) ---
+labels = {'S1': 'S1\nshuffled\n+ dayofyear', 'S2': 'S2\nshuffled\n+ 10-min lag', 'S3': 'S3\nchronological\n10-min ahead',
+          'S4': 'S4 (ours)\nchronological\nday-ahead'}
+colors = [MUTED, MUTED, MUTED, SERIES[0]]
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), layout='constrained')
+t12['1-R2'] = 1 - t12['R2']   # unexplained variance: R² values are all close to 1, so plot what is left
+for ax, col, fmt, title in [(axes[0], '1-R2', '{:.3f}', 'Unexplained variance, 1 − R² (lower looks better)'),
+                            (axes[1], 'MAPE', '{:.2f}%', 'MAPE on the test part (%)')]:
+    ax.bar([labels[s] for s in t12.index], t12[col], color=colors, width=0.6)
+    for i, v in enumerate(t12[col]):
+        ax.text(i, v, fmt.format(v), ha='center', va='bottom', fontsize=9, color=INK_2)
+    ax.set_title(title)
+    ax.set_ylim(0, t12[col].max() * 1.15)
+    ax.tick_params(axis='x', labelsize=8.5)
+fig.suptitle('Same Random Forest, four evaluation set-ups: how leakage inflates the score',
+             x=0.01, ha='left', fontweight='bold', color=INK)
+savefig(fig, 'F16_leakage_settings')
+plt.show()
+OUTPUT: <Figure size 1320x484 with 2 Axes>
+
+--- CELL 15 (markdown; execution=None) ---
+**Observations.** The unexplained variance of S4 is about 15 times that of S2 and its MAPE about 4 times: this is **the price of a correct evaluation**, not a sign of a weaker model.
+
+--- CELL 16 (markdown; execution=None) ---
+## 3. T12b – Tuning with shuffled KFold vs TimeSeriesSplit
+
+Tune the same RF twice on the development set (day-ahead), changing only the folds; record the CV estimate, the best parameters and the real test RMSE. `optimism_%` = test RMSE / CV RMSE − 1 (positive = CV over-promises).
+
+--- CELL 17 (code; execution=7) ---
+est, space, n_iter = search_spaces(n_jobs=1)['RF']
+n_iter = min(n_iter, 20)
+Xd, yd, Xt, yt = X[dev][MF], y[dev], X[te][MF], y[te]
+rows = []
+for name, cv in [('KFold (shuffled)', KFold(5, shuffle=True, random_state=RANDOM_STATE)),
+                 ('TimeSeriesSplit', make_tscv())]:
+    search = RandomizedSearchCV(est, space, n_iter=n_iter, cv=cv, scoring='neg_root_mean_squared_error',
+                                refit=True, random_state=RANDOM_STATE, n_jobs=N_JOBS)
+    t0 = time.time()
+    search.fit(Xd, yd)
+    test_rmse = metrics(yt, search.best_estimator_.predict(Xt))['RMSE']
+    rows.append({'cv_method': name, 'cv_RMSE_estimate': -search.best_score_, 'test_RMSE': test_rmse,
+                 'optimism_%': 100 * (test_rmse / -search.best_score_ - 1),
+                 'best_params': json.dumps({k: (v.item() if hasattr(v, 'item') else v)
+                                            for k, v in search.best_params_.items()}),
+                 'time_s': time.time() - t0})
+    print(f'{name}: {time.time() - t0:.1f}s')
+t12b = pd.DataFrame(rows).set_index('cv_method')
+t12b.to_csv(TABLES / 'T12b_kfold_vs_tscv.csv')
+t12b
+OUTPUT: KFold (shuffled): 36.6s
+
+OUTPUT: TimeSeriesSplit: 39.9s
+
+OUTPUT:                   cv_RMSE_estimate  test_RMSE  optimism_%                                        best_params  time_s
+cv_method                                                                                                           
+KFold (shuffled)         2,007.617  2,173.579       8.267  {"n_estimators": 300, "min_samples_leaf": 1, "...  36.564
+TimeSeriesSplit          3,012.381  2,044.174     -32.141  {"n_estimators": 500, "min_samples_leaf": 2, "...  39.914
+
+--- CELL 18 (markdown; execution=None) ---
+**Observations.** Tuning with shuffled KFold gives a CV score of 2,008 kW and picks deeper trees, but the real test RMSE is 2,174 (CV over-promises by 8.3%). TimeSeriesSplit gives a more pessimistic CV score (3,012, because of the hard July fold) but the model it picks is **better on the test set** (2,044 kW). Shuffled KFold both misjudges the error and selects a worse model.
+
+--- CELL 19 (markdown; execution=None) ---
+## 4. Summary
+
+- With the same model, shuffling the data or shortening the horizon lifts R² from 0.98 to 0.999: most of the high scores online come from the **evaluation**, not from the model.
+- Shuffled KFold for tuning both over-promises and selects a worse model than TimeSeriesSplit.
+- This project's R² is lower than many online notebooks, but it is the **trustworthy** number for the real task (forecasting the next day).

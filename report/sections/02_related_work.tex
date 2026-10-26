@@ -1,0 +1,38 @@
+\section{Background and Related Work}\label{sec:related}
+\subsection{From seasonal baselines to regression}
+A seasonal naive forecast repeats a prior load at a matching time of day or week. It directly tests how much useful information is already present in the demand cycle. The training mean profile instead estimates a typical load for each hour--weekday pair, discarding recent changes in level. These statistical reference methods are implemented in this project; ARIMA, SARIMA and exponential-smoothing models are not. The distinction matters because a comparison with a weak historical average alone would overstate the benefit of ML when a daily lag is already highly informative.
+
+Regression represents the forecast as a function of calendar, weather and past-load predictors. A linear model supplies a low-complexity reference. Trees learn threshold-based interactions; random forests average multiple randomized trees; XGBoost combines sequentially fitted trees\cite{chen2016}. RBF support vector regression offers a different nonlinear representation, with sensitivity to input scale and regularization. In the present project, representation and validation choices are evaluated alongside algorithm choice.
+
+\subsection{Tetouan studies and their relevance}
+The existing literature review identifies six relevant studies. Salam and El Hibaoui\cite{salam2018} provide the original conventional-ML comparison and the RF configuration reproduced here as RF-P1. RoSe et al.\cite{rose2023} compare regression variants and optimization methods. The local review flags a disagreement between that study's numerical table and its textual optimizer ranking; this report does not resolve it by choosing the more favorable interpretation.
+
+Da Silva and Meneses\cite{silva2023} compare recurrent models across several datasets. Their Tetouan temporal holdout design, as summarized in the local review, motivates keeping December separate from development. Islam et al.\cite{islam2025} investigate shifted consumption inputs with Prophet-based methods. Alsalem\cite{alsalem2025} combines fuzzy clustering with lagged inputs and regressors. Biswas et al.\cite{biswas2026} compare conventional and other forecasting models in Darts at multiple resolutions. These methods provide context, but none is reimplemented as an external benchmark in the repository.
+
+\Cref{tab:literature} preserves the available review-reported metrics and explicitly identifies missing setup information. Primary publisher records were checked for bibliographic identity. Full numerical configurations were not independently revalidated for every paper: IEEE access was blocked, the Energy Reports full page was inaccessible, and the Springer shift paper exposed only preview material. The local review and survey therefore remain the provenance of several setup descriptions.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{.15\linewidth}p{.19\linewidth}p{.22\linewidth}p{.19\linewidth}p{.16\linewidth}}
+\caption{Related Tetouan studies. Results are transcribed from the repository review and comparison CSV; RMSE/MAE use its reported kW scale and MAPE is percent. These are not a common benchmark. NR denotes unavailable configuration-specific evidence.}\label{tab:literature}\\
+\toprule Study & Dataset / target & Method / evaluation & Reported metrics & Relevance \\
+\midrule\endfirsthead
+\toprule Study & Dataset / target & Method / evaluation & Reported metrics & Relevance \\
+\midrule\endhead\bottomrule\endfoot
+Salam \& El Hibaoui (2018)\cite{salam2018} & Tetouan, 10-min; selected target unclear in local CSV & RF; 75/25 split, temporal ordering unspecified & RMSE \num{4481.1}; MAE \num{3595.3} & Original ML baseline and RF-P1 settings \\
+RoSe et al. (2023)\cite{rose2023} & Tetouan total, 10-min & Optimized Fine Tree; 70/30, ordering unclear & RMSE \num{2680}; MAE \num{1690}; R$^2$ \num{0.976} & Tuning study; optimizer attribution unresolved \\
+da Silva \& Meneses (2023)\cite{silva2023} & Multiple datasets including Tetouan zones & LSTM/BiLSTM; local review describes Jan--Nov development and December holdout & NR in repository comparison CSV & Chronological evaluation design \\
+Islam et al. (2025)\cite{islam2025} & Tetouan zones and their mean; target of selected row unclear & Prophet / NeuralProphet shift; review describes 75/15/10 temporal split & RMSE \num{1826.3}; MAE \num{1333.1}; MAPE \num{6.3}\%; R$^2$ \num{0.853} & Explicit history and forecast alignment \\
+Alsalem (2025)\cite{alsalem2025} & Tetouan Zone 3, 10-min & MLP + fuzzy C-means; short lags; reported 70/30 ordered split & RMSE \num{355.42}; MAE \num{246.43}; R$^2$ \num{0.9889} & Feature enrichment; different target and lead \\
+Biswas et al. (2026)\cite{biswas2026} & Tetouan mean of three zones, hourly selected row & RF in Darts; chronological evaluation; selected horizon unclear locally & MAE \num{224.2}; MAPE \num{1.04}\%; RMSE NR locally & Common pipeline; unresolved matched horizon \\
+\end{longtable}\endgroup
+
+\subsection{Validation, features and leakage}
+Time-series validation preserves training-before-validation order; the expanding-window implementation used here follows the \code{TimeSeriesSplit} interface\cite{tscv}. It measures performance on several later time windows instead of relying solely on November. Hyperparameter search still adapts to those windows, so its best score is a selection score, not an unbiased final performance estimate. Random search explores a specified budget of configurations\cite{bergstra2012}; the chosen budget and search space are part of the experimental design.
+
+Leakage is use of information unavailable for the intended prediction. Examples include fitting preprocessing on evaluation data or feeding contemporaneous components of the target into a future forecast. Pipelines help keep fitted transformations inside training partitions\cite{pitfalls}. A calendar value such as month is known in advance and is not intrinsically leakage. Likewise, a short forecast horizon can be legitimate. The questions are whether predictor availability matches issuance and whether evaluation matches the intended deployment task.
+
+\subsection{Public-code survey and comparability}
+The repository survey contains ten GitHub projects, seven marked as using shuffled evaluation. It records mixed targets, resolutions, metrics and historical inputs; despite the filename \code{kaggle_survey.csv}, it is a GitHub survey. These are project-authored code-review notes, not experiments independently reproduced for this report. \Cref{tab:survey} preserves links and reported values for traceability. The local survey also flags contemporaneous other-zone inputs in one repository; such inputs would be unavailable for a genuine advance forecast unless separately forecast.
+
+Cross-study ranking would require the same target, temporal aggregation, issuance convention, feature availability, development procedure and test period. MAPE and R$^2$ are invariant to a common positive rescaling of observations and predictions, but not to a change of target, horizon or test distribution. The mean of three zones can be rescaled to their sum; this algebra does not equate separately trained studies. The report consequently makes no state-of-the-art claim.
+\evidence{\code{docs/Literature_Review_Tetouan.pdf}, especially pp. 12, 16--19, 22, 32--33; \code{docs/literature_results.csv}; \code{docs/kaggle_survey.csv}; T11 and T13.}

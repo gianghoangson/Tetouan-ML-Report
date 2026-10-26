@@ -1,0 +1,11 @@
+\begin{table}[tbp]\centering\small
+\caption{Post-final RF search diagnostic: 20 candidates per CV strategy (T12b). Optimism is $100(\mathrm{RMSE}_{test}/\mathrm{RMSE}_{CV}-1)$. Errors in kW.}\label{tab:kfold}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrr}
+\toprule
+CV strategy & CV RMSE & December RMSE & Optimism (\%) \\
+\midrule
+KFold (shuffled) & \num{2007.6} & \num{2173.6} & \num{8.27} \\
+TimeSeriesSplit & \num{3012.4} & \num{2044.2} & \num{-32.14} \\
+\bottomrule\end{tabular}
+\end{table}

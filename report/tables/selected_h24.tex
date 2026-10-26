@@ -1,0 +1,20 @@
+\begingroup\small\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{.16\linewidth}p{.76\linewidth}}
+\caption{Selected h24 hyperparameters from best\_params.json. Estimator-wrapper prefixes are omitted; floating values are rounded to six decimals. Both target formulations were searched independently.}\label{tab:selected_h24}\\
+\toprule
+Variant & Selected parameters \\
+\midrule\endfirsthead
+\multicolumn{2}{l}{\small\itshape Continued from previous page}\\\toprule
+Variant & Selected parameters \\
+\midrule\endhead\bottomrule\endfoot
+LR & alpha = \num{0.001329} \\
+LR $\Delta$ & alpha = \num{98.777003} \\
+DT & min\_samples\_split = 10; min\_samples\_leaf = 5; max\_features = None; max\_depth = 8 \\
+DT $\Delta$ & min\_samples\_split = 20; min\_samples\_leaf = 5; max\_features = None; max\_depth = 4 \\
+RF & n\_estimators = 200; min\_samples\_leaf = 2; max\_features = \num{0.800000}; max\_depth = 30 \\
+RF $\Delta$ & n\_estimators = 100; min\_samples\_leaf = 10; max\_features = sqrt; max\_depth = 30 \\
+SVR & C = \num{26.926469}; epsilon = \num{0.010000}; gamma = \num{0.006339} \\
+SVR $\Delta$ & C = \num{138.262322}; epsilon = \num{0.100000}; gamma = \num{0.003387} \\
+XGB & colsample\_bytree = \num{0.798899}; learning\_rate = \num{0.024629}; max\_depth = 3; min\_child\_weight = 8; n\_estimators = 1304; reg\_lambda = \num{0.341635}; subsample = \num{0.990646} \\
+XGB $\Delta$ & colsample\_bytree = \num{0.831312}; learning\_rate = \num{0.011137}; max\_depth = 3; min\_child\_weight = 10; n\_estimators = 774; reg\_lambda = \num{9.197754}; subsample = \num{0.935573} \\
+\end{longtable}\endgroup

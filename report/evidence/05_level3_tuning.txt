@@ -1,0 +1,392 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 05 – Level 3: hyperparameter tuning
+
+Guideline section 9. How much does tuning improve on the defaults?
+
+- `RandomizedSearchCV` on **the same five folds** as Level 2, so the Level 2 → Level 3 difference is the effect of tuning. Selection criterion: lowest mean CV RMSE.
+- LR is tuned as **Ridge** (L2 penalty `alpha`), since plain LR has no hyperparameter.
+- **Two target types per model:** *absolute* (learn `y`) and *relative* (`<model>_delta`: learn `y − lag_24`, then add `lag_24` back). Level 2 showed that tree models cannot extrapolate when July loads exceed everything seen in training, whereas the deviation from yesterday stays in a familiar range. `lag_24` was chosen as the base on dev CV (`lag_168` was much worse). Both types use the same search space; the better one is chosen on CV.
+- Searches run in parallel (`n_jobs=N_JOBS`) with single-threaded inner models; no refit here (notebook 07 refits).
+
+**Caveat:** hyperparameters are chosen on the same folds that are reported, so Level 3 scores are slightly optimistic (selection bias); notebook 07 re-measures on December. Outputs: **T06**, **T07**, **F13**, **F14**, `best_params.json`.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable, load the shared helpers and the common figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+import json
+import time
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from src.config import TABLES, SMOKE
+from src.data import load_hourly
+from src.features import make_features, FEATURE_SETS, MODEL_FEATURES
+from src.evaluate import (metrics, log_result, save_results, split_masks, make_tscv, cross_val_log,
+                          cv_summary, CV_SCORING, RESULTS, RANDOM_STATE)
+from src.models import (default_models, search_spaces, tuned_model, baselines, NaiveLag, MeanProfile,
+                        p1_random_forest, split_name, DeltaTarget, N_JOBS, MODEL_NAMES, DELTA_SUFFIX, DELTA_BASE)
+from src.viz import (set_style, savefig, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, NEUTRAL, SURFACE, GRID, MODEL_COLORS, BASELINE_STYLE)
+
+set_style()
+pd.set_option('display.float_format', '{:,.3f}'.format)
+pd.set_option('display.width', 200)
+MF = MODEL_FEATURES[24]    # columns every model is trained on (baselines read lags from the full X)
+SCORING = CV_SCORING
+if SMOKE:
+    print('SMOKE MODE: code check only (dev = Jan–Oct, stand-in test = Nov, tiny models). '
+          'December is never touched. Outputs → results/smoke/')
+
+--- CELL 3 (markdown; execution=None) ---
+**Data and search spaces.** `search_spaces()` returns `(estimator, distributions, n_iter)` per model, for the absolute and the relative versions.
+
+--- CELL 4 (code; execution=2) ---
+from sklearn.model_selection import RandomizedSearchCV
+
+dh = load_hourly()
+X, y = make_features(dh, horizon=24)
+tr, va, dev, te = split_masks(X.index)          # te is NOT used here
+Xd, yd = X[dev], y[dev]
+tscv = make_tscv()
+SPACES = search_spaces(n_jobs=1)
+SPACES_DELTA = search_spaces(n_jobs=1, delta=True)
+print(f'dev: {len(Xd):,} rows | candidates per model and target type:', {m: SPACES[m][2] for m in MODEL_NAMES})
+OUTPUT: dev: 7,825 rows | candidates per model and target type: {'LR': 20, 'DT': 40, 'RF': 30, 'SVR': 30, 'XGB': 50}
+
+
+--- CELL 5 (markdown; execution=None) ---
+## 1. T06a – Search space
+
+Readable description of each distribution: `loguniform(a, b)` samples evenly on a log scale, `integer a … b` is `randint`, `uniform(a, b)` covers [a, b]. The relative versions use the same space with a `regressor__` prefix.
+
+--- CELL 6 (code; execution=3) ---
+def describe(dist):
+    if isinstance(dist, list):
+        return ', '.join(str(v) for v in dist)
+    name, args = dist.dist.name, dist.args
+    if name == 'uniform':                       # scipy uniform(loc, scale) covers [loc, loc + scale]
+        return f'uniform({args[0]}, {args[0] + args[1]})'
+    if name == 'randint':                       # randint(low, high) covers low … high − 1
+        return f'integer {args[0]} … {args[1] - 1}'
+    return f'{name}({", ".join(str(a) for a in args)})'
+
+t06a = pd.DataFrame([{'model': m, 'hyperparameter': p, 'search space': describe(d), 'n_iter': SPACES[m][2]}
+                     for m in MODEL_NAMES for p, d in SPACES[m][1].items()])
+t06a.to_csv(TABLES / 'T06_search_space.csv', index=False)
+t06a
+OUTPUT:    model           hyperparameter               search space  n_iter
+0     LR             ridge__alpha  loguniform(0.001, 1000.0)      20
+1     DT                max_depth  4, 6, 8, 10, 15, 20, None      40
+2     DT         min_samples_leaf           1, 5, 10, 20, 50      40
+3     DT        min_samples_split              2, 10, 20, 50      40
+4     DT             max_features       None, sqrt, 0.5, 0.8      40
+5     RF             n_estimators         100, 200, 300, 500      30
+6     RF                max_depth           10, 20, 30, None      30
+7     RF         min_samples_leaf                1, 2, 5, 10      30
+8     RF             max_features   sqrt, 0.3, 0.5, 0.8, 1.0      30
+9    SVR        regressor__svr__C    loguniform(0.1, 1000.0)      30
+10   SVR    regressor__svr__gamma      loguniform(0.0001, 1)      30
+11   SVR  regressor__svr__epsilon       0.01, 0.05, 0.1, 0.2      30
+12   XGB             n_estimators         integer 200 … 1499      50
+13   XGB            learning_rate      loguniform(0.01, 0.2)      50
+14   XGB                max_depth             integer 3 … 10      50
+15   XGB                subsample          uniform(0.6, 1.0)      50
+16   XGB         colsample_bytree          uniform(0.6, 1.0)      50
+17   XGB         min_child_weight             integer 1 … 10      50
+18   XGB               reg_lambda      loguniform(0.1, 10.0)      50
+
+--- CELL 7 (markdown; execution=None) ---
+## 2. Randomized search with TimeSeriesSplit
+
+For each model and target type: sample `n_iter` configurations, score each on the five folds with the four metrics, keep the configuration with the best mean RMSE, log its per-fold results and store its parameters. Every search uses the same `random_state`, so the absolute and relative versions try the same configurations.
+
+--- CELL 8 (code; execution=4) ---
+RESULTS.clear()
+best_params, searches = {}, {}
+for name in [m + sfx for m in MODEL_NAMES for sfx in ('', DELTA_SUFFIX)]:
+    base, delta = split_name(name)
+    est, space, n_iter = (SPACES_DELTA if delta else SPACES)[base]
+    search = RandomizedSearchCV(est, space, n_iter=n_iter, cv=tscv, scoring=SCORING, refit=False,
+                                random_state=RANDOM_STATE, n_jobs=N_JOBS, return_train_score=True)
+    t0 = time.time()
+    search.fit(Xd[MF], yd)
+    res = pd.DataFrame(search.cv_results_)
+    res.to_csv(TABLES / f'search_{name}.csv', index=False)
+    searches[name] = res
+    bi = int(res['rank_test_RMSE'].values.argmin())
+    for k in range(tscv.get_n_splits()):
+        log_result(level='L3', model=name, split=f'fold{k}',
+                   RMSE=-res.loc[bi, f'split{k}_test_RMSE'], MAE=-res.loc[bi, f'split{k}_test_MAE'],
+                   MAPE=-res.loc[bi, f'split{k}_test_MAPE'] * 100, R2=res.loc[bi, f'split{k}_test_R2'],
+                   fit_time=res.loc[bi, 'mean_fit_time'], train_RMSE=-res.loc[bi, f'split{k}_train_RMSE'])
+    best_params[name] = {k: (v.item() if hasattr(v, 'item') else v) for k, v in res.loc[bi, 'params'].items()}
+    print(f'{name:9s} {n_iter:3d} candidates × 5 folds in {time.time() - t0:7.1f}s | '
+          f'best CV RMSE {-res.loc[bi, "mean_test_RMSE"]:,.0f} | {best_params[name]}')
+
+long3 = save_results(TABLES / 'T07_level3_cv.csv')
+(TABLES / 'best_params.json').write_text(json.dumps(best_params, indent=2))
+print('saved', TABLES / 'best_params.json')
+OUTPUT: LR         20 candidates × 5 folds in     1.8s | best CV RMSE 2,792 | {'ridge__alpha': 0.0013289448722869186}
+
+OUTPUT: LR_delta   20 candidates × 5 folds in     0.3s | best CV RMSE 2,770 | {'regressor__ridge__alpha': 98.77700294007911}
+
+OUTPUT: DT         40 candidates × 5 folds in     0.5s | best CV RMSE 3,590 | {'min_samples_split': 10, 'min_samples_leaf': 5, 'max_features': None, 'max_depth': 8}
+
+OUTPUT: DT_delta   40 candidates × 5 folds in     0.6s | best CV RMSE 2,525 | {'regressor__min_samples_split': 20, 'regressor__min_samples_leaf': 5, 'regressor__max_features': None, 'regressor__max_depth': 4}
+
+OUTPUT: /home/nhatminh/Documents/Projects_DS_66/Machine-Learning/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+
+OUTPUT: RF         30 candidates × 5 folds in    44.8s | best CV RMSE 3,010 | {'n_estimators': 200, 'min_samples_leaf': 2, 'max_features': 0.8, 'max_depth': 30}
+
+OUTPUT: /home/nhatminh/Documents/Projects_DS_66/Machine-Learning/.venv/lib/python3.12/site-packages/joblib/externals/loky/process_executor.py:787: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  warnings.warn(
+
+OUTPUT: RF_delta   30 candidates × 5 folds in    51.1s | best CV RMSE 2,429 | {'regressor__n_estimators': 100, 'regressor__min_samples_leaf': 10, 'regressor__max_features': 'sqrt', 'regressor__max_depth': 30}
+
+OUTPUT: SVR        30 candidates × 5 folds in    52.1s | best CV RMSE 2,411 | {'regressor__svr__C': 26.92646910086177, 'regressor__svr__epsilon': 0.01, 'regressor__svr__gamma': 0.006338653441536257}
+
+OUTPUT: SVR_delta  30 candidates × 5 folds in    48.5s | best CV RMSE 2,427 | {'regressor__regressor__svr__C': 138.26232179369853, 'regressor__regressor__svr__epsilon': 0.1, 'regressor__regressor__svr__gamma': 0.003387255565852149}
+
+OUTPUT: XGB        50 candidates × 5 folds in    45.7s | best CV RMSE 3,010 | {'colsample_bytree': 0.7988994023569542, 'learning_rate': 0.02462927943506523, 'max_depth': 3, 'min_child_weight': 8, 'n_estimators': 1304, 'reg_lambda': 0.3416347415306915, 'subsample': 0.9906459823330611}
+
+OUTPUT: XGB_delta  50 candidates × 5 folds in    47.4s | best CV RMSE 2,441 | {'regressor__colsample_bytree': 0.8313120563984696, 'regressor__learning_rate': 0.011136839897653458, 'regressor__max_depth': 3, 'regressor__min_child_weight': 10, 'regressor__n_estimators': 774, 'regressor__reg_lambda': 9.19775371875246, 'regressor__subsample': 0.9355734008277453}
+saved /home/nhatminh/Documents/Projects_DS_66/Machine-Learning/results/tables/best_params.json
+
+
+--- CELL 9 (markdown; execution=None) ---
+## 3. T06b – Best hyperparameters
+
+--- CELL 10 (code; execution=5) ---
+t06b = pd.DataFrame([{'model': m, 'hyperparameter': p, 'best value': v} for m, ps in best_params.items()
+                     for p, v in ps.items()])
+t06b.to_csv(TABLES / 'T06_best_params.csv', index=False)
+t06b
+OUTPUT:         model                      hyperparameter best value
+0          LR                        ridge__alpha      0.001
+1    LR_delta             regressor__ridge__alpha     98.777
+2          DT                   min_samples_split         10
+3          DT                    min_samples_leaf          5
+4          DT                        max_features       None
+5          DT                           max_depth          8
+6    DT_delta        regressor__min_samples_split         20
+7    DT_delta         regressor__min_samples_leaf          5
+8    DT_delta             regressor__max_features       None
+9    DT_delta                regressor__max_depth          4
+10         RF                        n_estimators        200
+11         RF                    min_samples_leaf          2
+12         RF                        max_features      0.800
+13         RF                           max_depth         30
+14   RF_delta             regressor__n_estimators        100
+15   RF_delta         regressor__min_samples_leaf         10
+16   RF_delta             regressor__max_features       sqrt
+17   RF_delta                regressor__max_depth         30
+18        SVR                   regressor__svr__C     26.926
+19        SVR             regressor__svr__epsilon      0.010
+20        SVR               regressor__svr__gamma      0.006
+21  SVR_delta        regressor__regressor__svr__C    138.262
+22  SVR_delta  regressor__regressor__svr__epsilon      0.100
+23  SVR_delta    regressor__regressor__svr__gamma      0.003
+24        XGB                    colsample_bytree      0.799
+25        XGB                       learning_rate      0.025
+26        XGB                           max_depth          3
+27        XGB                    min_child_weight          8
+28        XGB                        n_estimators       1304
+29        XGB                          reg_lambda      0.342
+30        XGB                           subsample      0.991
+31  XGB_delta         regressor__colsample_bytree      0.831
+32  XGB_delta            regressor__learning_rate      0.011
+33  XGB_delta                regressor__max_depth          3
+34  XGB_delta         regressor__min_child_weight         10
+35  XGB_delta             regressor__n_estimators        774
+36  XGB_delta               regressor__reg_lambda      9.198
+37  XGB_delta                regressor__subsample      0.936
+
+--- CELL 11 (markdown; execution=None) ---
+**Observations.** SVR works best with `C` ≈ 26.93 and a small `gamma` ≈ 0.0063: a smooth, almost linear kernel that extrapolates better. DT is limited to `max_depth` = 8, which fights overfitting. Ridge picks a tiny `alpha`, i.e. almost no penalty is needed. The relative versions of the tree models choose simple configurations (shallow trees, large leaves or few features per split), because the deviation from yesterday is a simpler signal than the absolute load.
+
+--- CELL 12 (markdown; execution=None) ---
+## 4. T07 – Default (Level 2) vs tuned (Level 3)
+
+Same five folds, so the comparison is direct. `best_variant` marks the better target type of each model.
+
+--- CELL 13 (code; execution=6) ---
+l2_path = TABLES / 'T05_level2_cv.csv'
+assert l2_path.exists(), 'Run notebook 04 first (Level 2 results are needed for the comparison)'
+long2 = pd.read_csv(l2_path)
+s2, s3 = cv_summary(long2), cv_summary(long3)
+rows = []
+for key in [m + sfx for m in MODEL_NAMES for sfx in ('', DELTA_SUFFIX) if m + sfx in s3.index]:
+    m, delta = split_name(key)       # the default reference is always the absolute-target default model
+    rows.append({'model': key, 'base_model': m, 'target': 'relative (y − lag_24)' if delta else 'absolute',
+                 'default_RMSE_mean': s2.loc[m, 'RMSE_mean'], 'default_RMSE_std': s2.loc[m, 'RMSE_std'],
+                 'tuned_RMSE_mean': s3.loc[key, 'RMSE_mean'], 'tuned_RMSE_std': s3.loc[key, 'RMSE_std'],
+                 'improvement_%': (1 - s3.loc[key, 'RMSE_mean'] / s2.loc[m, 'RMSE_mean']) * 100,
+                 'default_MAPE': s2.loc[m, 'MAPE_mean'], 'tuned_MAPE': s3.loc[key, 'MAPE_mean'],
+                 'tuned_train_RMSE': s3.loc[key, 'train_RMSE_mean'],
+                 'tuned_overfit_ratio': s3.loc[key, 'RMSE_mean'] / max(s3.loc[key, 'train_RMSE_mean'], 1),
+                 'tuned_skill_vs_naive24': 1 - s3.loc[key, 'RMSE_mean'] / s2.loc['Naive-24h', 'RMSE_mean']})
+t07 = pd.DataFrame(rows).set_index('model').sort_values('tuned_RMSE_mean')
+# Better target type per model, chosen on CV
+t07['best_variant'] = t07['tuned_RMSE_mean'] == t07.groupby('base_model')['tuned_RMSE_mean'].transform('min')
+t07.to_csv(TABLES / 'T07_default_vs_tuned.csv')
+t07
+OUTPUT:           base_model                 target  default_RMSE_mean  default_RMSE_std  tuned_RMSE_mean  tuned_RMSE_std  improvement_%  default_MAPE  tuned_MAPE  tuned_train_RMSE  tuned_overfit_ratio  \
+model                                                                                                                                                                                               
+SVR              SVR               absolute          3,968.670         2,891.482        2,410.593         766.340         39.259         3.445       2.418         1,715.351                1.405   
+SVR_delta        SVR  relative (y − lag_24)          3,968.670         2,891.482        2,427.116         773.741         38.843         3.445       2.408         1,881.572                1.290   
+RF_delta          RF  relative (y − lag_24)          3,069.544         1,488.752        2,429.333         800.669         20.857         2.824       2.361         1,810.808                1.342   
+XGB_delta        XGB  relative (y − lag_24)          3,264.766         1,815.766        2,441.004         785.452         25.232         2.992       2.378         2,028.080                1.204   
+DT_delta          DT  relative (y − lag_24)          4,048.179         1,410.391        2,524.855         851.936         37.630         3.873       2.402         2,345.453                1.076   
+LR_delta          LR  relative (y − lag_24)          2,792.315           623.251        2,769.978         591.557          0.800         2.949       2.874         2,705.352                1.024   
+LR                LR               absolute          2,792.315           623.251        2,792.315         623.251         -0.000         2.949       2.949         2,655.338                1.052   
+XGB              XGB               absolute          3,264.766         1,815.766        3,009.858       1,470.206          7.808         2.992       2.805         1,662.041                1.811   
+RF                RF               absolute          3,069.544         1,488.752        3,010.368       1,588.679          1.928         2.824       2.745         1,035.376                2.908   
+DT                DT               absolute          4,048.179         1,410.391        3,589.677       1,756.099         11.326         3.873       3.344         2,161.522                1.661   
+
+           tuned_skill_vs_naive24  best_variant  
+model                                            
+SVR                         0.289          True  
+SVR_delta                   0.285         False  
+RF_delta                    0.284          True  
+XGB_delta                   0.280          True  
+DT_delta                    0.256          True  
+LR_delta                    0.183          True  
+LR                          0.177         False  
+XGB                         0.113         False  
+RF                          0.113         False  
+DT                         -0.058         False  
+
+--- CELL 14 (markdown; execution=None) ---
+RMSE per fold of every tuned version, to see whether the relative target fixes fold 0 (July).
+
+--- CELL 15 (code; execution=7) ---
+fold_rmse = long3.pivot(index='model', columns='split', values='RMSE').loc[t07.index]
+fold_rmse.round(0)
+OUTPUT: split         fold0     fold1     fold2     fold3     fold4
+model                                                      
+SVR       2,684.000 3,261.000 2,833.000 1,340.000 1,935.000
+SVR_delta 2,554.000 3,196.000 3,090.000 1,389.000 1,907.000
+RF_delta  3,215.000 2,999.000 2,693.000 1,271.000 1,969.000
+XGB_delta 2,979.000 2,918.000 3,061.000 1,285.000 1,961.000
+DT_delta  3,498.000 3,032.000 2,733.000 1,340.000 2,022.000
+LR_delta  3,104.000 3,133.000 3,336.000 2,000.000 2,276.000
+LR        3,071.000 3,308.000 3,323.000 1,971.000 2,289.000
+XGB       5,344.000 2,959.000 3,197.000 1,542.000 2,008.000
+RF        5,554.000 3,405.000 2,480.000 1,424.000 2,189.000
+DT        6,383.000 4,089.000 3,019.000 1,872.000 2,585.000
+
+--- CELL 16 (markdown; execution=None) ---
+**Observations.** The relative target is **better than the absolute target for four of five models**; for SVR the two are almost equal. After tuning the top versions are very close: SVR 2,411, SVR_delta 2,427, RF_delta 2,429, XGB_delta 2,441, DT_delta 2,525 kW. Tuning helps SVR most (39.3% better than its default) and DT. The overfitting ratio of the best versions falls to about 1.0–1.4. The relative target brings the fold-0 RMSE of RF from 5,554 down to 3,215 kW and that of XGB from 5,344 to 2,979.
+
+--- CELL 17 (markdown; execution=None) ---
+## 5. F13 – Default vs tuned, with error bars (std over five folds)
+
+Three bars per model: default, tuned with the absolute target, tuned with the relative target. Percentages are the RMSE change relative to the default model.
+
+--- CELL 18 (code; execution=8) ---
+order = [m for m in MODEL_NAMES if m in set(t07['base_model'])]
+x = np.arange(len(order))
+w = 0.27
+fig, ax = plt.subplots(figsize=(11, 4.8))
+bars = [(-w, 'Default (Level 2)', BLUE[200], lambda m: (s2.loc[m, 'RMSE_mean'], s2.loc[m, 'RMSE_std'], None)),
+        (0, 'Tuned, absolute target', BLUE[400], lambda m: (t07.loc[m, 'tuned_RMSE_mean'], t07.loc[m, 'tuned_RMSE_std'],
+                                                             t07.loc[m, 'improvement_%'])),
+        (w, 'Tuned, relative target (y − lag_24)', BLUE[600],
+         lambda m: (t07.loc[m + DELTA_SUFFIX, 'tuned_RMSE_mean'], t07.loc[m + DELTA_SUFFIX, 'tuned_RMSE_std'],
+                    t07.loc[m + DELTA_SUFFIX, 'improvement_%']) if m + DELTA_SUFFIX in t07.index else (np.nan, 0, None))]
+for off, lab, colr, get in bars:
+    vals = [get(m) for m in order]
+    ax.bar(x + off, [v[0] for v in vals], w * 0.92, yerr=[v[1] for v in vals], color=colr, label=lab,
+           error_kw={'ecolor': INK_2, 'elinewidth': 1, 'capsize': 3})
+    for i, (v, _, pct) in enumerate(vals):
+        if pct is not None and not np.isnan(v):
+            p = int(round(pct))
+            ax.text(i + off, v / 2, f'{p:+d}%' if p else '0%', ha='center', va='center', color='white',
+                    fontsize=8, fontweight='bold', rotation=90)
+naive = s2.loc['Naive-24h', 'RMSE_mean']
+ax.axhline(naive, color=INK_2, lw=1, ls='--', label='Naive-24h (CV mean)')
+ax.set_xticks(x, order)
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.set(title='Level 3: effect of tuning (CV RMSE, mean ± std over 5 folds)', ylabel='CV RMSE (kW)')
+ax.legend(loc='upper left', ncol=3)
+ax.set_ylim(0, ax.get_ylim()[1] * 1.12)
+savefig(fig, 'F13_default_vs_tuned')
+plt.show()
+print('Percentages inside the tuned bars = RMSE change vs the default (absolute-target) model.')
+OUTPUT: <Figure size 1210x528 with 1 Axes>
+OUTPUT: Percentages inside the tuned bars = RMSE change vs the default (absolute-target) model.
+
+
+--- CELL 19 (markdown; execution=None) ---
+**Observations.** Tuning and the relative target bring every model below the Naive-24h line, and the error bars of the tree models shrink sharply: the extrapolation problem is largely solved.
+
+--- CELL 20 (markdown; execution=None) ---
+## 6. F14 – Sensitivity to one key hyperparameter
+
+Each dot is a sampled configuration (other hyperparameters vary at random); orange = best. Panels show the better target type of each model; log-scaled parameters are plotted on a log axis.
+
+--- CELL 21 (code; execution=9) ---
+KEY = {'LR': ('ridge__alpha', True), 'DT': ('max_depth', False), 'RF': ('max_features', False),
+       'SVR': ('regressor__svr__C', True), 'XGB': ('learning_rate', True)}
+
+def plot_sensitivity(ax, res, param, log):
+    vals, rmse = res[f'param_{param}'], -res['mean_test_RMSE']
+    num = pd.to_numeric(vals, errors='coerce')
+    if num.notna().all():
+        xs = num.astype(float)
+        if log:   # plot log10(value) on a linear axis, label ticks with the original value
+            xs = np.log10(xs)
+            ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{10 ** v:.3g}'))
+    else:   # categorical, e.g. max_depth with None or max_features with 'sqrt'
+        labels = vals.astype(str)
+        def order(v):   # numbers first (ascending), then text values such as 'None' or 'sqrt'
+            n = pd.to_numeric(v, errors='coerce')
+            return (0, n, '') if pd.notna(n) else (1, 0.0, v)
+        cats = sorted(labels.unique(), key=order)
+        jitter = np.random.default_rng(0).uniform(-0.12, 0.12, len(labels))
+        xs = labels.map({c: i for i, c in enumerate(cats)}).astype(float) + jitter
+        ax.set_xticks(range(len(cats)), cats)
+    ax.scatter(xs, rmse, s=30, color=BLUE[400], alpha=0.75, linewidths=0)
+    bi = int(rmse.values.argmin())
+    ax.scatter([xs.iloc[bi]], [rmse.iloc[bi]], s=70, color=SERIES[1], zorder=3, label='best')
+    ax.yaxis.set_major_formatter(kw_fmt)
+    ax.grid(axis='x')
+
+best_keys = [t07[(t07['base_model'] == m) & t07['best_variant']].index[0] for m in order]
+fig, axes = plt.subplots(1, len(best_keys), figsize=(3.4 * len(best_keys), 3.6), squeeze=False)
+for ax, key in zip(axes[0], best_keys):
+    m, delta = split_name(key)
+    param, log = KEY[m]
+    plot_sensitivity(ax, searches[key], ('regressor__' if delta else '') + param, log)
+    ax.set_title(key, loc='left')
+    ax.set_xlabel(param.split('__')[-1] + (' (log scale)' if log else ''))
+axes[0][0].set_ylabel('CV RMSE (kW)')
+axes[0][-1].legend(loc='upper right')
+fig.suptitle('Hyperparameter sensitivity, better target type per model (each dot = one sampled configuration)', x=0.01, ha='left',
+             fontweight='bold', color=INK)
+fig.tight_layout()
+savefig(fig, 'F14_hyperparameter_sensitivity')
+plt.show()
+OUTPUT: <Figure size 1870x396 with 5 Axes>
+
+--- CELL 22 (markdown; execution=None) ---
+**Observations.** For SVR, a larger `C` gives a lower CV RMSE (a small `C` over-regularises). For XGB a small `learning_rate` is better; for the relative DT shallow trees beat deep ones; for the relative RF a small `max_features` (0.3 or sqrt) is better, since more diverse trees average out better. The clouds are wide, so finding the right region matters more than fine-tuning a single value.
+
+--- CELL 23 (markdown; execution=None) ---
+## 7. Summary
+
+- Best version on CV: **SVR** (2,411 kW), but the top four are within about 1%, less than the fold-to-fold standard deviation.
+- The relative target `y − lag_24` is the most important methodological improvement: it removes most of the tree models' extrapolation problem in July.
+- Level 3 scores are slightly optimistic; notebook 07 re-measures them on December.
+- Possible extensions (not done): a second, narrower grid search around the best point; GridSearch vs RandomizedSearch for RF.

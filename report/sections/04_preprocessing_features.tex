@@ -1,0 +1,68 @@
+\section{Data Preprocessing and Feature Engineering}\label{sec:features}
+\subsection{Chronological data construction}
+The loader renames the nine CSV columns by position, parses timestamps explicitly as month/day/year and hour:minute, sets the datetime index, and sorts it. No timezone is assigned. Let $z_{j,s}$ be the recorded load for zone $j$ at ten-minute timestamp $s$. The raw total and hourly target are
+\begin{equation}
+q_s=\sum_{j=1}^{3}z_{j,s},\qquad
+y_t=\frac{1}{6}\sum_{r=0}^{5}q_{t+10r\,\mathrm{min}}.
+\label{eq:target}
+\end{equation}
+Weather columns are averaged over the same hourly bin. The timestamp labels the start of the bin; its mean becomes available only after its observations have been collected. No outlier replacement or interpolation is performed. Although pandas averaging could skip missing observations in a different dataset, the saved quality check finds complete bins here; the pipeline should not be interpreted as implementing a general missing-data policy.
+
+\subsection{Calendar and special-day encoding}
+The main feature builder includes raw hour $a_t\in\{0,\ldots,23\}$, weekday $d_t\in\{0,\ldots,6\}$ and a weekend indicator $\mathbb{1}(d_t\ge5)$. Cyclic encodings supplement rather than replace the raw fields:
+\begin{equation}
+\left[\sin\!\left(\frac{2\pi a_t}{24}\right),\cos\!\left(\frac{2\pi a_t}{24}\right),
+\sin\!\left(\frac{2\pi d_t}{7}\right),\cos\!\left(\frac{2\pi d_t}{7}\right)\right].
+\label{eq:calendar}
+\end{equation}
+These variables are known for future target intervals. Separate binary indicators encode civil holidays, religious holidays and Ramadan. The implemented Ramadan interval is 27 May through 25 June, using an exclusive end date of 26 June. The holiday lists are fixed for 2017. Their calendar provenance is not separately archived; the development EDA was used to assess their load associations. Deployment in another year would require a maintained calendar.
+
+\subsection{Lag and rolling features}
+For horizon parameter $h$, the builder creates historical load features
+\begin{equation}
+\ell_k(t)=y_{t-k},\qquad k\ge h.
+\label{eq:lags}
+\end{equation}
+The built lags are $\{24,48,168\}$ for \hday\ and $\{1,2,3,24,168\}$ for \hone. Rolling features are calculated \emph{after} shifting by $h$:
+\begin{align}
+\mu_{w,h}(t)&=\frac{1}{w}\sum_{j=0}^{w-1}y_{t-h-j},\quad w\in\{24,168\},\label{eq:rollingmean}\\
+s_{24,h}(t)&=\sqrt{\frac{1}{23}\sum_{j=0}^{23}\left(y_{t-h-j}-\mu_{24,h}(t)\right)^2}.
+\label{eq:rollingstd}
+\end{align}
+The denominator in \cref{eq:rollingstd} follows pandas' sample-standard-deviation default. No window includes $y_t$. The feature checker recomputes lag and rolling values at 200 sampled timestamps for each horizon; notebook 02 also deliberately inserts an unshifted rolling mean and confirms detection. This verifies temporal construction of load-history columns, not the availability of the weather columns.
+
+\subsection{Built features versus selected inputs}
+\Cref{tab:features} distinguishes constructed columns from model inputs. The main \hday\ models use set D, with 17 columns. The \hone\ models use 19 columns, replacing the daily-lag pair with lags 1, 2, 3 and 24. Weekly and rolling columns remain available for naive baselines and ablation experiments.
+\begin{table}[tbp]\centering\small
+\caption{Implemented feature groups and prediction-time availability. The target-hour weather values are observed rather than forecast.}\label{tab:features}
+\begin{tabularx}{\linewidth}{@{}p{.18\linewidth}Xp{.22\linewidth}@{}}\toprule
+Group & Construction and use & Availability \\\midrule
+Weather (5) & Temperature, humidity, wind speed, general diffuse flows, diffuse flows; both horizons & Oracle target-hour weather \\
+Calendar (7) & Hour, weekday, weekend flag and four sine/cosine encodings; both horizons & Known calendar \\
+Special days (3) & Religious holiday, civil holiday, Ramadan; both horizons & Fixed 2017 calendar \\
+Daily lags (2) & $y_{t-24}$, $y_{t-48}$; selected for h24 & Previous completed days \\
+Recent/daily lags (4) & $y_{t-1}$, $y_{t-2}$, $y_{t-3}$, $y_{t-24}$; selected for h1 & Updated completed hours \\
+Weekly/rolling (4) & $y_{t-168}$, $\mu_{24,h}$, $s_{24,h}$, $\mu_{168,h}$; constructed, excluded from main inputs & Past windows only \\
+\bottomrule\end{tabularx}
+\end{table}
+
+The complete matrices contain 21 and 23 columns, respectively. The builder joins all features with the response and drops any incomplete row \emph{before} selecting D or the h1 subset. Consequently, unused weekly/rolling features still determine the initial warm-up loss: 191 hours for \hday\ and 168 for \hone. This leaves \num{8545} and \num{8568} eligible rows. The first \hday\ row is 8 January at 23:00, and the first \hone\ row is 8 January at 00:00. No later observations are removed in this dataset.
+
+\subsection{Issuance and information availability}
+At midnight of day $D$, yesterday's same-hour load is available for every target interval in day $D$, assuming completed-hour measurements are delivered promptly. The latest such interval is yesterday at 23:00. Thus the daily batch can use all selected load-history features without recursively predicting intermediate loads. However, its intervals begin 0--23 hours after midnight; the repository label \hday\ denotes a minimum history lag, not a uniform 24-hour lead for every forecast. No explicit scheduler or issuance-time dataset is implemented.
+
+In the hourly setting, the immediately previous completed hour is used to predict the next interval. The evaluation updates these measured histories as time advances, including within validation and test months. It does not forecast the entire December trajectory using only information available on 1 December.
+
+Weather is different: \code{X = dh[WEATHER].copy()} takes the realized mean weather during the interval being forecast. These values are not available at issuance. The results therefore answer a conditional forecasting question with perfect weather information. A deployment study would need archived weather forecasts or an alternative available-information design. The selected-SVR effect of that replacement is not measured here.
+
+\subsection{Scaling and lag-relative targets}
+Linear regression and Ridge use training-fitted input standardization. SVR additionally standardizes the response through a transformed-target wrapper; inverse transformation returns forecasts to kW. Fitting occurs inside each CV training fold. Tree models receive the original feature scales.
+
+For the residual formulation, \code{DeltaTarget} trains a regressor $g$ on a difference from an available base:
+\begin{equation}
+r_t=y_t-b_t,\qquad \widehat y_t=b_t+g(\mathbf{x}_t),\qquad
+b_t=\begin{cases}y_{t-24},&\hday,\\y_{t-1},&\hone.\end{cases}
+\label{eq:delta}
+\end{equation}
+The base remains a predictor as well. This formulation asks the model to correct a known load level, which can reduce the difficulty of predicting a new absolute level. It does not guarantee that future residuals remain in the training range. In residual SVR, the scaler is fitted to the residual target; the unscaled base is added after prediction.
+\evidence{\code{src/data.py}; \code{src/features.py}; \code{src/models.py}; notebook 02 cells 3--10, 20--27; T02/T03.}

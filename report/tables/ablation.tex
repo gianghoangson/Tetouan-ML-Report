@@ -1,0 +1,15 @@
+\begin{table}[tbp]\centering\small
+\caption{Feature ablation with fixed D-selected hyperparameters: mean CV RMSE in kW (T09). Missing entries were not run because the residual base is absent.}\label{tab:ablation}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\toprule
+Set (columns) & RF & XGB & RF $\Delta$ & XGB $\Delta$ \\
+\midrule
+A (5) & \num{15010.3} & \num{14826.7} & -- & -- \\
+B (12) & \num{10040.9} & \num{9669.3} & -- & -- \\
+C (15) & \num{9168.1} & \num{8740.2} & -- & -- \\
+D (17) & \num{3010.4} & \num{3009.9} & \num{2429.3} & \num{2441.0} \\
+E (21) & \num{3700.3} & \num{4921.4} & \num{2741.8} & \num{3964.2} \\
+F (16) & \num{3759.2} & \num{5017.1} & \num{2887.5} & \num{3928.4} \\
+\bottomrule\end{tabular}
+\end{table}

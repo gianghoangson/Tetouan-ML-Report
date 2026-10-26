@@ -1,0 +1,13 @@
+\begin{table}[tbp]\centering\small
+\caption{Four RF diagnostic settings (T12). These rows differ in task and test distribution and must not be treated as a controlled leakage-effect estimate. Errors in kW.}\label{tab:leakage}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Setting & Train / test rows & Features & RMSE & MAE & MAPE (\%) & R$^2$ \\
+\midrule
+S1 & \num{39311} / \num{13104} & \num{13} & \num{1325.3} & \num{854.8} & \num{1.25} & \num{0.9940} \\
+S2 & \num{39311} / \num{13104} & \num{14} & \num{620.0} & \num{419.2} & \num{0.61} & \num{0.9987} \\
+S3 & \num{48095} / \num{4320} & \num{13} & \num{644.0} & \num{443.3} & \num{0.74} & \num{0.9980} \\
+S4 & \num{7825} / \num{720} & \num{17} & \num{2017.1} & \num{1331.7} & \num{2.19} & \num{0.9798} \\
+\bottomrule\end{tabular}
+\end{table}

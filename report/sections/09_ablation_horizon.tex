@@ -1,0 +1,45 @@
+\section{Ablation Studies and Forecast-Horizon Analysis}\label{sec:ablation}
+\subsection{Feature-set design and comparison limits}
+Notebook 06 examines feature groups with RF and XGB, each using absolute and residual targets where the residual base exists. It evaluates the same eligible h24 timestamps and the same five temporal folds as the preceding stages. Parameters are frozen at the values selected on set D; they are not retuned for every feature subset. The results therefore assess feature changes under D-selected configurations, rather than the best attainable performance of each subset.
+
+Sets A--E add groups cumulatively: A contains the five weather variables; B adds seven calendar variables; C adds three special-day indicators; D adds daily lags 24 and 48; E adds lag 168, the 24-hour rolling mean and SD, and the 168-hour rolling mean. Their sizes are 5, 12, 15, 17 and 21. F removes the five weather variables from E, leaving 16. In particular, F is not D without weather. Residual models are evaluated only on D--F because A--C omit their lag-24 base.
+
+For successive evaluated sets $U,V$, the reported relative RMSE change is
+\begin{equation}
+\delta_{U\rightarrow V}=100\left(\frac{\overline R_V}{\overline R_U}-1\right).
+\label{eq:ablation_change}
+\end{equation}
+Negative values indicate improvement. Each comparison is conditional on the included groups and fixed parameters; predictive ablation does not identify causal effects of weather, holidays or consumption history.
+
+\subsection{Daily history dominates the tested feature additions}
+\Cref{tab:ablation,fig:ablation} show substantial error reduction when calendar variables supplement weather. Nevertheless, weather, calendar and special days alone remain much worse than Naive-24h. Adding daily lags from C to D lowers absolute RF mean RMSE from \num{9168.1} to \num{3010.4} kW, a \num{67.16}\% reduction. For absolute XGB, the corresponding change is \num{8740.2} to \num{3009.9} kW, or \num{65.56}\%. These are the largest relative reductions among the sequential additions tested here.
+\input{report/tables/ablation.tex}
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{F15_ablation.png}
+\caption{RF/XGB h24 feature ablation with D-selected hyperparameters held fixed (F15). Error bars show fold sample SD. Residual models begin at D because they require lag-24; F removes weather from E. These are conditional predictive comparisons.}\label{fig:ablation}
+\end{figure}
+
+The daily histories provide a recent load level that weather and fixed calendar indicators do not fully capture. This interpretation agrees with the seasonal naive results, but the experiment cannot separate the individual contributions of lag 24 and lag 48 because they are added together. On D, residual RF and residual XGB improve further to \num{2429.3} and \num{2441.0} kW, respectively. Residual RF on D has the lowest mean RMSE among the configurations included in this ablation.
+
+\subsection{Weekly, rolling and weather comparisons}
+Adding weekly and rolling predictors from D to E worsens mean RMSE for all four variants. Absolute RF increases by \num{22.92}\% and absolute XGB by \num{63.51}\%; residual RF and residual XGB increase by \num{12.86}\% and \num{62.40}\%. More historical summaries therefore do not guarantee improvement under the selected configurations. Redundant predictors, regime-dependent relationships and parameter interactions are possible explanations, but no experiment isolates their respective roles. In particular, the disadvantage of E may partly reflect choosing parameters on D.
+
+Weather removal from E to F increases RMSE by \num{1.59}\% for absolute RF, \num{1.95}\% for absolute XGB and \num{5.31}\% for residual RF. Residual XGB instead improves by \num{0.90}\%. Thus the measured weather contribution is not uniformly positive, and its magnitude depends on the fitted formulation and other predictors. This comparison does not quantify the operational penalty of replacing observed weather with forecasts: it uses no forecast-error archive, omits a D-without-weather comparison, and does not evaluate the selected SVR. It cannot establish that oracle-weather optimism is negligible for the final model.
+
+\subsection{Separately tuned hourly setting}
+The h1 experiment uses 19 inputs: the same weather, calendar and special-day groups, plus lags 1, 2, 3 and 24. Its residual base is lag 1. It repeats the ten model/formulation searches using the same distributions, budgets and temporal validation dates, rather than transferring h24 parameters without tuning. h1 has 23 additional early-January training hours because of its different warm-up. Validation observations are identical across the two settings.
+
+\Cref{tab:horizon,fig:horizon} compares each family's better formulation by development mean RMSE. LR, DT, RF and XGB use residual formulations in both settings; SVR uses absolute targets. Absolute SVR has h1 mean CV RMSE \num{1866.4} kW and MAPE \num{1.86}\%, compared with h24 values \num{2410.6} kW and \num{2.42}\%. Its RMSE is \num{22.57}\% lower in h1. All five family representatives have lower mean RMSE in h1, but the effect is heterogeneous: DT changes only from \num{2524.9} to \num{2489.6} kW, while XGB changes from \num{2441.0} to \num{2111.7} kW.
+\input{report/tables/horizon.tex}
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{F15b_horizon.png}
+\caption{Development CV RMSE for separately tuned h24 and h1 family representatives (F15b). Each bar uses the better target formulation within its family and setting. The h24 label denotes the daily-batch/minimum-lag convention explained in \cref{sec:features}, rather than a uniform 24-hour issuance lead.}\label{fig:horizon}
+\end{figure}
+
+The h1 persistence baseline has mean RMSE \num{6332.9} kW, substantially worse than Naive-24h at \num{3392.4} kW. A recent observation alone can be inaccurate when the demand curve changes rapidly between consecutive hours; the result demonstrates that shorter lag is not automatically a better naive forecast. A trained model can combine recent and seasonal history with calendar information rather than simply copying the previous hour.
+
+Absolute SVR remains the lowest-mean-RMSE candidate among all stored h1 variants. Residual SVR is close at \num{1874.1} kW, and the h1 LR residual advantage over absolute Ridge is only about \num{0.0005} kW. Such a numerical difference should not be interpreted as a practically meaningful gain. The selected absolute SVR parameters happen to match across horizons, despite the searches being conducted separately.
+
+\subsection{Scope of the horizon conclusion}
+These results compare two implemented forecasting configurations. Alongside the history cutoff, they change the selected history columns, residual base, optimized parameters and early training sample count. Both retain observed target-hour weather. Consequently, the contrast supports an empirical advantage for the h1 configuration under this protocol, rather than a controlled universal law relating error to forecast lead. It also remains development evidence: the December evaluation must use the CV-selected absolute SVR for each setting and report test rankings separately.
+\evidence{Notebook 06 cells 4--19; \code{T09_ablation_summary.csv}; \code{T10_horizon.csv}; \code{T10_horizon_cv.csv}; \code{best_params_h1.json}; ten \code{search_h1_*.csv} files; F15 and F15b. Feature membership is defined in \code{src/features.py}.}

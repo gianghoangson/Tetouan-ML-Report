@@ -1,0 +1,585 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 07 – Final test, error analysis and explainability
+
+Guideline section 12.
+
+> **This notebook uses the test set (December).** It is run once, after every choice has been fixed; the pipeline must not be changed based on these results. In smoke mode the "test" month is November and December is untouched.
+
+1. **Final:** refit every model on the whole development set and predict December once; each model in three versions (default, tuned with absolute target, tuned with relative target) → **T08**.
+2. **The final model is chosen on Level 3 CV**, not on the test results.
+3. **Error analysis** of the final model → **F17, F18**, worst days.
+4. **Explainability** of the best tree model on CV → **F19**.
+5. **Secondary problem h1** on the same test set, also once → **T08_h1**.
+6. **Comparison with the literature** → **T13**, **F20**.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable, load the shared helpers and the common figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+import json
+import time
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from src.config import TABLES, SMOKE
+from src.data import load_hourly
+from src.features import make_features, FEATURE_SETS, MODEL_FEATURES
+from src.evaluate import (metrics, log_result, save_results, split_masks, make_tscv, cross_val_log,
+                          cv_summary, CV_SCORING, RESULTS, RANDOM_STATE)
+from src.models import (default_models, search_spaces, tuned_model, baselines, NaiveLag, MeanProfile,
+                        p1_random_forest, split_name, DeltaTarget, N_JOBS, MODEL_NAMES, DELTA_SUFFIX, DELTA_BASE)
+from src.viz import (set_style, savefig, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, NEUTRAL, SURFACE, GRID, MODEL_COLORS, BASELINE_STYLE)
+
+set_style()
+pd.set_option('display.float_format', '{:,.3f}'.format)
+pd.set_option('display.width', 200)
+MF = MODEL_FEATURES[24]    # columns every model is trained on (baselines read lags from the full X)
+SCORING = CV_SCORING
+if SMOKE:
+    print('SMOKE MODE: code check only (dev = Jan–Oct, stand-in test = Nov, tiny models). '
+          'December is never touched. Outputs → results/smoke/')
+
+--- CELL 3 (markdown; execution=None) ---
+**Data.** Development and test sets, tuned hyperparameters and the CV summaries of Levels 2 and 3.
+
+--- CELL 4 (code; execution=2) ---
+import shap
+from sklearn.inspection import permutation_importance
+
+dh = load_hourly()
+X, y = make_features(dh, horizon=24)
+tr, va, dev, te = split_masks(X.index)
+Xd, yd, Xt, yt = X[dev], y[dev], X[te], y[te]
+best_params = json.loads((TABLES / 'best_params.json').read_text())
+s3 = cv_summary(pd.read_csv(TABLES / 'T07_level3_cv.csv'))
+s2 = cv_summary(pd.read_csv(TABLES / 'T05_level2_cv.csv'))
+print(f'dev  {Xd.index[0].date()} → {Xd.index[-1].date()} ({len(Xd):,} rows)')
+print(f'TEST {Xt.index[0].date()} → {Xt.index[-1].date()} ({len(Xt):,} rows)' + ('  [stand-in, smoke]' if SMOKE else ''))
+OUTPUT: dev  2017-01-08 → 2017-11-30 (7,825 rows)
+TEST 2017-12-01 → 2017-12-30 (720 rows)
+
+
+--- CELL 5 (markdown; execution=None) ---
+## 1. Final: refit on the development set and predict the test set once
+
+Baselines are fitted on the full `X`; models on `MF`. Fitted models and test predictions are kept for the analysis; predictions are saved to `T08_test_predictions.csv`.
+
+--- CELL 6 (code; execution=3) ---
+RESULTS.clear()
+pred, fitted = {}, {}
+for name, est in baselines().items():
+    est.fit(Xd, yd)
+    pred[name] = est.predict(Xt)
+    log_result(level='final', model=name, split='test', fit_time=0.0, pred_time=0.0, **metrics(yt, pred[name]))
+
+for name in [m for m in MODEL_NAMES if m in best_params]:
+    versions = [(f'{name}-default', default_models()[name]), (f'{name}-tuned', tuned_model(name, best_params[name]))]
+    if name + DELTA_SUFFIX in best_params:
+        versions.append((f'{name}{DELTA_SUFFIX}-tuned', tuned_model(name + DELTA_SUFFIX, best_params[name + DELTA_SUFFIX])))
+    for key, est in versions:
+        t0 = time.time(); est.fit(Xd[MF], yd); fit_time = time.time() - t0
+        t0 = time.time(); pred[key] = est.predict(Xt[MF]); pred_time = time.time() - t0
+        fitted[key] = est
+        log_result(level='final', model=key, split='test', fit_time=fit_time, pred_time=pred_time,
+                   **metrics(yt, pred[key]))
+        print(f'{key:18s} fit {fit_time:6.1f}s')
+long = save_results(TABLES / 'T08_final_test_long.csv')
+pd.DataFrame(pred, index=Xt.index).assign(actual=yt).to_csv(TABLES / 'T08_test_predictions.csv')
+OUTPUT: LR-default         fit    0.0s
+LR-tuned           fit    0.0s
+LR_delta-tuned     fit    0.0s
+DT-default         fit    0.1s
+DT-tuned           fit    0.0s
+DT_delta-tuned     fit    0.0s
+
+OUTPUT: RF-default         fit    0.4s
+
+OUTPUT: RF-tuned           fit    0.5s
+RF_delta-tuned     fit    0.1s
+
+OUTPUT: SVR-default        fit    0.5s
+
+OUTPUT: SVR-tuned          fit    3.7s
+
+OUTPUT: SVR_delta-tuned    fit    2.6s
+
+OUTPUT: XGB-default        fit    0.2s
+
+OUTPUT: XGB-tuned          fit    0.2s
+XGB_delta-tuned    fit    0.1s
+
+
+--- CELL 7 (markdown; execution=None) ---
+## 2. T08 – Test results
+
+`skill_vs_naive24` = 1 − RMSE / RMSE_Naive-24h on the test set; `cv_RMSE_estimate` is the RMSE predicted by CV *before* seeing the test set (Level 3 for tuned versions, Level 2 for defaults and baselines).
+
+--- CELL 8 (code; execution=4) ---
+t08 = long.set_index('model')[['RMSE', 'MAE', 'MAPE', 'R2', 'fit_time', 'pred_time']].copy()
+t08['skill_vs_naive24'] = 1 - t08['RMSE'] / t08.loc['Naive-24h', 'RMSE']
+# CV estimate made before seeing the test set: Level 3 for tuned models, Level 2 for defaults/baselines
+cv_est = {}
+for k in t08.index:
+    m, _, variant = k.partition('-')
+    if variant == 'tuned':
+        cv_est[k] = s3.loc[m, 'RMSE_mean']
+    elif variant == 'default':
+        cv_est[k] = s2.loc[m, 'RMSE_mean']
+    elif k in s2.index:
+        cv_est[k] = s2.loc[k, 'RMSE_mean']
+t08['cv_RMSE_estimate'] = pd.Series(cv_est)
+t08 = t08.sort_values('RMSE')
+t08.to_csv(TABLES / 'T08_final_test.csv')
+t08
+OUTPUT:                      RMSE       MAE   MAPE    R2  fit_time  pred_time  skill_vs_naive24  cv_RMSE_estimate
+model                                                                                                    
+SVR_delta-tuned 1,419.059 1,046.100  1.724 0.990     2.582      0.124             0.569         2,427.116
+SVR-tuned       1,624.640 1,094.613  1.778 0.987     3.686      0.137             0.507         2,410.593
+XGB-tuned       1,711.537 1,233.502  2.029 0.985     0.247      0.003             0.481         3,009.858
+XGB_delta-tuned 1,719.237 1,209.923  1.998 0.985     0.146      0.003             0.478         2,441.004
+RF_delta-tuned  1,761.908 1,171.445  1.929 0.985     0.107      0.026             0.465         2,429.333
+XGB-default     1,891.007 1,330.255  2.147 0.982     0.250      0.002             0.426         3,264.766
+DT_delta-tuned  2,005.219 1,316.651  2.195 0.980     0.015      0.001             0.392         2,524.855
+RF-tuned        2,017.092 1,331.675  2.193 0.980     0.471      0.035             0.388         3,010.368
+RF-default      2,044.314 1,360.789  2.240 0.979     0.377      0.024             0.380         3,069.544
+SVR-default     2,063.695 1,300.490  2.198 0.979     0.475      0.041             0.374         3,968.670
+LR-tuned        2,169.559 1,624.814  2.743 0.977     0.004      0.001             0.342         2,792.315
+LR-default      2,169.559 1,624.814  2.743 0.977     0.013      0.001             0.342         2,792.315
+LR_delta-tuned  2,217.263 1,629.130  2.736 0.976     0.003      0.001             0.327         2,769.978
+Naive-168h      2,619.849 1,775.389  2.868 0.966     0.000      0.000             0.205         4,892.615
+DT-tuned        2,846.577 1,960.282  3.190 0.960     0.027      0.001             0.136         3,589.677
+DT-default      2,989.628 1,987.445  3.275 0.956     0.051      0.001             0.093         4,048.179
+Naive-24h       3,296.292 2,071.536  3.395 0.946     0.000      0.000             0.000         3,392.372
+MeanProfile     9,596.284 8,961.737 14.660 0.542     0.000      0.000            -1.911        12,005.062
+
+--- CELL 9 (markdown; execution=None) ---
+**Observations.** **Main result (December, day-ahead).** The model chosen on CV before looking at the test set is **SVR-tuned**: RMSE 1,625 kW, MAE 1,095 kW, MAPE 1.78%, R² 0.987, **50.7% better than Naive-24h**. The best model on the test set is SVR_delta (1,419 kW); it is not selected because the CV rule must be kept, and the two were almost tied on CV. Every tuned model beats Naive-24h. Test RMSEs are about 20–35% **below the CV estimates**: December has no extrapolation problem, whereas CV includes the hard summer months. The test ranking is close to the CV ranking (the top five are SVR, XGB and RF versions), so CV is a reliable selection method.
+
+--- CELL 10 (markdown; execution=None) ---
+**Model selection.** Pick the version with the lowest Level 3 CV RMSE; the best test model is printed for information only.
+
+--- CELL 11 (code; execution=5) ---
+tuned_in_run = [k for k in s3.index if split_name(k)[0] in MODEL_NAMES]
+CHOSEN = s3.loc[tuned_in_run, 'RMSE_mean'].idxmin()
+FINAL = f'{CHOSEN}-tuned'
+best_on_test = t08.drop(index=[k for k in t08.index if '-' not in k]).index[0]
+COLOR = MODEL_COLORS[split_name(CHOSEN)[0]]
+print(f'Final model (chosen by Level 3 CV RMSE, BEFORE looking at test): {FINAL}')
+print(f'Best model on test (for information only, not used for selection): {best_on_test}')
+OUTPUT: Final model (chosen by Level 3 CV RMSE, BEFORE looking at test): SVR-tuned
+Best model on test (for information only, not used for selection): SVR_delta-tuned
+
+
+--- CELL 12 (markdown; execution=None) ---
+## 3. Error analysis of the final model
+
+Residual = prediction − actual (positive = over-forecast); MAE is also expressed as a share of the mean load.
+
+--- CELL 13 (code; execution=6) ---
+res = pd.DataFrame({'actual': yt, 'pred': pred[FINAL], 'naive24': pred['Naive-24h']}, index=Xt.index)
+res['err'] = res['pred'] - res['actual']               # > 0 = over-forecast
+res['abs_err'] = res['err'].abs()
+res['abs_err_naive'] = (res['naive24'] - res['actual']).abs()
+mean_load = res['actual'].mean()
+print(f'{FINAL}: MAE {res.abs_err.mean():,.0f} kW = {100 * res.abs_err.mean() / mean_load:.2f}% of the mean load '
+      f'({mean_load:,.0f} kW); bias (mean error) {res.err.mean():+,.0f} kW')
+print(f'Naive-24h: MAE {res.abs_err_naive.mean():,.0f} kW')
+OUTPUT: SVR-tuned: MAE 1,095 kW = 1.72% of the mean load (63,751 kW); bias (mean error) -202 kW
+Naive-24h: MAE 2,072 kW
+
+
+--- CELL 14 (markdown; execution=None) ---
+### F17 – Actual vs predicted over the test month, with a one-week zoom
+
+--- CELL 15 (code; execution=7) ---
+week_start = res.index[res.index.dayofweek == 0].normalize().unique()[1]
+wk = (res.index >= week_start) & (res.index < week_start + pd.Timedelta(days=7))
+fig, axes = plt.subplots(2, 1, figsize=(12, 7.5), layout='constrained')
+for ax, sel, title in [(axes[0], slice(None), 'Whole test period'),
+                       (axes[1], wk, f'Zoom: week of {week_start:%d %b}')]:
+    r = res[sel]
+    ax.plot(r.index, r['actual'], color=INK, lw=1.8 if ax is axes[1] else 1.1, label='Actual')
+    ax.plot(r.index, r['pred'], color=COLOR, lw=1.5 if ax is axes[1] else 1.0, label=FINAL)
+    if ax is axes[1]:
+        ax.plot(r.index, r['naive24'], color=SERIES[1], lw=1.2, ls='--', label='Naive-24h')
+    ax.yaxis.set_major_formatter(kw_fmt)
+    ax.set(title=title, ylabel='Total load (kW)')
+axes[0].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%d/%m'))
+axes[1].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%a %d/%m'))
+axes[0].legend(loc='upper left', ncol=2)
+axes[1].legend(loc='upper left', ncol=3)
+fig.suptitle(f'Final model on the test set: actual vs predicted ({FINAL})', x=0.01, ha='left', fontweight='bold', color=INK)
+savefig(fig, 'F17_test_actual_vs_pred')
+plt.show()
+OUTPUT: <Figure size 1320x825 with 2 Axes>
+
+--- CELL 16 (markdown; execution=None) ---
+### F17b – Residuals over time and their distribution
+
+--- CELL 17 (code; execution=8) ---
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.8), gridspec_kw={'width_ratios': [2.2, 1]}, layout='constrained')
+axes[0].plot(res.index, res['err'], color=COLOR, lw=0.9)
+axes[0].axhline(0, color=INK_2, lw=0.8)
+axes[0].yaxis.set_major_formatter(kw_fmt)
+axes[0].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%d/%m'))
+axes[0].set(title='Residual over time (prediction − actual)', ylabel='Residual (kW)')
+axes[1].hist(res['err'], bins=40, color=COLOR, edgecolor=SURFACE, linewidth=0.4)
+axes[1].axvline(0, color=INK_2, lw=0.8)
+axes[1].xaxis.set_major_formatter(kw_fmt)
+axes[1].set(title='Residual distribution', xlabel='Residual (kW)', ylabel='Hours')
+savefig(fig, 'F17b_residuals')
+plt.show()
+print(res['err'].describe().round(0).to_string())
+OUTPUT: <Figure size 1320x418 with 2 Axes>
+OUTPUT: count      720.000
+mean      -202.000
+std      1,613.000
+min     -9,362.000
+25%       -824.000
+50%         18.000
+75%        707.000
+max      6,514.000
+
+
+--- CELL 18 (markdown; execution=None) ---
+### F17c – Actual vs predicted (y = x line)
+
+--- CELL 19 (code; execution=9) ---
+fig, ax = plt.subplots(figsize=(5.6, 5.4))
+ax.scatter(res['actual'], res['pred'], s=10, alpha=0.5, color=COLOR, linewidths=0)
+lo, hi = res[['actual', 'pred']].min().min(), res[['actual', 'pred']].max().max()
+ax.plot([lo, hi], [lo, hi], color=INK_2, lw=1, ls='--', label='y = x (perfect forecast)')
+ax.xaxis.set_major_formatter(kw_fmt); ax.yaxis.set_major_formatter(kw_fmt)
+ax.grid(axis='x')
+ax.set(title=f'Actual vs predicted ({FINAL})', xlabel='Actual (kW)', ylabel='Predicted (kW)')
+ax.legend(loc='upper left')
+savefig(fig, 'F17c_scatter')
+plt.show()
+OUTPUT: <Figure size 616x594 with 1 Axes>
+
+--- CELL 20 (markdown; execution=None) ---
+**Observations.** Predictions follow the actual load for almost the whole month. The two clear misses are at the start: **1 December (Mawlid)**, under-forecast by about 3,617 kW on average over the day, and **Sunday 3 December**. Residuals are roughly symmetric around zero (median ≈ 0, bias -202 kW) with no trend over time, and the scatter stays on the y = x line at every load level.
+
+--- CELL 21 (markdown; execution=None) ---
+### F18 – Error by hour of day and by weekday / holiday
+
+MAE of the final model and of Naive-24h; holidays form a separate group.
+
+--- CELL 22 (code; execution=10) ---
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+holiday = (Xt['is_religious_holiday'] == 1) | (Xt['is_civil_holiday'] == 1)
+group = np.where(holiday, 'Holiday', pd.Index(res.index.dayofweek).map(dict(enumerate(days))))
+by_hour = res.groupby(res.index.hour)[['abs_err', 'abs_err_naive']].mean()
+by_day = res.groupby(group)[['abs_err', 'abs_err_naive']].mean().reindex([d for d in days + ['Holiday'] if d in set(group)])
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4), layout='constrained')
+axes[0].plot(by_hour.index, by_hour['abs_err'], color=COLOR, marker='o', ms=4, lw=2, label=FINAL)
+axes[0].plot(by_hour.index, by_hour['abs_err_naive'], color=MUTED, marker='o', ms=4, lw=1.4, ls='--', label='Naive-24h')
+axes[0].set_xticks(range(0, 24, 2))
+axes[0].yaxis.set_major_formatter(kw_fmt)
+axes[0].set(title='MAE by hour of day', xlabel='Hour', ylabel='MAE (kW)')
+axes[0].legend(loc='upper left')
+xx = np.arange(len(by_day)); w = 0.38
+axes[1].bar(xx - w / 2, by_day['abs_err'], w * 0.92, color=COLOR, label=FINAL)
+axes[1].bar(xx + w / 2, by_day['abs_err_naive'], w * 0.92, color=MUTED, label='Naive-24h')
+axes[1].set_xticks(xx, by_day.index)
+axes[1].yaxis.set_major_formatter(kw_fmt)
+axes[1].set(title='MAE by weekday (holidays separate)', ylabel='MAE (kW)')
+axes[1].legend(loc='upper left')
+savefig(fig, 'F18_error_by_hour_weekday')
+plt.show()
+by_day.round(0)
+OUTPUT: <Figure size 1320x440 with 2 Axes>
+OUTPUT:           abs_err  abs_err_naive
+Mon     1,007.000      5,294.000
+Tue       837.000        893.000
+Wed       710.000        562.000
+Thu       815.000        831.000
+Fri       734.000      1,272.000
+Sat     1,116.000      1,564.000
+Sun     1,567.000      2,985.000
+Holiday 4,579.000      6,974.000
+
+--- CELL 23 (markdown; execution=None) ---
+**Observations.** By hour, the model reduces the error most during the day: at 9 h its MAE is 1,077 kW against 3,355 for Naive-24h, at 12 h 1,658 against 3,275. By weekday: **Monday 1,007 vs 5,294 kW** (Naive-24h copies Sunday), Sunday 1,567 vs 2,985. The holiday group (only 1 December) has the largest error.
+
+--- CELL 24 (markdown; execution=None) ---
+### Worst days and holidays in the test period
+
+Daily MAE, bias, mean actual and predicted load, weekday, mean temperature and holiday flags.
+
+--- CELL 25 (code; execution=11) ---
+daily = res.groupby(res.index.normalize()).agg(MAE=('abs_err', 'mean'), bias=('err', 'mean'),
+                                                 actual_mean=('actual', 'mean'), pred_mean=('pred', 'mean'))
+daily['weekday'] = daily.index.dayofweek.map(dict(enumerate(days)))
+daily['temp_mean'] = Xt['Temperature'].groupby(Xt.index.normalize()).mean()
+flags = Xt[['is_religious_holiday', 'is_civil_holiday']].groupby(Xt.index.normalize()).max()
+daily = daily.join(flags)
+worst = daily.sort_values('MAE', ascending=False).head(5)
+worst.to_csv(TABLES / 'T08_worst_days.csv')
+print('Top 5 days with the largest error:')
+display(worst.round(1))
+print('Holidays in the test period:')
+display(daily[(daily['is_religious_holiday'] == 1) | (daily['is_civil_holiday'] == 1)].round(1))
+OUTPUT: Top 5 days with the largest error:
+
+OUTPUT:                  MAE       bias  actual_mean  pred_mean weekday  temp_mean  is_religious_holiday  is_civil_holiday
+DateTime                                                                                                          
+2017-12-01 4,579.200 -3,616.700   58,574.200 54,957.400     Fri     17.100                     1                 0
+2017-12-03 3,028.500 -2,880.500   59,192.400 56,311.900     Sun     14.100                     0                 0
+2017-12-12 1,714.100  1,712.500   64,338.500 66,051.100     Tue     18.200                     0                 0
+2017-12-21 1,336.200  1,118.100   64,373.900 65,492.000     Thu     16.300                     0                 0
+2017-12-02 1,273.400   -554.700   60,104.300 59,549.700     Sat     16.100                     0                 0
+OUTPUT: Holidays in the test period:
+
+OUTPUT:                  MAE       bias  actual_mean  pred_mean weekday  temp_mean  is_religious_holiday  is_civil_holiday
+DateTime                                                                                                          
+2017-12-01 4,579.200 -3,616.700   58,574.200 54,957.400     Fri     17.100                     1                 0
+
+--- CELL 26 (markdown; execution=None) ---
+**Observations.** **The warning of notebook 02 came true.** The worst day is **1 December, Mawlid** (MAE 4,579 kW, bias -3,617): in training the religious-holiday flag is learned mostly from Eid (−8% to −13%), so the model over-predicts the drop (forecast 54,957 vs actual 58,574 kW, daily means). SVR_delta predicts this day almost exactly (58,573). Sunday 3 December, right after the holiday, and Saturday 2 December are also in the top five. Without 1–3 December the MAPE of SVR would be about 1.43%. Future work: treat Eid separately from other religious holidays.
+
+--- CELL 27 (markdown; execution=None) ---
+## 4. Explainability
+
+Applied to the **best tree model on CV** (RF, XGB or DT, absolute or relative), because SHAP `TreeExplainer` is exact and fast for trees. For a relative version, built-in importance and SHAP describe the **deviation from yesterday** (`y − lag_24`), which is what the trees learn; permutation importance is measured on the final prediction (`lag_24` + deviation).
+
+- *Built-in importance:* impurity reduction from splits on each feature; fast but biased towards features with many values.
+- *Permutation importance:* shuffle one column of the test set and measure the RMSE increase (`n_repeats` shuffles); more reliable.
+- *SHAP:* splits each prediction into additive feature contributions (kW).
+
+--- CELL 28 (code; execution=12) ---
+trees = [k for m in ['RF', 'XGB', 'DT'] for k in (m, m + DELTA_SUFFIX) if f'{k}-tuned' in fitted and k in s3.index]
+EXPLAIN = s3.loc[trees, 'RMSE_mean'].idxmin()
+model_x = fitted[f'{EXPLAIN}-tuned']
+tree_x = model_x.regressor_ if isinstance(model_x, DeltaTarget) else model_x     # the fitted tree ensemble itself
+target_x = 'deviation from lag_24' if isinstance(model_x, DeltaTarget) else 'load'
+print('Explained model:', f'{EXPLAIN}-tuned', '| trees explain the', target_x)
+
+builtin = pd.Series(tree_x.feature_importances_, index=MF)
+perm = permutation_importance(model_x, Xt[MF], yt, scoring='neg_root_mean_squared_error',
+                              n_repeats=3 if SMOKE else 10, random_state=RANDOM_STATE, n_jobs=N_JOBS)
+perm_s = pd.Series(perm.importances_mean, index=MF)       # RMSE increase (kW) when shuffled
+top = perm_s.sort_values(ascending=False).index[:15][::-1]
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5.2), layout='constrained')
+axes[0].barh(top, builtin[top], color=BLUE[400], height=0.65)
+axes[0].set(title=f'Built-in feature importance ({target_x})', xlabel='Share of impurity reduction')
+axes[1].barh(top, perm_s[top], xerr=pd.Series(perm.importances_std, index=MF)[top], color=BLUE[600],
+             height=0.65, error_kw={'ecolor': INK_2, 'elinewidth': 0.8})
+axes[1].xaxis.set_major_formatter(kw_fmt)
+axes[1].set(title='Permutation importance on test', xlabel='RMSE increase when shuffled (kW)')
+for ax in axes:
+    ax.grid(axis='y', visible=False); ax.grid(axis='x'); ax.tick_params(axis='y', length=0)
+fig.suptitle(f'What drives the forecast? ({EXPLAIN}-tuned, features ranked by permutation importance)',
+             x=0.01, ha='left', fontweight='bold', color=INK)
+savefig(fig, 'F19a_feature_importance')
+plt.show()
+OUTPUT: Explained model: RF_delta-tuned | trees explain the deviation from lag_24
+
+OUTPUT: <Figure size 1320x572 with 2 Axes>
+
+--- CELL 29 (markdown; execution=None) ---
+SHAP summary (beeswarm): one dot per test hour, x = contribution, colour = feature value.
+
+--- CELL 30 (code; execution=13) ---
+explainer = shap.TreeExplainer(tree_x)
+sv = explainer(Xt[MF])
+plt.figure()
+shap.summary_plot(sv.values, Xt[MF], max_display=15, show=False, plot_size=(9, 6))
+plt.title(f'SHAP summary ({EXPLAIN}-tuned, explains the {target_x}, test set)', loc='left', fontweight='bold')
+savefig(plt.gcf(), 'F19b_shap_summary')
+plt.show()
+OUTPUT: <Figure size 990x660 with 2 Axes>
+
+--- CELL 31 (markdown; execution=None) ---
+SHAP dependence for temperature and `lag_24`.
+
+--- CELL 32 (code; execution=14) ---
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), layout='constrained')
+for ax, feat in zip(axes, ['Temperature', 'lag_24']):
+    ax.scatter(Xt[feat], sv[:, feat].values, s=10, alpha=0.5, color=BLUE[500], linewidths=0)
+    ax.axhline(0, color=INK_2, lw=0.8)
+    ax.yaxis.set_major_formatter(kw_fmt)
+    if feat == 'lag_24':
+        ax.xaxis.set_major_formatter(kw_fmt)
+    ax.grid(axis='x')
+    ax.set(title=f'SHAP dependence: {feat}', xlabel=feat + (' (°C)' if feat == 'Temperature' else ' (kW)'),
+           ylabel=f'SHAP value (kW, {target_x})')
+savefig(fig, 'F19c_shap_dependence')
+plt.show()
+OUTPUT: <Figure size 1320x462 with 2 Axes>
+
+--- CELL 33 (markdown; execution=None) ---
+**Observations.** The explained model is RF_delta (best tree model on CV), which learns the **deviation from yesterday**. Permutation importance shows that `lag_24` is the foundation (shuffling it raises the RMSE by more than 17,000 kW because it is both the base and a feature). The deviation itself is driven mainly by **the weekday** (`dayofweek`, `dow_sin/cos`, `is_weekend`): SHAP adds load on Mondays (yesterday was Sunday) and removes it at weekends, exactly as the EDA suggested. Next come the hour, solar radiation and `is_religious_holiday` (red dots pull the forecast down by about 1,000–1,500 kW). Temperature matters little in December, when there is no cooling demand.
+
+--- CELL 34 (markdown; execution=None) ---
+## 5. Secondary problem h1 (1 hour ahead) on the test set
+
+Same test set, predicted **once**, in the same run as h24. Each model uses its better h1 version (tuned in notebook 06, `best_params_h1.json`); the final h1 model is chosen on h1 CV. Baselines include Persistence.
+
+--- CELL 35 (code; execution=15) ---
+X1, y1 = make_features(dh, horizon=1)
+_, _, dev1, te1 = split_masks(X1.index)
+MF1 = MODEL_FEATURES[1]
+Xd1, yd1, Xt1, yt1 = X1[dev1], y1[dev1], X1[te1], y1[te1]
+assert Xt1.index.equals(Xt.index), 'h1 and h24 test periods differ'
+bp1 = json.loads((TABLES / 'best_params_h1.json').read_text())
+s1 = cv_summary(pd.read_csv(TABLES / 'T10_horizon_cv.csv'))
+
+RESULTS.clear()
+pred1 = {}
+for name, est in {'Persistence': NaiveLag('lag_1'), **baselines()}.items():
+    est.fit(Xd1, yd1)
+    pred1[name] = est.predict(Xt1)
+    log_result(scenario='h1', level='final', model=name, split='test', fit_time=0.0, pred_time=0.0,
+               **metrics(yt1, pred1[name]))
+for m in [m for m in MODEL_NAMES if m in bp1]:
+    key = min([k for k in (m, m + DELTA_SUFFIX) if k in s1.index], key=lambda k: s1.loc[k, 'RMSE_mean'])
+    est = tuned_model(key, bp1[key], horizon=1)
+    t0 = time.time(); est.fit(Xd1[MF1], yd1); fit_time = time.time() - t0
+    t0 = time.time(); pred1[f'{key}-tuned'] = est.predict(Xt1[MF1]); pred_time = time.time() - t0
+    log_result(scenario='h1', level='final', model=f'{key}-tuned', split='test', fit_time=fit_time,
+               pred_time=pred_time, **metrics(yt1, pred1[f'{key}-tuned']))
+long1 = save_results(TABLES / 'T08_final_test_h1_long.csv')
+
+t08_h1 = long1.set_index('model')[['RMSE', 'MAE', 'MAPE', 'R2', 'fit_time', 'pred_time']].copy()
+t08_h1['skill_vs_persistence'] = 1 - t08_h1['RMSE'] / t08_h1.loc['Persistence', 'RMSE']
+t08_h1['skill_vs_naive24'] = 1 - t08_h1['RMSE'] / t08_h1.loc['Naive-24h', 'RMSE']
+t08_h1['cv_RMSE_estimate'] = [s1['RMSE_mean'].get(k.replace('-tuned', ''), np.nan) for k in t08_h1.index]
+t08_h1 = t08_h1.sort_values('RMSE')
+t08_h1.to_csv(TABLES / 'T08_final_test_h1.csv')
+FINAL_H1 = min([k for k in t08_h1.index if k.endswith('-tuned')], key=lambda k: s1.loc[k.replace('-tuned', ''), 'RMSE_mean'])
+print(f'Final h1 model (chosen by h1 CV, before looking at test): {FINAL_H1}')
+t08_h1
+OUTPUT: Final h1 model (chosen by h1 CV, before looking at test): SVR-tuned
+
+OUTPUT:                      RMSE       MAE   MAPE    R2  fit_time  pred_time  skill_vs_persistence  skill_vs_naive24  cv_RMSE_estimate
+model                                                                                                                          
+SVR-tuned       1,195.838   861.754  1.410 0.993     4.962      0.143                 0.782             0.637         1,866.423
+XGB_delta-tuned 1,256.577   826.580  1.370 0.992     1.376      0.006                 0.771             0.619         2,111.739
+RF_delta-tuned  1,394.057   918.408  1.525 0.990     0.553      0.047                 0.745             0.577         2,183.478
+LR_delta-tuned  1,997.242 1,481.517  2.422 0.980     0.004      0.001                 0.635             0.394         2,420.500
+DT_delta-tuned  2,595.097 1,458.000  2.459 0.966     0.025      0.001                 0.526             0.213         2,489.576
+Naive-168h      2,619.849 1,775.389  2.868 0.966     0.000      0.000                 0.522             0.205         4,892.615
+Naive-24h       3,296.292 2,071.536  3.395 0.946     0.000      0.000                 0.398             0.000         3,392.372
+Persistence     5,475.333 3,946.565  6.225 0.851     0.000      0.000                 0.000            -0.661         6,332.872
+MeanProfile     9,581.745 8,947.062 14.635 0.543     0.000      0.000                -0.750            -1.907        11,997.403
+
+--- CELL 36 (markdown; execution=None) ---
+**Observations.** SVR-tuned (chosen on h1 CV) reaches RMSE 1,196 kW, MAPE **1.41%** and R² **0.993**, 78.2% better than Persistence and 63.7% better than Naive-24h. XGB_delta is a close second (MAPE 1.37%, even a lower MAE).
+
+--- CELL 37 (markdown; execution=None) ---
+## 6. T13 and F20 – Comparison with the literature (indicative)
+
+The test results of this project (h24 and h1) next to the results **reported** in the literature review (its Table 7) and in the surveyed GitHub repositories (`docs/literature_results.csv`). These are the studies' own numbers; their set-ups were **not** re-run here.
+
+A fair comparison needs the same target, resolution, horizon, split and test period. **No study matches all five**, so this is a rough positioning, not a ranking. The extra columns show how comparable each row is:
+
+- `same_target`: same quantity as this project (city total)?
+- `horizon_vs_ours`: forecast horizon compared with this project (shorter horizons are much easier; "no load lags" means a nowcast from weather and calendar);
+- `chronological_split`: train before test, without shuffling?
+- `comparability`: overall judgement (not comparable / weak / moderate).
+
+MAPE and R² do not depend on the unit of the target, but they still depend on how hard the target is: a single zone is noisier than the city total, and short horizons or shuffled splits make any model look better. RMSE and MAE only compare for the same target.
+
+--- CELL 38 (code; execution=16) ---
+lit = pd.read_csv(ROOT / 'docs' / 'literature_results.csv')
+ours = pd.DataFrame([
+    {'source': 'This project', 'reference': 'Day-ahead (main problem), test set', 'model': FINAL,
+     'target': 'Total (Z1+Z2+Z3)', 'resolution': 'hourly', 'horizon': '24 h (issued at 00:00)',
+     'split': 'chronological, test used once', **t08.loc[FINAL, ['RMSE', 'MAE', 'MAPE', 'R2']].to_dict(),
+     'note': 'Model chosen by CV before seeing the test set'},
+    {'source': 'This project', 'reference': '1 hour ahead (secondary problem), test set', 'model': FINAL_H1,
+     'target': 'Total (Z1+Z2+Z3)', 'resolution': 'hourly', 'horizon': '1 h',
+     'split': 'chronological, test used once', **t08_h1.loc[FINAL_H1, ['RMSE', 'MAE', 'MAPE', 'R2']].to_dict(),
+     'note': 'Model chosen by CV before seeing the test set'},
+])
+t13 = pd.concat([ours, lit], ignore_index=True)
+t13[['same_target', 'horizon_vs_ours', 'chronological_split', 'comparability']] = (
+    t13[['same_target', 'horizon_vs_ours', 'chronological_split', 'comparability']].fillna('– (this project)'))
+t13.to_csv(TABLES / 'T13_literature_comparison.csv', index=False)
+t13[['source', 'reference', 'target', 'horizon', 'split', 'MAPE', 'R2', 'RMSE',
+     'same_target', 'horizon_vs_ours', 'chronological_split', 'comparability']]
+OUTPUT:          source                                      reference            target                        horizon                          split  MAPE    R2      RMSE                      same_target  \
+0  This project             Day-ahead (main problem), test set  Total (Z1+Z2+Z3)         24 h (issued at 00:00)  chronological, test used once 1.778 0.987 1,624.640                 – (this project)   
+1  This project     1 hour ahead (secondary problem), test set  Total (Z1+Z2+Z3)                            1 h  chronological, test used once 1.410 0.993 1,195.838                 – (this project)   
+2            P1               Salam & El Hibaoui (2018), IRSEC        not stated      not stated (no load lags)     75/25, ordering not stated   NaN   NaN 4,481.100                          unclear   
+3            P2                    RoSe et al. (2023), ICACECS  Total (Z1+Z2+Z3)      not stated (no load lags)     70/30, ordering not stated   NaN 0.976 2,680.000                      yes (total)   
+4            P4        Islam et al. (2025), Quality & Quantity        not stated  10 min (shift, y(t) → y(t+1))         75/15/10 chronological 6.300 0.853 1,826.300                          unclear   
+5            P5             Alsalem (2025), Scientific Reports            Zone 3        10 min (lags 10–30 min)     70/30, temporal order kept   NaN 0.989   355.420                      no (Zone 3)   
+6            P6   Biswas et al. (2026), Results in Engineering   Mean of 3 zones       not stated in lit review                  chronological 1.040   NaN       NaN  yes for MAPE (mean = total / 3)   
+7        GitHub    daniahfarooq/electricity-demand-forecasting            Zone 1         1 hour (lag 1 h, 24 h)            chronological 80/20 2.540 0.973 1,039.100                      no (Zone 1)   
+8        GitHub          atishk28/electricity-load-forecasting             Total                   no load lags            chronological 80/20   NaN 0.834 5,744.300                      yes (total)   
+9        GitHub  niharkaria/Tetouan_Power_Consumption_Analysis             Total                   no load lags       shuffled 80/20 (leakage)   NaN 0.986 2,026.000                      yes (total)   
+
+                      horizon_vs_ours        chronological_split             comparability  
+0                    – (this project)           – (this project)          – (this project)  
+1                    – (this project)           – (this project)          – (this project)  
+2              unclear (no load lags)                    unclear            not comparable  
+3  no forecast horizon (no load lags)  unclear (likely shuffled)                      weak  
+4                    shorter (10 min)                        yes        weak (easier task)  
+5                    shorter (10 min)        partly (order kept)                      weak  
+6                             unclear                        yes      moderate (MAPE only)  
+7                 same as h1 (1 hour)                        yes          moderate (vs h1)  
+8  no forecast horizon (no load lags)                        yes                      weak  
+9  no forecast horizon (no load lags)              no (shuffled)  not comparable (leakage)  
+
+--- CELL 39 (markdown; execution=None) ---
+F20: MAPE and unexplained variance (1 − R²) per source; blue = this project, shuffled splits are flagged.
+
+--- CELL 40 (code; execution=17) ---
+def lab(r):
+    who = r['reference'].split('/')[0] if r['source'] == 'GitHub' else r['source']
+    return f"{who} – {r['horizon']}" + (' [shuffled split]' if 'shuffled' in str(r['split']) else '')
+t13['1-R2'] = 1 - t13['R2']
+fig, axes = plt.subplots(1, 2, figsize=(13, 5.2), layout='constrained')
+for ax, col, fmt, title in [(axes[0], 'MAPE', '{:.2f}%', 'MAPE (%), lower is better'),
+                            (axes[1], '1-R2', '{:.3f}', 'Unexplained variance 1 − R², lower is better')]:
+    d = t13.dropna(subset=[col]).copy()
+    d['label'] = d.apply(lab, axis=1)
+    d = d.sort_values(col, ascending=False)
+    colors = [SERIES[0] if s == 'This project' else MUTED for s in d['source']]
+    ax.barh(d['label'], d[col], color=colors, height=0.6)
+    for i, v in enumerate(d[col]):
+        ax.text(v, i, ' ' + fmt.format(v), va='center', fontsize=8.5, color=INK_2)
+    ax.set_title(title)
+    ax.grid(axis='y', visible=False); ax.grid(axis='x'); ax.tick_params(axis='y', length=0, labelsize=8.5)
+    ax.set_xlim(0, d[col].max() * 1.2)
+fig.suptitle('Indicative only: reported results use different targets, horizons, splits and test periods (blue = this project)',
+             x=0.01, ha='left', fontweight='bold', color=INK)
+savefig(fig, 'F20_literature_comparison')
+plt.show()
+OUTPUT: <Figure size 1430x572 with 2 Axes>
+
+--- CELL 41 (markdown; execution=None) ---
+**Observations.** **Indicative only.** On the scale-free metrics this project's test results are in the same range as, or better than, the reported ones: day-ahead MAPE 1.78% / R² 0.987, 1 hour ahead MAPE 1.41% / R² 0.993. The most informative rows:
+
+- **P4** solves an *easier* task (10-minute horizon) yet reports MAPE 6.3%, so the gap favours this project despite its harder task; the target and the test period still differ.
+- **daniahfarooq** has the closest set-up to the 1-hour problem (hourly, 1 hour ahead, chronological split) and reports MAPE 2.54%, but for Zone 1, which is noisier than the city total and has a different test window.
+- **P6** forecasts the mean of the zones (equivalent to the total for MAPE) with a chronological split and reports a lower MAPE (1.04%); its horizon is not stated in the literature review, so the gap cannot be interpreted yet.
+- **P1, P2, P5 and the shuffled repositories** differ in target, horizon or split (or leak information) and cannot be ranked against this project.
+
+Further caveats: this project's numbers come from **one test month** (December, calmer than summer), and the literature numbers are taken from the literature review, not re-checked against the original papers. A fair comparison requires re-running each study's exact set-up with this pipeline (future work).
+
+--- CELL 42 (markdown; execution=None) ---
+## 7. Business interpretation and summary
+
+For the day-ahead problem the model is wrong by **1,095 kW per hour on average, about 1.72% of the mean load** (63,751 kW), half the error of "tomorrow looks like today". If reserve capacity is sized on forecast error, it could be roughly halved. The main risk is **rare religious holidays** (Mawlid was about 6% off), where a manual adjustment or extra reserve is advisable.
+
+**RQ3 (accuracy vs cost):** SVR is the most accurate model but the slowest to fit (about 3.5 s); XGB_delta and RF_delta are only 8–12% worse in MAPE and fit in under 0.2 s; LR fits instantly but is about 50% worse. With about 8,000 rows every model is fast enough for daily operation, so accuracy should come first.
+
+| December test | RMSE (kW) | MAE (kW) | MAPE | R² | Skill vs Naive-24h |
+|---|---|---|---|---|---|
+| Day-ahead, SVR-tuned | 1,625 | 1,095 | 1.78% | 0.987 | 50.7% |
+| 1 hour ahead, SVR-tuned | 1,196 | 862 | 1.41% | 0.993 | 63.7% |
+| Naive-24h | 3,296 | 2,072 | 3.39% | 0.946 | 0 |

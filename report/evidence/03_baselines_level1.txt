@@ -1,0 +1,258 @@
+
+--- CELL 0 (markdown; execution=None) ---
+# 03 – Naive baselines (Level 0) and default models (Level 1)
+
+Guideline sections 6–7, day-ahead problem (h24).
+
+- **Level 0:** naive baselines, the minimum any model must beat.
+- **Level 1:** the five models with **default** hyperparameters, trained on January–October and evaluated on November, on feature set D.
+
+**Checkpoint:** if no model beats Naive-24h, go back to the features before tuning. Outputs: **T04**, **F11**, **F11b**.
+
+--- CELL 1 (markdown; execution=None) ---
+**Setup.** Make `src/` importable, load the shared helpers and the common figure style.
+
+--- CELL 2 (code; execution=1) ---
+import sys
+import json
+import time
+from pathlib import Path
+
+ROOT = Path.cwd().parent if Path.cwd().name == 'notebooks' else Path.cwd()
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from src.config import TABLES, SMOKE
+from src.data import load_hourly
+from src.features import make_features, FEATURE_SETS, MODEL_FEATURES
+from src.evaluate import (metrics, log_result, save_results, split_masks, make_tscv, cross_val_log,
+                          cv_summary, CV_SCORING, RESULTS, RANDOM_STATE)
+from src.models import (default_models, search_spaces, tuned_model, baselines, NaiveLag, MeanProfile,
+                        p1_random_forest, split_name, DeltaTarget, N_JOBS, MODEL_NAMES, DELTA_SUFFIX, DELTA_BASE)
+from src.viz import (set_style, savefig, label_line_ends, kw_fmt,
+                     SERIES, BLUE, INK, INK_2, MUTED, NEUTRAL, SURFACE, GRID, MODEL_COLORS, BASELINE_STYLE)
+
+set_style()
+pd.set_option('display.float_format', '{:,.3f}'.format)
+pd.set_option('display.width', 200)
+MF = MODEL_FEATURES[24]    # columns every model is trained on (baselines read lags from the full X)
+SCORING = CV_SCORING
+if SMOKE:
+    print('SMOKE MODE: code check only (dev = Jan–Oct, stand-in test = Nov, tiny models). '
+          'December is never touched. Outputs → results/smoke/')
+
+--- CELL 3 (markdown; execution=None) ---
+**Data.** Build the h24 features and the train / validation masks (the test mask is not used here).
+
+--- CELL 4 (code; execution=2) ---
+dh = load_hourly()
+X, y = make_features(dh, horizon=24)
+tr, va, dev, te = split_masks(X.index)   # te is NOT used in this notebook
+Xtr, ytr, Xva, yva = X[tr], y[tr], X[va], y[va]
+RESULTS.clear()
+val_pred = {}   # validation predictions, for the figures
+print(f'train {len(Xtr):,} rows ({Xtr.index[0].date()} → {Xtr.index[-1].date()}) | '
+      f'val {len(Xva):,} rows ({Xva.index[0].date()} → {Xva.index[-1].date()}) | models use {len(MF)} features')
+OUTPUT: train 7,105 rows (2017-01-08 → 2017-10-31) | val 720 rows (2017-11-01 → 2017-11-30) | models use 17 features
+
+
+--- CELL 5 (markdown; execution=None) ---
+## 1. Level 0 – Naive baselines
+
+| Baseline | Formula | Meaning |
+|---|---|---|
+| Naive-24h | ŷ(t) = y(t−24) | Tomorrow looks like today |
+| Naive-168h | ŷ(t) = y(t−168) | Same hour, same weekday last week |
+| MeanProfile | mean of the training load for the same (hour, weekday) | A "typical week", no recent history |
+
+The baselines are sklearn-style estimators (`src/models.py`), so Level 2 can cross-validate them exactly like the models.
+
+--- CELL 6 (code; execution=3) ---
+for name, est in baselines().items():
+    est.fit(Xtr, ytr)
+    log_result(level='L0', model=name, split='train', fit_time=0.0, **metrics(ytr, est.predict(Xtr)))
+    val_pred[name] = est.predict(Xva)
+    log_result(level='L0', model=name, split='val', fit_time=0.0, **metrics(yva, val_pred[name]))
+pd.DataFrame(RESULTS).query("split == 'val'")[['model', 'RMSE', 'MAE', 'MAPE', 'R2']]
+OUTPUT:          model      RMSE       MAE   MAPE    R2
+1    Naive-24h 3,076.399 2,080.713  3.267 0.951
+3   Naive-168h 3,202.923 2,425.752  3.793 0.947
+5  MeanProfile 9,369.583 8,560.806 13.497 0.549
+
+--- CELL 7 (markdown; execution=None) ---
+**Observations.** Naive-24h is the strongest baseline: RMSE 3,076 kW, MAPE 3.27%, R² 0.951. Copying yesterday already gives R² ≈ 0.95, as the ACF predicted. MeanProfile is poor (MAPE 13.5%) because its yearly average includes the summer and over-predicts November: **recent history matters far more than a typical week**.
+
+--- CELL 8 (markdown; execution=None) ---
+## 2. Level 1 – Five models with default hyperparameters
+
+Fit each model on the training months and record the error on training and validation data (`fit_time` in seconds). LR and SVR scale their inputs inside a `Pipeline`, so the scaler only sees training data; SVR also scales the **target** (`TransformedTargetRegressor`), otherwise its default `epsilon=0.1` is meaningless for a load of about 70,000 kW. Tree models need no scaling.
+
+--- CELL 9 (code; execution=4) ---
+models = default_models()
+for name in MODEL_NAMES:
+    model = models[name]
+    t0 = time.time()
+    model.fit(Xtr[MF], ytr)
+    fit_time = time.time() - t0
+    log_result(level='L1', model=name, split='train', fit_time=fit_time, **metrics(ytr, model.predict(Xtr[MF])))
+    val_pred[name] = model.predict(Xva[MF])
+    log_result(level='L1', model=name, split='val', fit_time=fit_time, **metrics(yva, val_pred[name]))
+    print(f'{name:4s} fitted in {fit_time:6.2f}s')
+OUTPUT: LR   fitted in   0.01s
+DT   fitted in   0.04s
+
+OUTPUT: RF   fitted in   0.33s
+
+OUTPUT: SVR  fitted in   0.36s
+
+OUTPUT: XGB  fitted in   0.25s
+
+
+--- CELL 10 (markdown; execution=None) ---
+### Level 1b – Random Forest with the configuration of the original paper (P1)
+
+`n_estimators=30, max_features=7, max_depth=None, min_samples_split=2, min_samples_leaf=1` (Salam & El Hibaoui, 2018).
+
+--- CELL 11 (code; execution=5) ---
+model = p1_random_forest()
+t0 = time.time(); model.fit(Xtr[MF], ytr); fit_time = time.time() - t0
+log_result(level='L1b', model='RF-P1', split='train', fit_time=fit_time, **metrics(ytr, model.predict(Xtr[MF])))
+val_pred['RF-P1'] = model.predict(Xva[MF])
+log_result(level='L1b', model='RF-P1', split='val', fit_time=fit_time, **metrics(yva, val_pred['RF-P1']))
+
+--- CELL 12 (markdown; execution=None) ---
+## 3. T04 – Level 0 and Level 1 results
+
+Save the long table (standard result columns), then build a wide table with one row per model, the skill score against Naive-24h (`1 − RMSE / RMSE_Naive-24h`) and the overfitting ratio (`RMSE_val / RMSE_train`; `inf` means zero training error).
+
+--- CELL 13 (code; execution=6) ---
+long = save_results(TABLES / 'T04_level0_level1.csv')   # long format, standard columns
+
+wide = long.pivot_table(index=['level', 'model'], columns='split', values=['RMSE', 'MAE', 'MAPE', 'R2'])
+wide.columns = [f'{split}_{m}' for m, split in wide.columns]
+wide = wide[[f'{s}_{m}' for s in ('val', 'train') for m in ('RMSE', 'MAE', 'MAPE', 'R2')]]
+wide['fit_time_s'] = long.groupby(['level', 'model'])['fit_time'].first()
+naive_rmse = wide.loc[('L0', 'Naive-24h'), 'val_RMSE']
+wide['skill_vs_naive24'] = 1 - wide['val_RMSE'] / naive_rmse       # > 0 = better than Naive-24h
+# >> 1 = overfitting; inf = training RMSE < 1 kW, i.e. the model memorised the training set
+wide['overfit_ratio'] = (wide['val_RMSE'] / wide['train_RMSE'].where(wide['train_RMSE'] >= 1)).fillna(np.inf)
+wide = wide.sort_values('val_RMSE')
+wide.to_csv(TABLES / 'T04_level0_level1_wide.csv')
+wide
+OUTPUT:                    val_RMSE   val_MAE  val_MAPE  val_R2  train_RMSE  train_MAE  train_MAPE  train_R2  fit_time_s  skill_vs_naive24  overfit_ratio
+level model                                                                                                                                      
+L1    XGB         2,161.413 1,598.411     2.422   0.976     812.434    597.539       0.852     0.998       0.253             0.297          2.660
+L1b   RF-P1       2,191.988 1,620.260     2.498   0.975     805.008    528.428       0.744     0.998       0.070             0.287          2.723
+L1    SVR         2,195.220 1,601.126     2.525   0.975   1,567.698  1,176.381       1.664     0.992       0.356             0.286          1.400
+      RF          2,227.512 1,616.675     2.473   0.975     794.437    528.127       0.745     0.998       0.326             0.276          2.804
+      LR          2,288.732 1,733.957     2.757   0.973   2,670.511  1,906.744       2.751     0.976       0.011             0.256          0.857
+      DT          2,992.432 2,189.955     3.345   0.954       0.000      0.000       0.000     1.000       0.043             0.027            inf
+L0    Naive-24h   3,076.399 2,080.713     3.267   0.951   3,497.506  2,319.875       3.343     0.959       0.000             0.000          0.880
+      Naive-168h  3,202.923 2,425.752     3.793   0.947   4,686.382  3,014.152       4.128     0.926       0.000            -0.041          0.683
+      MeanProfile 9,369.583 8,560.806    13.497   0.549   9,628.282  7,527.260      10.140     0.688       0.000            -2.046          0.973
+
+--- CELL 14 (markdown; execution=None) ---
+**Observations.** With feature set D, **every model except DT beats Naive-24h** on November: XGB 2,161 kW (MAPE 2.42%, skill 29.7%), RF-P1 2,192, SVR 2,195, RF 2,228, LR 2,289. The default DT memorises the training set (zero training error) and is barely better than Naive-24h: classic overfitting, fixed in Level 3. RF and XGB have a validation/training ratio of about 2.8. The P1 forest (30 trees) matches the default forest (100 trees). Ratios below 1 for LR and the baselines show that November is an easier month than the summer-heavy training period.
+
+--- CELL 15 (markdown; execution=None) ---
+## 4. F11 – Models vs baselines on November
+
+RMSE and MAPE per model; the dashed line is Naive-24h.
+
+--- CELL 16 (code; execution=7) ---
+v = wide.reset_index().sort_values('val_RMSE', ascending=False)
+is_base = v['level'] == 'L0'
+colors = [MUTED if b else SERIES[0] for b in is_base]
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 0.45 * len(v) + 2.2), sharey=True, layout='constrained')
+for ax, col, unit, fmt in [(axes[0], 'val_RMSE', 'kW', '{:,.0f}'), (axes[1], 'val_MAPE', '%', '{:.2f}%')]:
+    ax.barh(v['model'], v[col], color=colors, height=0.6)
+    ref = v.loc[v['model'] == 'Naive-24h', col].item()
+    ax.axvline(ref, color=INK_2, lw=1, ls='--')
+    for i, val in enumerate(v[col]):
+        ax.text(val, i, ' ' + fmt.format(val), va='center', fontsize=8.5, color=INK_2)
+    ax.set_xlim(0, v[col].max() * 1.18)
+    ax.grid(axis='y', visible=False)
+    ax.grid(axis='x')
+    ax.set_xlabel(f'{col.split("_")[1]} on validation ({unit})')
+    ax.tick_params(axis='y', length=0)
+axes[0].xaxis.set_major_formatter(kw_fmt)
+fig.suptitle('Level 1: default models vs naive baselines (validation = Nov, day-ahead)',
+             x=0.01, ha='left', fontweight='bold', color=INK)
+handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in (MUTED, SERIES[0])]
+handles.append(plt.Line2D([], [], color=INK_2, lw=1, ls='--'))
+fig.legend(handles, ['Naive baseline', 'ML model (default)', 'Naive-24h level (reference)'],
+           loc='outside lower center', ncol=3)
+savefig(fig, 'F11_level1_vs_baselines')
+plt.show()
+OUTPUT: <Figure size 1320x687.5 with 2 Axes>
+
+--- CELL 17 (markdown; execution=None) ---
+## 5. F11b – Actual vs predicted over one validation week
+
+The second full week of the validation month (13–19 November, with a civil holiday on Saturday 18).
+
+--- CELL 18 (code; execution=8) ---
+best = wide.reset_index().query("level != 'L0'").iloc[0]['model']
+week_start = Xva.index[Xva.index.dayofweek == 0].normalize().unique()[1]   # 2nd Monday of the val month
+wk = (Xva.index >= week_start) & (Xva.index < week_start + pd.Timedelta(days=7))
+idx = Xva.index[wk]
+
+fig, ax = plt.subplots(figsize=(11, 4))
+ax.plot(idx, yva[wk], color=INK, lw=2, label='Actual')
+ax.plot(idx, val_pred[best][wk], color=SERIES[0], lw=1.6, label=f'{best} (best ML, default)')
+ax.plot(idx, val_pred['Naive-24h'][wk], color=SERIES[1], lw=1.4, ls='--', label='Naive-24h')
+ax.yaxis.set_major_formatter(kw_fmt)
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%a %d/%m'))
+ax.set(title='Actual vs predicted load, one validation week', ylabel='Total load (kW)')
+ax.legend(loc='upper left', ncol=3)
+ax.set_ylim(top=ax.get_ylim()[1] * 1.08)
+savefig(fig, 'F11b_week_actual_vs_pred')
+plt.show()
+print('Best ML model on validation:', best)
+OUTPUT: <Figure size 1210x440 with 1 Axes>
+OUTPUT: Best ML model on validation: XGB
+
+
+--- CELL 19 (markdown; execution=None) ---
+**Observations.** From Tuesday to Friday both the model and Naive-24h follow the actual load. The differences are at both ends of the week: on **Monday** Naive-24h copies Sunday and is far too low during the day, and on **Sunday** it copies Saturday and is too high. The model corrects most of both errors thanks to `dayofweek`. The civil holiday on Saturday 18 looks like an ordinary Saturday.
+
+--- CELL 20 (markdown; execution=None) ---
+## 6. Errors by weekday and by hour (validation)
+
+Mean absolute error of Naive-24h, Naive-168h and the best model, by weekday:
+
+--- CELL 21 (code; execution=9) ---
+err = pd.DataFrame({name: np.abs(yva.values - val_pred[name]) for name in ['Naive-24h', 'Naive-168h', best]},
+                   index=Xva.index)
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+by_dow = err.groupby(err.index.dayofweek).mean().set_axis(days)
+by_dow.round(0).T.rename_axis('MAE (kW) by weekday')
+OUTPUT:                           Mon       Tue       Wed       Thu       Fri       Sat       Sun
+MAE (kW) by weekday                                                                      
+Naive-24h           4,077.000 1,200.000 1,534.000 1,302.000 1,346.000 1,972.000 3,466.000
+Naive-168h          3,576.000 2,651.000 2,359.000 2,215.000 2,260.000 2,121.000 1,866.000
+XGB                 2,113.000 1,078.000 1,797.000 1,511.000   949.000 2,043.000 1,671.000
+
+--- CELL 22 (markdown; execution=None) ---
+...and by hour of day (every second hour shown):
+
+--- CELL 23 (code; execution=10) ---
+by_hour = err.groupby(err.index.hour).mean()
+by_hour.iloc[::2].round(0).T.rename_axis('MAE (kW) by hour (every 2nd hour)')
+OUTPUT: DateTime                                 0         2         4         6         8         10        12        14        16        18        20        22
+MAE (kW) by hour (every 2nd hour)                                                                                                                        
+Naive-24h                           747.000   661.000   938.000 1,503.000 3,030.000 2,768.000 3,161.000 3,184.000 3,554.000 2,715.000 1,971.000   967.000
+Naive-168h                        1,451.000 1,141.000 1,291.000 1,812.000 3,070.000 3,795.000 4,082.000 4,031.000 3,071.000 2,016.000 1,786.000 1,644.000
+XGB                               1,003.000   845.000   769.000   963.000 1,343.000 1,981.000 2,427.000 2,129.000 2,335.000 1,968.000 1,976.000 1,267.000
+
+--- CELL 24 (markdown; execution=None) ---
+**Observations.** **The EDA prediction holds:** Naive-24h has an MAE of 4,077 kW on Mondays and 3,466 kW on Sundays, 2.5–3 times the Tuesday–Friday level. The best model cuts the Monday error by about half. By hour, Naive-24h is worst during the day (8–16 h, about 2,800–3,600 kW) where the model helps most; at night, where Naive-24h is already accurate, the model does not improve further.
+
+--- CELL 25 (markdown; execution=None) ---
+## 7. Checkpoint and summary
+
+**Checkpoint passed:** every model except DT beats Naive-24h, the best by about 29.7%. These are results on **one month**; Level 2 (notebook 04) checks their stability over five months.

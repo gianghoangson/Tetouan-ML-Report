@@ -1,0 +1,362 @@
+{
+  "scope": "Sections 06--09 only; static and saved-evidence validation",
+  "checks": [
+    {
+      "check": "Exactly four resumed section files exist",
+      "passed": true
+    },
+    {
+      "check": "All existing report labels are unique",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: balanced braces",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: matched environments",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: reference labels exist",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: citation keys exist",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: no unexpected control characters",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: input exists: report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/baselines.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "06_baselines.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F11b_week_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: balanced braces",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: matched environments",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: reference labels exist",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: citation keys exist",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: no unexpected control characters",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: input exists: report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/cv.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: input exists: report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/cv_folds.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "07_cross_validation.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: balanced braces",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: matched environments",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: reference labels exist",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: citation keys exist",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: no unexpected control characters",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: input exists: report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/search_space.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: input exists: report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/selected_h24.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: input exists: report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/tuning.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "08_hyperparameter_tuning.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: balanced braces",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: matched environments",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: reference labels exist",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: citation keys exist",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: no unexpected control characters",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: input exists: report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/ablation.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: input exists: report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "report/tables/horizon.tex: numbered, captioned and referenced",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "09_ablation_horizon.tex: figure caption, label and in-text reference",
+      "passed": true
+    },
+    {
+      "check": "Figure exists: F15b_horizon.png",
+      "passed": true
+    },
+    {
+      "check": "November lowest RMSE/MAE/MAPE is XGB",
+      "passed": true
+    },
+    {
+      "check": "DT improves November RMSE but worsens MAE and MAPE",
+      "passed": true
+    },
+    {
+      "check": "November XGB skill rounds to 29.74 percent",
+      "passed": true
+    },
+    {
+      "check": "Default CV RMSE winner is LR, MAPE winner is RF",
+      "passed": true
+    },
+    {
+      "check": "Default CV means and sample SDs match saved summary",
+      "passed": true
+    },
+    {
+      "check": "L2 last fold reproduces L1 for all eight shared models",
+      "passed": true
+    },
+    {
+      "check": "h24 tuned RMSE selects absolute SVR",
+      "passed": true
+    },
+    {
+      "check": "Residual target lowers tuned h24 RMSE in four of five families",
+      "passed": true
+    },
+    {
+      "check": "Absolute DT tuned still exceeds CV naive baseline",
+      "passed": true
+    },
+    {
+      "check": "Four leading h24 CV means span 30.4 kW and 1.26 percent",
+      "passed": true
+    },
+    {
+      "check": "RF residual has lowest tuned h24 MAPE",
+      "passed": true
+    },
+    {
+      "check": "RF C-to-D relative reduction",
+      "passed": true
+    },
+    {
+      "check": "XGB C-to-D relative reduction",
+      "passed": true
+    },
+    {
+      "check": "RF D-to-E relative increase",
+      "passed": true
+    },
+    {
+      "check": "XGB D-to-E relative increase",
+      "passed": true
+    },
+    {
+      "check": "RF_delta D-to-E relative increase",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta D-to-E relative increase",
+      "passed": true
+    },
+    {
+      "check": "RF E-to-F relative change",
+      "passed": true
+    },
+    {
+      "check": "XGB E-to-F relative change",
+      "passed": true
+    },
+    {
+      "check": "RF_delta E-to-F relative change",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta E-to-F relative change",
+      "passed": true
+    },
+    {
+      "check": "Selected SVR h1 CV RMSE reduction rounds to 22.57 percent",
+      "passed": true
+    },
+    {
+      "check": "h1 persistence worse than daily naive",
+      "passed": true
+    },
+    {
+      "check": "All five reported h1 family representatives improve RMSE",
+      "passed": true
+    },
+    {
+      "check": "Separate horizons select identical absolute SVR parameters",
+      "passed": true
+    },
+    {
+      "check": "All 20 saved searches remain present",
+      "passed": true
+    },
+    {
+      "check": "Original audited source/data/notebook/result artifacts match SHA-256 manifest",
+      "passed": true
+    }
+  ],
+  "passed": 77,
+  "failed": 0,
+  "section_files": [
+    "report/sections/06_baselines.tex",
+    "report/sections/07_cross_validation.tex",
+    "report/sections/08_hyperparameter_tuning.tex",
+    "report/sections/09_ablation_horizon.tex"
+  ],
+  "referenced_tables": [
+    "report/tables/baselines.tex",
+    "report/tables/cv.tex",
+    "report/tables/cv_folds.tex",
+    "report/tables/search_space.tex",
+    "report/tables/selected_h24.tex",
+    "report/tables/tuning.tex",
+    "report/tables/ablation.tex",
+    "report/tables/horizon.tex"
+  ],
+  "referenced_figures": [
+    "F11_level1_vs_baselines.png",
+    "F11b_week_actual_vs_pred.png",
+    "F12_rmse_per_fold.png",
+    "F13_default_vs_tuned.png",
+    "F15_ablation.png",
+    "F15b_horizon.png"
+  ],
+  "pending_main_inputs": [
+    "report/sections/10_final_evaluation.tex",
+    "report/sections/11_leakage.tex",
+    "report/sections/12_discussion.tex",
+    "report/sections/13_conclusion.tex",
+    "report/appendices/supplementary.tex"
+  ],
+  "unresolved_references_in_existing_partial_report": [
+    "fig:holidays",
+    "fig:wind",
+    "fig:zone_event",
+    "sec:conclusion",
+    "sec:discussion",
+    "sec:final",
+    "sec:leakage"
+  ],
+  "changed_original_artifacts": [],
+  "tool_paths": {
+    "latexmk": "D:\\MiKTeX\\miktex\\bin\\x64\\latexmk.EXE",
+    "pdflatex": "D:\\MiKTeX\\miktex\\bin\\x64\\pdflatex.EXE",
+    "biber": "D:\\MiKTeX\\miktex\\bin\\x64\\biber.EXE"
+  },
+  "compilation": "Not performed. Full main.tex still has pending sections/appendix. MiKTeX executables were found, but version probes could not initialize the user profile under the current sandbox. No PDF/layout validation claimed."
+}
