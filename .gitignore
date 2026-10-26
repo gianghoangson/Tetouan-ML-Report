@@ -1,0 +1,14 @@
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.out
+*.bcf
+*.run.xml
+*.bbl
+*.blg
+*-SAVE-ERROR
