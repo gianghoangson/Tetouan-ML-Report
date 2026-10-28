@@ -1,14 +1,14 @@
-\begin{table}[tbp]\centering\small
-\caption{Recorded h24 refit and whole-test prediction durations for selected representative models (T08). Hardware and thread configuration are not recorded in this table; timings are descriptive.}\label{tab:runtime}
+\begin{table}[H]\centering\small
+\caption{Refit and prediction time of the tuned h24 models (T08), single run; timings are indicative.}\label{tab:runtime}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrrr}
 \toprule
 Model & Fit (s) & Predict 720 rows (s) & Test RMSE (kW) \\
 \midrule
-LR $\Delta$-tuned & \num{0.003} & \num{0.001} & \num{2217.3} \\
-DT $\Delta$-tuned & \num{0.015} & \num{0.001} & \num{2005.2} \\
-RF $\Delta$-tuned & \num{0.107} & \num{0.026} & \num{1761.9} \\
-SVR-tuned & \num{3.686} & \num{0.137} & \num{1624.6} \\
-XGB $\Delta$-tuned & \num{0.146} & \num{0.003} & \num{1719.2} \\
+LR $\Delta$-tuned & \num{0.008} & \num{0.003} & \num{2217.3} \\
+DT $\Delta$-tuned & \num{0.044} & \num{0.003} & \num{2005.2} \\
+RF $\Delta$-tuned & \num{0.306} & \num{0.025} & \num{1761.9} \\
+SVR-tuned & \num{4.861} & \num{0.259} & \num{1624.6} \\
+XGB $\Delta$-tuned & \num{0.188} & \num{0.005} & \num{1719.2} \\
 \bottomrule\end{tabular}
 \end{table}

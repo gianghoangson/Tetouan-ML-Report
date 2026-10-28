@@ -1,6 +1,6 @@
 # Tetouan ML research report
 
-The English report is an A4, single-column academic document with thirteen sections, a title page, abstract, bibliography and supplementary appendix. It uses saved repository evidence. Building the report does **not** require running notebooks or training models.
+The English report is an A4, single-column academic document with ten sections (about 30 pages), a title page, abstract, bibliography and supplementary appendix. It uses saved repository evidence. Building the report does **not** require running notebooks or training models.
 
 ## Files and evidence
 
@@ -8,14 +8,10 @@ The English report is an A4, single-column academic document with thirteen secti
 - `sections/`, `appendices/`: modular report text.
 - `references.bib`: BibLaTeX bibliography, processed with Biber.
 - `tables/`: LaTeX tables generated from existing CSV/JSON artifacts.
-- `research_audit.md`: claim/source mapping, discrepancies and limitations.
-- `reference_verification.md`: bibliography provenance and verification limits.
-- `REPORT_PROGRESS.md`: completion and handoff status.
-- `validation_summary.md` and `evidence/report_validation.json`: final checks and compilation status.
-- `FINAL_REVIEW.md`: strict scientific/LaTeX peer review, confirmed corrections and readiness assessment.
+- `research_audit.md`, `reference_verification.md`, `REPORT_PROGRESS.md`, `validation_summary.md`, `FINAL_REVIEW.md`, `evidence/` and the `check_*`/`validate_*` scripts belong to the first 54-page draft and have not been updated for the shortened report (28/10/2026).
 - Figures are loaded directly from `../results/figures/` relative to this folder; no image copies are needed locally.
 
-Student/team information, IDs, class, instructor and submission date are intentional title-page placeholders. Fill these in `main.tex` before submission.
+`build_tables.py` reads the CSV/JSON results from `results/tables/` of the project repository (the parent folder of this report repository when it has no `results/tables/` of its own). Figures are copied into `results/figures/` of this repository.
 
 ## Local compilation
 

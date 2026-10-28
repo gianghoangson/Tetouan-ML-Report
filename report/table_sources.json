@@ -46,8 +46,8 @@
     "sources": [
       "T04_level0_level1_wide.csv"
     ],
-    "caption": "November validation, h24: seasonal baselines, default regressors and RF-P1 (T04). RMSE/MAE are in kW; MAPE is percent.",
-    "rows": 9,
+    "caption": "Level 0 and Level 1: November validation of the seasonal baselines and the default regressors, h24 (T04). RMSE/MAE in kW; MAPE in percent.",
+    "rows": 7,
     "columns": [
       "Model",
       "Train RMSE",
@@ -62,24 +62,10 @@
       "T05_level2_summary.csv"
     ],
     "caption": "Default-model development CV, h24 (T05). SD is the sample standard deviation over five folds, not a confidence interval. Errors in kW; MAPE in percent.",
-    "rows": 8,
+    "rows": 7,
     "columns": [
       "Model",
       "RMSE mean $\\pm$ SD",
-      "MAE",
-      "MAPE",
-      "R$^2$"
-    ]
-  },
-  "cv_variability": {
-    "sources": [
-      "T05_level2_summary.csv"
-    ],
-    "caption": "Supplementary default CV variability for all four metrics (T05); mean $\\pm$ sample SD. RMSE/MAE in kW, MAPE in percent.",
-    "rows": 8,
-    "columns": [
-      "Model",
-      "RMSE",
       "MAE",
       "MAPE",
       "R$^2$"
@@ -104,7 +90,7 @@
       "T05_level2_cv.csv"
     ],
     "caption": "Default h24 RMSE by temporal fold (T05), in kW. Models are ordered by mean fold RMSE; fold boundaries are given in Table~\\ref{tab:folds}.",
-    "rows": 8,
+    "rows": 7,
     "columns": [
       "Model",
       "Fold 0",
@@ -130,27 +116,13 @@
       "T06_search_space.csv",
       "src/models.py"
     ],
-    "caption": "Search spaces shared by both horizons and both target formulations (T06). Budgets are per model formulation, not per parameter. Integer limits are inclusive as displayed.",
+    "caption": "Hyperparameter search spaces (T06). Each model is tuned twice (absolute and relative target) with the same space; \\emph{Candidates} is the number of sampled configurations.",
     "rows": 19,
     "columns": [
       "Model",
-      "Parameter",
-      "Distribution / values",
-      "Budget"
-    ]
-  },
-  "parameters": {
-    "sources": [
-      "best_params.json",
-      "best_params_h1.json"
-    ],
-    "caption": "All selected configurations from the two parameter JSON files. Wrapper prefixes are omitted; floating parameters are rounded to six decimal places here. JSON files retain full precision.",
-    "rows": 76,
-    "columns": [
-      "Setting",
-      "Variant",
-      "Parameter",
-      "Selected value"
+      "Candidates",
+      "Hyperparameter",
+      "Values / distribution"
     ]
   },
   "ablation": {
@@ -171,10 +143,11 @@
     "sources": [
       "T10_horizon.csv"
     ],
-    "caption": "Development CV horizon comparison (T10), RMSE in kW: best formulation within each family chosen separately per horizon. LR, DT, RF and XGB use residual targets; SVR uses the absolute target.",
-    "rows": 9,
+    "caption": "Horizon comparison on development CV (T10): mean RMSE in kW and MAPE in percent. Each model keeps its h24 target type and hyperparameters at both horizons.",
+    "rows": 7,
     "columns": [
       "Model",
+      "Target",
       "h24 RMSE",
       "h1 RMSE",
       "h24 MAPE (\\%)",
@@ -185,23 +158,8 @@
     "sources": [
       "T08_final_test.csv"
     ],
-    "caption": "December h24 evaluation (T08), ordered by observed RMSE. The CV-selected model is SVR-tuned. This ordering does not redefine selection. RMSE/MAE in kW; skill is RMSE reduction against Naive-24h.",
-    "rows": 18,
-    "columns": [
-      "Model",
-      "RMSE",
-      "MAE",
-      "MAPE (\\%)",
-      "R$^2$",
-      "Skill (\\%)"
-    ]
-  },
-  "test1": {
-    "sources": [
-      "T08_final_test_h1.csv"
-    ],
-    "caption": "December h1 evaluation (T08), ordered by observed RMSE. The CV-selected model is SVR-tuned. This ordering does not redefine selection. RMSE/MAE in kW; skill is RMSE reduction against Naive-24h.",
-    "rows": 9,
+    "caption": "December test, h24 (T08), ordered by test RMSE. The model chosen on CV before the test is SVR-tuned. RMSE/MAE in kW; skill is the RMSE reduction against Naive-24h.",
+    "rows": 17,
     "columns": [
       "Model",
       "RMSE",
@@ -245,7 +203,7 @@
     "sources": [
       "T12b_kfold_vs_tscv.csv"
     ],
-    "caption": "Post-final RF search diagnostic: 20 candidates per CV strategy (T12b). Optimism is $100(\\mathrm{RMSE}_{test}/\\mathrm{RMSE}_{CV}-1)$. Errors in kW.",
+    "caption": "Tuning the same RF with shuffled KFold or TimeSeriesSplit, 20 candidates each (T12b). Optimism $=100(\\mathrm{RMSE}_{test}/\\mathrm{RMSE}_{CV}-1)$; errors in kW.",
     "rows": 2,
     "columns": [
       "CV strategy",
@@ -258,26 +216,13 @@
     "sources": [
       "T08_final_test.csv"
     ],
-    "caption": "Recorded h24 refit and whole-test prediction durations for selected representative models (T08). Hardware and thread configuration are not recorded in this table; timings are descriptive.",
+    "caption": "Refit and prediction time of the tuned h24 models (T08), single run; timings are indicative.",
     "rows": 5,
     "columns": [
       "Model",
       "Fit (s)",
       "Predict 720 rows (s)",
       "Test RMSE (kW)"
-    ]
-  },
-  "search_inventory": {
-    "sources": [
-      "search_*.csv"
-    ],
-    "caption": "Audit of all saved searches: number of sampled configurations and selected mean CV RMSE (kW). The row index is zero-based within the CSV data, excluding its header.",
-    "rows": 20,
-    "columns": [
-      "Search",
-      "Candidates",
-      "Selected row",
-      "Mean RMSE"
     ]
   },
   "dependencies": {
@@ -296,13 +241,6 @@
       "docs/kaggle_survey.csv",
       "T11_kaggle_survey.csv"
     ],
-    "caption": "Repository-authored survey of ten public GitHub projects (docs/kaggle\\_survey.csv / T11). Metrics and protocol descriptions are survey transcriptions, not independently reproduced results; targets and metrics vary.",
-    "rows": 10,
-    "columns": [
-      "Repository owner",
-      "Target",
-      "Split / validation",
-      "Survey-reported value"
-    ]
+    "rows": 10
   }
 }

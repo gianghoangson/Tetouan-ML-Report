@@ -1,29 +1,28 @@
-\begingroup\small\setlength{\tabcolsep}{4pt}
-\begin{longtable}{p{.10\linewidth}p{.24\linewidth}p{.48\linewidth}r}
-\caption{Search spaces shared by both horizons and both target formulations (T06). Budgets are per model formulation, not per parameter. Integer limits are inclusive as displayed.}\label{tab:search_space}\\
+\begin{table}[H]\centering\small
+\caption{Hyperparameter search spaces (T06). Each model is tuned twice (absolute and relative target) with the same space; \emph{Candidates} is the number of sampled configurations.}\label{tab:search_space}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrll}
 \toprule
-Model & Parameter & Distribution / values & Budget \\
-\midrule\endfirsthead
-\multicolumn{4}{l}{\small\itshape Continued from previous page}\\\toprule
-Model & Parameter & Distribution / values & Budget \\
-\midrule\endhead\bottomrule\endfoot
-LR & alpha & log-uniform(0.001, 1000.0) & \num{20} \\
-DT & max\_depth & 4, 6, 8, 10, 15, 20, None & \num{40} \\
-DT & min\_samples\_leaf & 1, 5, 10, 20, 50 & \num{40} \\
-DT & min\_samples\_split & 2, 10, 20, 50 & \num{40} \\
-DT & max\_features & None, sqrt, 0.5, 0.8 & \num{40} \\
-RF & n\_estimators & 100, 200, 300, 500 & \num{30} \\
-RF & max\_depth & 10, 20, 30, None & \num{30} \\
-RF & min\_samples\_leaf & 1, 2, 5, 10 & \num{30} \\
-RF & max\_features & sqrt, 0.3, 0.5, 0.8, 1.0 & \num{30} \\
-SVR & C & log-uniform(0.1, 1000.0) & \num{30} \\
-SVR & gamma & log-uniform(0.0001, 1) & \num{30} \\
-SVR & epsilon & 0.01, 0.05, 0.1, 0.2 & \num{30} \\
-XGB & n\_estimators & integer 200 ... 1499 & \num{50} \\
-XGB & learning\_rate & log-uniform(0.01, 0.2) & \num{50} \\
-XGB & max\_depth & integer 3 ... 10 & \num{50} \\
-XGB & subsample & uniform(0.6, 1.0) & \num{50} \\
-XGB & colsample\_bytree & uniform(0.6, 1.0) & \num{50} \\
-XGB & min\_child\_weight & integer 1 ... 10 & \num{50} \\
-XGB & reg\_lambda & log-uniform(0.1, 10.0) & \num{50} \\
-\end{longtable}\endgroup
+Model & Candidates & Hyperparameter & Values / distribution \\
+\midrule
+LR & \num{20} & \code{alpha} & log-uniform(0.001, 1000.0) \\
+\addlinespace DT & \num{40} & \code{max_depth} & 4, 6, 8, 10, 15, 20, None \\
+ &  & \code{min_samples_leaf} & 1, 5, 10, 20, 50 \\
+ &  & \code{min_samples_split} & 2, 10, 20, 50 \\
+ &  & \code{max_features} & None, sqrt, 0.5, 0.8 \\
+\addlinespace RF & \num{30} & \code{n_estimators} & 100, 200, 300, 500 \\
+ &  & \code{max_depth} & 10, 20, 30, None \\
+ &  & \code{min_samples_leaf} & 1, 2, 5, 10 \\
+ &  & \code{max_features} & sqrt, 0.3, 0.5, 0.8, 1.0 \\
+\addlinespace SVR & \num{30} & \code{C} & log-uniform(0.1, 1000.0) \\
+ &  & \code{gamma} & log-uniform(0.0001, 1) \\
+ &  & \code{epsilon} & 0.01, 0.05, 0.1, 0.2 \\
+\addlinespace XGB & \num{50} & \code{n_estimators} & integer 200 ... 1499 \\
+ &  & \code{learning_rate} & log-uniform(0.01, 0.2) \\
+ &  & \code{max_depth} & integer 3 ... 10 \\
+ &  & \code{subsample} & uniform(0.6, 1.0) \\
+ &  & \code{colsample_bytree} & uniform(0.6, 1.0) \\
+ &  & \code{min_child_weight} & integer 1 ... 10 \\
+ &  & \code{reg_lambda} & log-uniform(0.1, 10.0) \\
+\bottomrule\end{tabular}
+\end{table}

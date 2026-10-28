@@ -1,18 +1,16 @@
-\begin{table}[tbp]\centering\small
-\caption{Development CV horizon comparison (T10), RMSE in kW: best formulation within each family chosen separately per horizon. LR, DT, RF and XGB use residual targets; SVR uses the absolute target.}\label{tab:horizon}
+\begin{table}[H]\centering\small
+\caption{Horizon comparison on development CV (T10): mean RMSE in kW and MAPE in percent. Each model keeps its h24 target type and hyperparameters at both horizons.}\label{tab:horizon}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lrrrr}
+\begin{tabular}{llrrrr}
 \toprule
-Model & h24 RMSE & h1 RMSE & h24 MAPE (\%) & h1 MAPE (\%) \\
+Model & Target & h24 RMSE & h1 RMSE & h24 MAPE (\%) & h1 MAPE (\%) \\
 \midrule
-Persistence & -- & \num{6332.9} & -- & \num{6.40} \\
-Naive-24h & \num{3392.4} & \num{3392.4} & \num{3.28} & \num{3.28} \\
-Naive-168h & \num{4892.6} & \num{4892.6} & \num{4.92} & \num{4.92} \\
-MeanProfile & \num{12005.1} & \num{11997.4} & \num{13.83} & \num{13.82} \\
-LR & \num{2770.0} & \num{2420.5} & \num{2.87} & \num{2.50} \\
-DT & \num{2524.9} & \num{2489.6} & \num{2.40} & \num{2.29} \\
-RF & \num{2429.3} & \num{2183.5} & \num{2.36} & \num{2.05} \\
-SVR & \num{2410.6} & \num{1866.4} & \num{2.42} & \num{1.86} \\
-XGB & \num{2441.0} & \num{2111.7} & \num{2.38} & \num{1.98} \\
+Naive-24h & -- & \num{3392.4} & \num{3392.4} & \num{3.28} & \num{3.28} \\
+Naive-168h & -- & \num{4892.6} & \num{4892.6} & \num{4.92} & \num{4.92} \\
+LR & relative & \num{2770.0} & \num{2509.0} & \num{2.87} & \num{2.60} \\
+DT & relative & \num{2524.9} & \num{2550.7} & \num{2.40} & \num{2.43} \\
+RF & relative & \num{2429.3} & \num{2381.1} & \num{2.36} & \num{2.32} \\
+SVR & absolute & \num{2410.6} & \num{1866.4} & \num{2.42} & \num{1.86} \\
+XGB & relative & \num{2441.0} & \num{2321.6} & \num{2.38} & \num{2.28} \\
 \bottomrule\end{tabular}
 \end{table}

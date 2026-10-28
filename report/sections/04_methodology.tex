@@ -1,0 +1,54 @@
+\section{Methodology}\label{sec:method}
+\subsection{Features}\label{sec:features}
+All features are built on the full chronological series and the data are split afterwards; every load-history feature is shifted by at least the horizon $h$, so this order cannot leak future values. \Cref{tab:features} lists the groups.
+
+\textbf{Calendar.} Hour, weekday and a weekend flag, plus sine/cosine encodings so that 23:00 and 00:00, or Sunday and Monday, are close. No \code{month} or \code{dayofyear} feature is used: December never appears in training, so such a feature would force the model to extrapolate.
+
+\textbf{Special days.} Separate flags for religious holidays, civil holidays and Ramadan (\cref{sec:data}).
+
+\textbf{Load history.} Lags $y_{t-k}$ with $k\ge h$: \code{lag_24} and \code{lag_48} for \hday; \code{lag_1}, \code{lag_2}, \code{lag_3} and \code{lag_24} for \hone. Rolling means and the rolling standard deviation are computed on the series shifted by $h$ first, so no window contains $y_t$. A checker recomputes every lag and rolling value by hand at 200 random timestamps, and a deliberately unshifted rolling mean is correctly detected.
+
+\textbf{Weather.} The five measured weather variables of the target hour. This is a perfect-forecast assumption: in operation they would have to be replaced by weather forecasts (\cref{sec:conclusion}).
+
+The models use feature set D (17 columns for \hday, 19 for \hone). The weekly lag and rolling features are built but only used by the Naive-168h baseline and the ablation, which showed that they hurt (\cref{sec:ablation}). The first 191 hours (168 for \hone) lack history and are dropped, so the data start on 8 January.
+\begin{table}[H]\centering\small
+\caption{Feature groups (T03). Model inputs are feature set D.}\label{tab:features}
+\begin{tabularx}{\linewidth}{@{}p{.2\linewidth}Xp{.2\linewidth}@{}}\toprule
+Group & Features & Used by the models \\\midrule
+Weather (5) & Temperature, humidity, wind speed, general and diffuse flows (target hour) & both horizons \\
+Calendar (7) & Hour, weekday, weekend flag, sin/cos of hour and weekday & both horizons \\
+Special days (3) & Religious holiday, civil holiday, Ramadan & both horizons \\
+Daily lags (2) & $y_{t-24}$, $y_{t-48}$ & \hday \\
+Recent lags (4) & $y_{t-1}$, $y_{t-2}$, $y_{t-3}$, $y_{t-24}$ & \hone \\
+Weekly / rolling (4) & $y_{t-168}$, 24-h rolling mean and SD, 168-h rolling mean (all shifted by $h$) & no (ablation only) \\
+\bottomrule\end{tabularx}
+\end{table}
+
+\subsection{Chronological split and cross-validation}
+The data are split by date (\cref{tab:splits}): training January--October, validation November, and test December. Development (January--November) is used for every decision: features, hyperparameters and model selection. December is predicted once, at the final step.
+\input{report/tables/splits.tex}
+
+Within development, \code{TimeSeriesSplit(n_splits=5, test_size=720)} creates five expanding-window folds, each validating the 30 days that follow its training window (\cref{fig:split}; exact dates in \cref{tab:folds}, appendix). Validation windows run from early July to the end of November, so the summer peak is part of the evaluation. The last fold coincides with the November validation month. Scalers are fitted inside each training fold through sklearn pipelines.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F10_split_and_folds.png}
+\caption{Chronological split and the five expanding-window folds (F10). December is outside every fold.}\label{fig:split}
+\end{figure}
+
+\subsection{Baselines and models}
+Two seasonal naive baselines set the minimum level a model must beat: \textbf{Naive-24h}, $\widehat y_t=y_{t-24}$ (``tomorrow equals today''), and \textbf{Naive-168h}, $\widehat y_t=y_{t-168}$ (same hour last week). The five models are linear regression (Ridge when tuned), a decision tree (DT), a random forest (RF, 100 trees by default), RBF SVR and XGBoost (XGB). LR and SVR standardise their inputs; SVR also standardises the target, because the default $\epsilon=0.1$ is meaningless for loads around \num{70000} kW. All random seeds are 42.
+
+\subsection{Relative target}\label{sec:delta}
+Tree-based models predict the mean of the training targets in a leaf, so they can never predict above the highest load seen in training. In the July fold, 12\% of the validation hours exceed the training maximum (\num{133130} versus \num{110711} kW), and absolute tree models under-forecast them (\cref{sec:cv}). The relative target asks the model to learn the deviation from yesterday instead:
+\begin{equation}
+r_t=y_t-y_{t-24},\qquad \widehat y_t=y_{t-24}+g(\mathbf x_t),
+\label{eq:delta}
+\end{equation}
+where $g$ is any regressor and $y_{t-24}$ also remains an input. The load level may reach new highs, but the day-to-day deviation stays within the range seen in training; the level is carried by $y_{t-24}$ through an addition, which has no upper bound. Relative versions are marked with $\Delta$ (e.g.\ RF $\Delta$). Both target types are tuned for every model and the better one is chosen on CV.
+
+\subsection{Metrics and selection rule}
+Models are compared with RMSE and MAE (kW), MAPE (\%) and R$^2$. CV results are the mean and sample standard deviation over the five folds. The skill score against the baseline is
+\begin{equation}
+S=1-\frac{\mathrm{RMSE}_{\mathrm{model}}}{\mathrm{RMSE}_{\mathrm{Naive\text{-}24h}}},
+\label{eq:skill}
+\end{equation}
+the share of the baseline error that the model removes. The final model is the tuned version with the lowest mean CV RMSE; the test results are reported but never used for selection.

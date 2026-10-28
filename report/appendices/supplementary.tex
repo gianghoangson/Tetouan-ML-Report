@@ -1,83 +1,42 @@
-\section{Supplementary Reproducibility Material}\label{sec:supplementary}
-\subsection{Artifact-based reproduction}
-The report is reproducible from the saved numerical tables and existing figures without fitting models. From the repository root, \code{python report/build_tables.py} regenerates the report's table fragments and source map. \code{python report/check_evidence.py} independently checks stored numerical evidence, including all h24 prediction columns, without executing notebooks. The complete-report validator checks inputs, labels, citations and source hashes. Compilation commands and the precise scope of each helper are documented in \code{report/README.md}.
-
-The evidence extracts retain PDF page boundaries and notebook cell indices. \code{source_manifest.json} records hashes of the audited project artifacts, \code{table_sources.json} maps generated tables to CSV/JSON inputs, and \code{research_audit.md} maps important narrative claims. The report-generation helpers write within \code{report/}; they do not regenerate project experiments. The notebook runner is intentionally excluded from this compilation workflow because normal execution would fit models and overwrite saved notebook/results outputs.
-
-\subsection{Recorded environment and experiment execution}
-\Cref{tab:dependencies} reproduces the dependency pins recorded by the repository. Its experiment environment is documented as Python 3.12 with seed 42. The report inspection environment is distinct and was not used to refit the results. Package pins are provenance statements; this report does not certify that a fresh environment was installed or every artifact was reproduced end to end.
+\section{Supplementary Material}\label{sec:supplementary}
+\subsection{Reproducibility}
+All results come from the project repository. \code{python run_all.py} runs the whole pipeline in order and regenerates every result table and figure; \code{TETOUAN_N_JOBS} sets the number of CPU threads and changes speed only. Results are reproducible because library versions are pinned (\cref{tab:dependencies}, Python 3.12), every model and search uses seed 42, and the split is defined by fixed dates. Only the timing columns change between runs.
 \input{report/tables/dependencies.tex}
 
-The documented notebook order is EDA, features, November baselines, temporal CV, tuning, ablation/horizon, final test analysis and leakage diagnostics. \code{TETOUAN_N_JOBS} controls search parallelism. Smoke mode changes periods and model/search budgets and writes separate outputs under \code{results/smoke/}; its scores are code-check outputs, not the reported experiments. No full or smoke experiments were executed to prepare this report. Hardware, exact execution history, model binaries and h1 individual predictions are not archived.
+\subsection{Cross-validation folds and Level 0--2 results}
+\input{report/tables/folds.tex}
+\input{report/tables/baselines.tex}
+\input{report/tables/cv.tex}
+\input{report/tables/cv_folds.tex}
 
-\subsection{Repository organization}
-\begin{verbatim}
-Machine-Learning/
-  README.md                 project overview
-  requirements.txt          recorded experiment dependencies
-  run_all.py                notebook execution runner
-  data/                     existing data artifacts
-  docs/                     guideline, literature review and logs
-  notebooks/                ordered notebooks 01--08
-  src/                      config, data, features, evaluate,
-                            models, viz, and package initializer
-  results/
-    tables/                 saved CSV metrics/searches and JSONs
-    figures/                existing PNG assets
-  report/
-    main.tex                root-relative LaTeX entry point
-    references.bib          traceable bibliography
-    research_audit.md       evidence and discrepancy audit
-    sections/               thirteen report sections
-    appendices/             supplementary material
-    tables/                 generated LaTeX table fragments
-    evidence/               extracts, manifests and checks
-\end{verbatim}
+\subsection{Hyperparameter tuning}
+\input{report/tables/tuning.tex}
+\input{report/tables/selected_h24.tex}
 
-\subsection{Supplementary metric variability}
-\Cref{tab:cv_variability} gives mean and sample SD for every default-CV metric. These statistics describe temporal fold variation, not independent-seed repetitions. They complement the fold-specific RMSEs in \cref{tab:cv_folds}.
-\input{report/tables/cv_variability.tex}
-\FloatBarrier
+\subsection{Ablation}
+\input{report/tables/ablation.tex}
 
-\subsection{Selected parameters and search traceability}
-\Cref{tab:parameters} lists both horizons' selected absolute and residual configurations. Floating values are rounded for display; full precision remains in \code{best_params.json} and \code{best_params_h1.json}. A prefix omitted from the table belongs to an estimator wrapper, not to a different parameter. \Cref{tab:selected_h24} provides the compact h24 view used in the main analysis.
-\input{report/tables/parameters.tex}
-
-\Cref{tab:search_inventory} identifies the selected zero-based data row and mean CV RMSE for each saved search. It supports tracing a result back to individual sampled configurations. The selected search score is conditional on the same folds used to choose it; it is not an independently estimated generalization error.
-\input{report/tables/search_inventory.tex}
-
-\subsection{Public-code survey}
-\Cref{tab:survey} preserves the ten links and heterogeneous reported values from the repository-authored GitHub survey. No external project was rerun. Some survey descriptions simplify protocol details; the linked repositories and the local notes remain the appropriate starting points for further inspection. These entries are contextual evidence, not additional benchmark participants.
-\input{report/tables/survey.tex}
-
-\subsection{Additional figures}\label{sec:supp_figures}
-\Cref{fig:zone_event,fig:wind,fig:holidays} retain the quality and calendar diagnostics discussed in \cref{sec:data}. The zone event does not establish a switching mechanism, the wind distribution does not prove sensor malfunction, and holiday profiles do not control seasonal confounding. All observations are retained in the implemented preprocessing.
-\begin{figure}[tbp]\centering
-\includegraphics[width=\linewidth]{DQ01_zone_transfer_20170420.png}
-\caption{Zone and total-load behavior around 20 April (DQ01). Redistribution between networks is a plausible interpretation; no independent operational log confirms it.}\label{fig:zone_event}
+\subsection{Final test and leakage experiment}
+\input{report/tables/worst_days.tex}
+\input{report/tables/runtime.tex}
+\input{report/tables/leakage.tex}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F17b_residuals.png}
+\caption{Residuals (prediction minus actual) of the selected SVR over December and their distribution.}\label{fig:test_residuals}
 \end{figure}
-\begin{figure}[tbp]\centering
-\includegraphics[width=.88\linewidth]{DQ02_windspeed_bimodal.png}
-\caption{Whole-year wind-speed diagnostic (DQ02). The bimodal distribution motivates caution about sensor semantics; the pipeline retains the observed values. This descriptive graphic includes December.}\label{fig:wind}
+\begin{figure}[H]\centering
+\includegraphics[width=.6\linewidth]{F17c_scatter.png}
+\caption{Actual against forecast December load of the selected SVR, with the line $y=x$.}\label{fig:test_scatter}
 \end{figure}
-\begin{figure}[tbp]\centering
-\includegraphics[width=\linewidth]{F08_weekday_holiday.png}
-\caption{Development-period weekday and holiday load profiles (F08). Group differences motivate calendar predictors but are neither causal effects nor independently validated event forecasts.}\label{fig:holidays}
+\begin{figure}[H]\centering
+\includegraphics[width=.8\linewidth]{F19b_shap_summary.png}
+\caption{Detailed SHAP summary of the relative RF: one dot per December hour, colour is the feature value (red high, blue low).}\label{fig:shap_detail}
 \end{figure}
-\FloatBarrier
-
-\Cref{fig:test_scatter} supplements the selected-SVR test analysis: most observations are close to the equality line, but local departures remain. \Cref{fig:shap_dependence} shows conditional associations within the residual RF. Its lag-24 contributions explain the learned correction and exclude the explicit lag base; its temperature pattern is not a causal demand-response estimate.
-\begin{figure}[tbp]\centering
-\includegraphics[width=.70\linewidth]{F17c_scatter.png}
-\caption{Selected h24 SVR forecasts against actual December loads (F17c). The equality reference aids assessment of large local misses; proximity alone does not establish calibrated uncertainty or temporal independence.}\label{fig:test_scatter}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F19a_feature_importance.png}
+\caption{Relative RF: built-in importance (left, explains the deviation from \code{lag_24}) and test permutation importance (right, full forecast).}\label{fig:importance}
 \end{figure}
-\begin{figure}[tbp]\centering
+\begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{F19c_shap_dependence.png}
-\caption{Residual-RF Tree SHAP dependence plots for temperature and lag-24 on December inputs (F19c). Values are contributions to the residual model output in kW, not to the separately added baseline.}\label{fig:shap_dependence}
+\caption{SHAP dependence of the relative RF on temperature and \code{lag_24} (contributions to the deviation from yesterday, kW).}\label{fig:shap_dependence}
 \end{figure}
-\FloatBarrier
-
-\subsection{Unavailable artifacts and unresolved metadata}
-The planned F09 pipeline graphic is absent; no replacement experiment output is invented. F14 is reviewed but omitted because its jointly varying parameters do not provide controlled single-parameter sensitivity. F20 is omitted to avoid visually ranking incompatible literature tasks. The related-work table and survey preserve the underlying contextual evidence instead.
-
-Outstanding metadata include student/team names and IDs, instructor and submission date, wind/radiation units, timestamp timezone, measurement latency and detailed hardware configuration. The local row count differs from the dataset landing-page count. The literature review leaves certain paper targets, horizons and optimizer descriptions unresolved; these qualifications are retained in \cref{sec:related}. None prevents compilation, but they constrain the scientific interpretation and should be resolved before stronger claims or operational use.

@@ -1,18 +1,16 @@
-\begin{table}[tbp]\centering\small
-\caption{November validation, h24: seasonal baselines, default regressors and RF-P1 (T04). RMSE/MAE are in kW; MAPE is percent.}\label{tab:baselines}
+\begin{table}[H]\centering\small
+\caption{Level 0 and Level 1: November validation of the seasonal baselines and the default regressors, h24 (T04). RMSE/MAE in kW; MAPE in percent.}\label{tab:baselines}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrrrrr}
 \toprule
 Model & Train RMSE & Val. RMSE & Val. MAE & MAPE & R$^2$ \\
 \midrule
 XGB & \num{812.4} & \num{2161.4} & \num{1598.4} & \num{2.42} & \num{0.9760} \\
-RF-P1 & \num{805.0} & \num{2192.0} & \num{1620.3} & \num{2.50} & \num{0.9753} \\
 SVR & \num{1567.7} & \num{2195.2} & \num{1601.1} & \num{2.52} & \num{0.9753} \\
 RF & \num{794.4} & \num{2227.5} & \num{1616.7} & \num{2.47} & \num{0.9745} \\
 LR & \num{2670.5} & \num{2288.7} & \num{1734.0} & \num{2.76} & \num{0.9731} \\
 DT & \num{0.0} & \num{2992.4} & \num{2190.0} & \num{3.34} & \num{0.9540} \\
 Naive-24h & \num{3497.5} & \num{3076.4} & \num{2080.7} & \num{3.27} & \num{0.9514} \\
 Naive-168h & \num{4686.4} & \num{3202.9} & \num{2425.8} & \num{3.79} & \num{0.9473} \\
-MeanProfile & \num{9628.3} & \num{9369.6} & \num{8560.8} & \num{13.50} & \num{0.5493} \\
 \bottomrule\end{tabular}
 \end{table}

@@ -1,0 +1,31 @@
+\section{Final Test and Error Analysis}\label{sec:final}
+\subsection{December test}
+Once every choice is fixed, each model is refitted on the whole development set (\num{7825} hours, 8 January -- 30 November) and predicts the 720 hours of December once. Lag inputs use the loads measured up to the previous day. The final model was chosen before this step: the absolute-target SVR, which has the lowest CV RMSE.
+
+The selected SVR reaches RMSE \num{1625} kW, MAE \num{1095} kW, MAPE 1.78\% and R$^2=0.987$ (\cref{tab:test24}): a 50.7\% RMSE reduction against Naive-24h (\num{3296} kW). It also beats Naive-168h (\num{2620} kW), which happens to be the stronger baseline in December. Every tuned model beats Naive-24h, and the better version of each model also beats Naive-168h. The relative SVR has the lowest test RMSE (\num{1419} kW), but it is not selected: switching after seeing the test would turn December into a validation set, and the two versions were tied on CV. Test errors are 20--35\% below the CV estimates, because December has no extrapolation problem and the final models see more data, whereas the CV folds include the summer peak. The four best versions on CV are all among the five best on the test set, so the CV ranking was reliable.
+\input{report/tables/test24.tex}
+
+\subsection{Error analysis}
+The forecast follows the actual load for almost the whole month (\cref{fig:test_series}). The MAE equals 1.72\% of the mean December load (\num{63751} kW), half the error of ``tomorrow equals today''. The errors are centred on zero (bias $-202$ kW) with no trend over the month (residual plots in \cref{fig:test_residuals}, appendix).
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F17_test_actual_vs_pred.png}
+\caption{Actual and forecast load of the selected SVR over December, with a one-week zoom including Naive-24h.}\label{fig:test_series}
+\end{figure}
+
+By hour and weekday (\cref{fig:test_groups}), the model removes most of the baseline error during the day and on Mondays (MAE \num{1007} versus \num{5294} kW for Naive-24h, which copies Sunday). The worst day by far is 1 December, the religious holiday of Mawlid: MAE \num{4579} kW, with the daily mean forecast at \num{54957} kW against \num{58574} kW actual (\cref{tab:worst_days}, appendix). The religious-holiday flag was learned mostly from the two Eid holidays ($-8$\% to $-13$\%), so the model predicts too large a drop. Saturday 2 and Sunday 3 December, around the holiday, are also among the five worst days.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F18_error_by_hour_weekday.png}
+\caption{December MAE by hour of day and by weekday (holidays separate) for the selected SVR and Naive-24h.}\label{fig:test_groups}
+\end{figure}
+
+\subsection{Explainability}
+SHAP decomposes each forecast into additive contributions of the features\cite{lundberg2017}. Its tree explainer is exact and fast for tree ensembles, so the explanations use the best tree model on CV, the relative RF. This model learns the deviation from yesterday, so SHAP explains \emph{why today differs from yesterday}. \Cref{fig:shap} groups related features (for example the four weekday encodings) and averages over the 720 December hours.
+
+The weekday features account for most of the correction (mean absolute contribution about \num{1360} kW, five times the next group), followed by the hour of day, the load lags and solar radiation; weather matters little in December, when there is no cooling demand. Panel (b) shows the mechanism: on Mondays the model adds about \num{3800} kW to yesterday's Sunday load, and on Sundays it removes about \num{3200} kW because yesterday was a Saturday, exactly as the EDA suggested. The detailed SHAP summary and the permutation importance are given in \cref{fig:shap_detail,fig:importance} (appendix); permutation importance confirms that \code{lag_24} is the foundation of the forecast (shuffling it raises the test RMSE by more than \num{17000} kW).
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F19d_shap_groups.png}
+\caption{SHAP explanation of the relative RF on December: (a) average absolute contribution of each feature group to the correction of yesterday's load; (b) mean contribution of the weekday features on each day of the week.}\label{fig:shap}
+\end{figure}
+
+\subsection{Accuracy and cost (RQ3)}
+SVR is the most accurate model but the slowest to fit (a few seconds); relative XGB and relative RF are 6--8\% worse in test RMSE and fit in under half a second; Ridge fits instantly but is about 35\% worse (\cref{tab:runtime}, appendix). With about \num{8000} training rows every model is fast enough for daily operation, so accuracy should come first.

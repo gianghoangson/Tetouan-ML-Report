@@ -1,0 +1,20 @@
+\section{Baselines and Cross-Validation}\label{sec:baseline}
+\subsection{Level 0 and Level 1: one validation month}
+The first experiment checks whether the models can beat the naive baselines before any tuning. The five models are trained with default hyperparameters on January--October and evaluated on November (\cref{fig:baseline_comparison}; full numbers in \cref{tab:baselines}, appendix). Naive-24h reaches RMSE \num{3076} kW, MAPE 3.27\% and R$^2=0.951$: copying yesterday already explains most of the variance, as the ACF predicted. Naive-168h is slightly worse (\num{3203} kW).
+
+Every model except DT clearly beats Naive-24h: XGB has the lowest RMSE (\num{2161} kW, skill 29.7\%), followed by SVR (\num{2195}), RF (\num{2228}) and LR (\num{2289}). The default DT grows until each leaf holds a single sample: its training error is zero, but its validation RMSE (\num{2992} kW) is barely below the baseline. The guideline checkpoint is passed: the models beat the naive baseline before tuning.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F11_level1_vs_baselines.png}
+\caption{Level 1: November RMSE and MAPE of the default models and the baselines. The dashed line marks Naive-24h.}\label{fig:baseline_comparison}
+\end{figure}
+
+The weekday effect seen in the EDA shows up in the errors: Naive-24h has an MAE of \num{4077} kW on Mondays (it copies Sunday) and \num{3466} kW on Sundays (it copies Saturday), 2.5--3 times its Tuesday--Friday level. The best model roughly halves the Monday error thanks to the weekday features.
+
+\subsection{Level 2: five temporal folds}\label{sec:cv}
+One validation month may be unrepresentative. The second experiment keeps the same default models and only replaces the November split with the five temporal folds (\cref{fig:cv_folds}; numbers in \cref{tab:cv,tab:cv_folds}, appendix). The ranking changes: LR becomes the best default model (\num{2792} $\pm$ \num{623} kW), followed by RF (\num{3070}) and XGB (\num{3265}), while SVR (\num{3969}) and DT (\num{4048}) fall behind Naive-24h (\num{3392}). The last fold reproduces the November results exactly, so a single month would have given a misleading ranking.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F12_rmse_per_fold.png}
+\caption{Level 2: RMSE of the default models and the baselines in each validation fold. Fold 0 covers 4 July -- 2 August.}\label{fig:cv_folds}
+\end{figure}
+
+The large differences come from fold 0 (July). There, RF, XGB, SVR and DT reach \num{5397}, \num{6230}, \num{8775} and \num{6111} kW, against \num{3071} kW for LR and \num{4024} kW for Naive-24h. The cause is extrapolation: 12\% of the July hours exceed the highest load in the training window, and tree models cannot predict above that range (\cref{sec:delta}); the RBF SVR also degrades far from its training data. From fold 2 onwards, RF and XGB beat LR again. This finding motivates the relative target tested in the next section.

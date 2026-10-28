@@ -1,0 +1,13 @@
+\section{Hyperparameter Tuning}\label{sec:tuning}
+This experiment tunes each model with \code{RandomizedSearchCV} on the same five folds as Level 2, so the change from Level 2 to Level 3 is the effect of tuning. Random search samples a fixed number of configurations from given ranges\cite{bergstra2012}: 20 for Ridge, 40 for DT, 30 for RF and SVR, and 50 for XGB (\cref{tab:search_space}). Each model is tuned twice, with the absolute and with the relative target, trying the same configurations, and the one with the lowest mean CV RMSE is kept. Linear regression is tuned as Ridge, because plain least squares has no hyperparameter. Log-uniform distributions are used for parameters whose scale is unknown, so that every order of magnitude is equally likely to be tried.
+\input{report/tables/search_space.tex}
+
+\Cref{fig:tuning} compares, for each model, the default version with the two tuned versions (numbers in \cref{tab:tuning}, appendix). The best version is the absolute SVR: \num{2411} $\pm$ \num{766} kW, 39\% below its default. Tuning matters most for SVR, which is very sensitive to its regularisation parameter $C$, and hardly at all for Ridge. The relative SVR (\num{2427}), relative RF (\num{2429}) and relative XGB (\num{2441}) follow within 1.3\%, less than the fold-to-fold variation.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F13_default_vs_tuned.png}
+\caption{CV RMSE per model: default, tuned with the absolute target and tuned with the relative target (mean $\pm$ SD over five folds). Percentages compare with the default model.}\label{fig:tuning}
+\end{figure}
+
+For the tree models the relative target matters more than tuning. Tuning alone lowers absolute RF by only 2\% and absolute XGB by 8\%, while the relative target brings them to \num{2429} and \num{2441} kW. The gain comes from the July fold, where RMSE drops from \num{5554} to \num{3215} kW for RF and from \num{5344} to \num{2979} kW for XGB. The relative target is better for LR, DT, RF and XGB; for SVR the two versions are almost tied.
+
+The same folds are used to choose and to report the configurations, so these CV scores are slightly optimistic; the December test measures the selected model again.

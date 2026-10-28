@@ -1,63 +1,62 @@
-\section{Dataset Description and Exploratory Data Analysis}\label{sec:data}
-\subsection{Source, coverage and measurement scale}
-The local data file is the UCI Tetouan dataset\cite{uci}, containing timestamped meteorological variables and loads for three distribution zones. The actual file contains \num{52416} observations from 1 January 2017 at 00:00 to 30 December at 23:50, at ten-minute intervals. This is 364 complete days, not a complete 365-day year. UCI's landing-page instance count and the supplied literature review state \num{52417}; the report uses the directly verified local count and records the metadata discrepancy.
+\section{Dataset and Exploratory Data Analysis}\label{sec:data}
+\subsection{Data and quality checks}
+The dataset\cite{uci} contains \num{52416} ten-minute records from 1 January 2017 00:00 to 30 December 2017 23:50 (364 days): temperature, humidity, wind speed, two diffuse-flow (solar radiation) measurements and the loads of three distribution zones (Quads, Smir, Boussafou). Averaging each hour gives \num{8736} hourly rows. The target is the hourly mean of the three-zone sum, in kW (\cref{tab:descriptive}).
 
-Hourly averaging produces \num{8736} observations. The response is the hourly mean of the three-zone sum, reported as average power in kW. The project does not model accumulated energy consumption. Temperature and humidity use the repository's Celsius and percent conventions; wind and diffuse-flow units are unspecified in the repository's data dictionary. They are retained with their original numerical scales. The names \code{GenDiffuse} and \code{Diffuse} are positional renamings, not an independently verified reinterpretation of the physical sensor channels.
-
-\Cref{tab:descriptive} reports raw ten-minute statistics across the full available year. The city's aggregate mean is approximately \num{71222.9} kW, while the three zones have different levels and variability. Those raw extrema should not be confused with extrema of the smoothed hourly target used for training.
+Data-quality checks find no missing values, duplicates, irregular time steps or non-positive values, so no row is removed or imputed. Two anomalies are kept as they are. On 20 April at noon, load moves from Zone 1 to Zone 2 for a few hours; the city total barely changes, which is one reason to forecast the total. Wind speed is almost binary (57\% of samples $\le 0.1$, 38.6\% between 4.8 and 5.1), which suggests an on/off instrument signal; it is kept and listed as a limitation. Unless stated otherwise, the figures below use January--November only, so that the December test set does not influence feature design.
 \input{report/tables/descriptive.tex}
 
-\subsection{Data quality and retained anomalies}
-The saved checks find no missing cells, duplicate rows, duplicate timestamps or irregular ten-minute/hourly intervals. All numeric values are positive, and the longest repeated-value run is nine ten-minute samples. These checks justify the absence of missing-value imputation in the observed dataset; they do not prove that every sensor reading is physically correct.
-
-Two observations warrant specific attention. Around midday on 20 April, Zone 1 falls sharply while Zone 2 subsequently rises; the hourly total also dips. This is consistent with temporary redistribution between networks, but the repository has no switching log that proves the mechanism. Aggregating zones reduces sensitivity to redistributions that conserve total load; it cannot remove an actual interruption or simultaneous measurement error. Wind speed is strongly bimodal: the saved notebook places about 57.0\% of observations at or below 0.1, and 38.6\% between 4.8 and 5.1. Instrument behavior is a plausible explanation, not an established diagnosis. Both patterns remain in the data. \Cref{fig:zone_event,fig:wind} in the appendix preserve the diagnostics.
-
-\subsection{Seasonal and zone-level variation}
-\Cref{fig:annual} shows pronounced summer elevation. Monthly mean total load is approximately \num{88174} kW in July versus \num{65105} kW in November and \num{63751} kW in December. This shift explains why validation windows containing summer can challenge a model trained on earlier months. It also warns against interpreting the relatively low December error as representative of the entire year.
-\begin{figure}[tbp]\centering
+\subsection{Seasonal pattern}
+\Cref{fig:annual} shows a flat load of about \num{66000}--\num{70000} kW from January to May, a summer rise to a July peak of \num{88174} kW (about 30\% above the base level), and a quick fall in September. December, the test month, averages \num{63751} kW, close to November (\num{65105} kW). The summer peak matters later: models trained on the first half of the year must forecast July loads higher than anything seen in training.
+\begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{F01_total_hourly_year.png}
-\caption{Hourly total load and a centered seven-day descriptive mean (F01). Summer changes the load level and amplitude. December is shaded; this whole-year plot is descriptive, and its centered mean is not a model feature.}\label{fig:annual}
+\caption{Hourly total load over 2017 with a centred seven-day mean (F01). December (test) is shaded.}\label{fig:annual}
 \end{figure}
 
-The zone curves in \cref{fig:zones} show that the aggregate combines different seasonal patterns. Zone 3 has a particularly large summer rise, whereas Zone 2 grows relative to Zone 3 later in the year. Such patterns motivate a city-total target for this study but do not establish the cause of each zone-level change. There are no separately trained zone models or zone forecast metrics in the saved results.
-\begin{figure}[tbp]\centering
+The three zones behave differently (\cref{fig:zones}). Zone 3 rises most in summer (its July mean is 2.6 times its December mean), and from September Zone 2 grows while Zone 3 falls, consistent with load transfers between networks. Forecasting the city total avoids these transfers.
+\begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{F02_zones_daily.png}
-\caption{Daily means of the three distribution-zone loads (F02). Their differing seasonal behavior contributes to the changing city total. December is shown for description, not as a development validation fold.}\label{fig:zones}
+\caption{Daily mean load of the three distribution zones (F02).}\label{fig:zones}
 \end{figure}
 
-\subsection{Daily, weekly and special-day patterns}
-The development-period seasonal profiles in \cref{fig:season} have early-morning minima around 06:00--07:00 and evening maxima around 19:00--20:00. Their peak-to-trough ratios range approximately from 1.89 to 2.11. The one-hour shift in evening peak timing is compatible with seasonal daylight and possibly clock conventions, but no timezone or daylight-saving correction is implemented.
-\begin{figure}[tbp]\centering
-\includegraphics[width=.90\linewidth]{F03_profile_by_season.png}
-\caption{Mean daily profiles by season, January--November only (F03). The common cycle motivates hour encodings; changes in level motivate historical load predictors. The chart does not isolate temperature or daylight effects.}\label{fig:season}
+\subsection{Daily and weekly cycles}
+Every season has the same daily shape (\cref{fig:season}): a minimum at 06:00--07:00, a daytime plateau and an evening peak at 19:00--20:00, about twice the minimum. The daily cycle is the strongest structure in the data and motivates the hour features and the daily lags. Summer is higher at every hour, most visibly at night.
+\begin{figure}[H]\centering
+\includegraphics[width=.9\linewidth]{F03_profile_by_season.png}
+\caption{Mean daily load profile by season, January--November (F03).}\label{fig:season}
 \end{figure}
 
-The relative heatmap in \cref{fig:weekday} removes the large daily cycle by comparing each hour with the Monday--Friday mean of that hour. Sundays are approximately 5.9\% lower on average, with stronger early-morning deviations. This gives a specific prediction for the baseline analysis: copying Sunday's load into Monday should underestimate some Monday hours. The ML models can condition that correction on weekday and hour.
-\begin{figure}[tbp]\centering
+The right panel of \cref{fig:weekday} removes the daily cycle by comparing each hour with the Monday--Friday mean of the same hour. Sundays are 5.9\% lower on average and about 15\% lower at 07:00--08:00; Saturday mornings are 4--6\% lower. A ``copy yesterday'' forecast will therefore be too low on Mondays and too high on Sundays, which the baseline results confirm (\cref{sec:baseline}).
+\begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{F04_heatmap_hour_weekday.png}
-\caption{Development-period hour--weekday patterns (F04). The right panel expresses deviations relative to the weekday mean at the same hour, revealing variation otherwise dominated by the daily load cycle.}\label{fig:weekday}
+\caption{Mean load by hour and weekday (left) and deviation from the Monday--Friday mean of the same hour (right), January--November (F04).}\label{fig:weekday}
 \end{figure}
 
-Ramadan and the preceding four weeks have distinct nighttime profiles (\cref{fig:ramadan}); the saved analysis finds a difference near \num{32142} kW at 02:00. The comparison also spans a seasonal and temperature change. It motivates a Ramadan indicator without establishing a causal effect of religious practice or ruling out weather contributions. Holiday deviations relative to a centered fifteen-day median are also heterogeneous (\cref{fig:holidays}). The repository distinguishes religious and civil holidays rather than assigning one common effect to every listed date. Centered smoothing here is descriptive EDA only.
-\begin{figure}[tbp]\centering
+\subsection{Ramadan and holidays}
+Ramadan (27 May -- 25 June) reshapes the daily profile (\cref{fig:ramadan}): the load between 00:00 and 03:00 is up to \num{32142} kW higher than in the four preceding weeks (the pre-dawn meal), mornings are lower and evenings higher. Mean temperature is only \SI{1.8}{\celsius} higher, so weather does not explain the change; this motivates an \code{is_ramadan} flag.
+\begin{figure}[H]\centering
 \includegraphics[width=.93\linewidth]{F05_ramadan_profile.png}
-\caption{Ramadan and pre-Ramadan hourly profiles, with listed public holidays removed (F05). Large nighttime differences motivate a special-period indicator; seasonal confounding remains.}\label{fig:ramadan}
+\caption{Hourly load profile during Ramadan and the four preceding weeks, holidays excluded (F05).}\label{fig:ramadan}
 \end{figure}
 
-\subsection{Weather association and serial dependence}
-The weather scatter and correlation matrix in \cref{fig:temperature,fig:correlation} concern January--November hourly observations. Total load has Pearson correlation approximately 0.49 with temperature, $-0.30$ with humidity, 0.21 with wind speed, 0.15 with general diffuse flows and 0.02 with diffuse flows. The temperature scatter has separate time-of-day bands and a stronger high-temperature load association. These are predictive associations; they do not identify cooling consumption separately or demonstrate that weather effects are absent at lower temperatures.
-\begin{figure}[tbp]\centering
-\includegraphics[width=.80\linewidth]{F06a_temperature_vs_total.png}
-\caption{Target-hour temperature and total load, colored by time of day (F06a). Distinct bands indicate that calendar conditioning is relevant when interpreting the weather--load relationship.}\label{fig:temperature}
-\end{figure}
-\begin{figure}[tbp]\centering
-\includegraphics[width=.77\linewidth]{F06b_correlation.png}
-\caption{Pearson correlations on hourly development data (F06b). Strong correlations between zones and their sum are expected arithmetically; contemporaneous zones are excluded as forecasting inputs.}\label{fig:correlation}
+\Cref{fig:holidays} compares each day with the median of the surrounding 15 days, which removes the seasonal trend. Sundays are 5.9\% lower. Religious holidays drop sharply (Eid al-Fitr and Eid al-Adha: $-8$\% to $-13$\%, mean about $-9$\%), whereas civil holidays are weaker and uneven (mean about $-3$\%; 1 May and 6 November about $-6$\%, other dates close to normal days). The holiday flag is therefore split into religious and civil holidays.
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F08_weekday_holiday.png}
+\caption{Daily load by weekday and on holidays, as deviation from the centred 15-day median, January--November (F08).}\label{fig:holidays}
 \end{figure}
 
-The autocorrelation in \cref{fig:acf} is approximately 0.98 at lag 24 and 0.95 at lag 168, with recurring daily peaks. These findings motivate seasonal lags and a previous-day baseline. High autocorrelation does not determine the optimal feature set: a weekly predictor may still hurt a particular fitted model under a changing load regime, as the ablation later demonstrates. The plotted ACF bands are not forecast intervals.
-\begin{figure}[tbp]\centering
+\subsection{Weather and autocorrelation}
+Temperature is the weather variable most correlated with the load ($r=0.49$; humidity $-0.30$, wind speed 0.21, radiation 0.15 and 0.02). The relation is nonlinear (\cref{fig:temperature}): the load barely depends on temperature below about \SI{22}{\celsius} and rises quickly above it (cooling). The three time-of-day bands show that the hour explains more than temperature, which favours nonlinear models. The zones are strongly correlated with the total (\cref{fig:correlation}) but cannot be inputs at the same timestamp, since they are components of the target.
+\begin{figure}[H]\centering
+\includegraphics[width=.8\linewidth]{F06a_temperature_vs_total.png}
+\caption{Temperature against total load, coloured by time of day, January--November (F06a).}\label{fig:temperature}
+\end{figure}
+\begin{figure}[H]\centering
+\includegraphics[width=.75\linewidth]{F06b_correlation.png}
+\caption{Pearson correlations between hourly variables, January--November (F06b).}\label{fig:correlation}
+\end{figure}
+
+The autocorrelation function (\cref{fig:acf}) peaks every 24 hours: 0.98 at lag 24, slowly decaying to 0.95 at lag 72; it is negative ($-0.23$) at lag 12, when day meets night. The value at lag 168 (0.95) stands above its neighbours (0.88 at lags 167 and 169), revealing a weekly cycle. These peaks justify \code{lag_24}, \code{lag_48} and the tested \code{lag_168} for \hday, and \code{lag_1}--\code{lag_3} for \hone. They also mean that Naive-24h is a hard baseline to beat.
+\begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{F07_acf_total.png}
-\caption{Autocorrelation of the hourly total through 200 lags, January--November (F07). Daily and weekly dependence motivate history-based predictors and make randomly shuffled evaluation a poor proxy for future forecasting.}\label{fig:acf}
+\caption{Autocorrelation of the hourly total load up to lag 200, January--November (F07).}\label{fig:acf}
 \end{figure}
-\evidence{Notebook 01 cells 4--43; T01 data-quality/descriptive tables; F01--F08; DQ01--DQ02. F03--F08 use development data; F01/F02 and DQ02 include December.}

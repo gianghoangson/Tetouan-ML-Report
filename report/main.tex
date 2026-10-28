@@ -1,4 +1,4 @@
-% Complete thirteen-section report and supplementary appendix.
+% Ten-section report and supplementary appendix.
 % Compile from the repository root; see report/README.md.
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
@@ -15,7 +15,9 @@
 \usepackage[section]{placeins}
 \usepackage[backend=biber,style=numeric,sorting=none,giveninits=true,maxbibnames=8]{biblatex}
 \addbibresource{report/references.bib}
-\usepackage[hidelinks,unicode]{hyperref}
+\usepackage{xcolor}
+\definecolor{refblue}{RGB}{0,70,170}
+\usepackage[unicode,colorlinks=true,linkcolor=refblue,citecolor=refblue,urlcolor=refblue]{hyperref}
 \usepackage[capitalise,noabbrev]{cleveref}
 \graphicspath{{results/figures/}}
 \sisetup{group-separator={,},group-minimum-digits=4,detect-all}
@@ -30,10 +32,9 @@
 \renewcommand{\floatpagefraction}{0.75}
 \setcounter{tocdepth}{2}
 \newcommand{\code}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\evidence}[1]{\par{\footnotesize\textit{Repository evidence:} #1}\par}
 \newcommand{\hday}{\texttt{h24}}
 \newcommand{\hone}{\texttt{h1}}
-\hypersetup{pdftitle={Machine Learning-Based Electricity Consumption Forecasting in Tetouan City},pdfsubject={Evidence-based Machine Learning course report},pdfauthor={Student/team information pending}}
+\hypersetup{pdftitle={Machine Learning-Based Electricity Consumption Forecasting in Tetouan City},pdfsubject={Evidence-based Machine Learning course report},pdfauthor={Dang Nhat Minh, Giang Hoang Son}}
 
 \begin{document}
 \begin{titlepage}
@@ -86,40 +87,29 @@ regression models\par}
 
 \vspace{1.1cm}
 
-{\small
-Prepared from the repository's saved experiments.\par
-Audit snapshot: 26 October 2026.\par
-}
 
 \end{titlepage}
 
 \pagenumbering{roman}
 \begin{abstract}
-Short-term electricity demand forecasting requires both accurate models and an evaluation protocol that respects the information available when predictions are issued. This study examines the implemented Tetouan City forecasting pipeline using 52,416 ten-minute observations from 2017, aggregated into 8,736 hourly mean loads. The target is the sum of three distribution-zone loads. Linear regression, decision trees, random forests, support vector regression and XGBoost are compared with seasonal naive and mean-profile baselines. Calendar variables, special-day indicators and historical loads complement meteorological predictors. Five expanding-window folds within January--November support feature assessment and randomized hyperparameter search; December provides a separate chronological evaluation period. Absolute targets are compared with corrections to a known lagged load. The development-selected support vector regressor achieves a December RMSE of 1,624.6 kW and MAPE of 1.78\% in the midnight daily forecasting setting, reducing RMSE by 50.71\% against the previous-day baseline. The separately tuned hourly setting achieves 1,195.8 kW RMSE and 1.41\% MAPE. Daily lags provide the largest improvement in the tested feature additions, while weekly and rolling features can worsen validation error. Diagnostic experiments demonstrate that apparent accuracy changes substantially with the split, features and forecast horizon. These results remain conditional on observed target-hour weather, rapid measurement availability and one year of data. Reused development folds and documented test reruns further limit claims of independent validation. The study supports careful temporal evaluation and baseline-relative reporting rather than an algorithm-only interpretation of forecasting performance.
+Distributors need a forecast of every hour of the next day to plan electricity purchases. This project forecasts the hourly load of Tetouan City (sum of three distribution zones, 2017) one day ahead with five conventional models (linear regression, decision tree, random forest, SVR and XGBoost) and compares them with seasonal naive baselines. Evaluation is strictly chronological: five expanding-window folds on January--November are used for every decision, and December is predicted once as the test set. Cross-validation reveals that tree models fail during the July heat wave because they cannot predict above the training range; learning the deviation from yesterday's load fixes this. Daily lags are the most useful feature group, while weekly and rolling features hurt. The SVR selected on cross-validation reaches a December RMSE of 1,625 kW and MAPE of 1.78\%, 50.7\% better than the ``tomorrow equals today'' baseline. A leakage experiment shows that shuffled splits and ten-minute horizons, common in public notebooks, inflate R$^2$ to 0.999 with the same model. Results assume measured target-hour weather and cover a single year.
 \end{abstract}
 \noindent\textbf{Keywords:} electricity demand; Tetouan City; time-series validation; support vector regression; feature engineering; data leakage.
 
 \clearpage
-\tableofcontents
-\clearpage
-\listoffigures
-\clearpage
-\listoftables
+{\hypersetup{linkcolor=black}\tableofcontents}
 \clearpage
 \pagenumbering{arabic}
 \input{report/sections/01_introduction.tex}
 \input{report/sections/02_related_work.tex}
 \input{report/sections/03_dataset_eda.tex}
-\input{report/sections/04_preprocessing_features.tex}
-\input{report/sections/05_methodology.tex}
-\input{report/sections/06_baselines.tex}
-\input{report/sections/07_cross_validation.tex}
-\input{report/sections/08_hyperparameter_tuning.tex}
-\input{report/sections/09_ablation_horizon.tex}
-\input{report/sections/10_final_evaluation.tex}
-\input{report/sections/11_leakage.tex}
-\input{report/sections/12_discussion.tex}
-\input{report/sections/13_conclusion.tex}
+\input{report/sections/04_methodology.tex}
+\input{report/sections/05_baselines_cv.tex}
+\input{report/sections/06_tuning.tex}
+\input{report/sections/07_ablation_horizon.tex}
+\input{report/sections/08_final_evaluation.tex}
+\input{report/sections/09_leakage.tex}
+\input{report/sections/10_discussion_conclusion.tex}
 \FloatBarrier
 \printbibliography[heading=bibintoc,title={References}]
 \clearpage

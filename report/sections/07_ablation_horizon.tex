@@ -1,0 +1,17 @@
+\section{Ablation and Forecast Horizon}\label{sec:ablation}
+\subsection{Feature ablation (RQ2)}
+To measure what each feature group contributes, the groups are added one at a time and RF and XGB are cross-validated after each step, with the tuned hyperparameters kept fixed so that only the features change. Set A contains weather only; B adds calendar; C adds special days; D adds the daily lags; E adds the weekly lag and the rolling features; F is E without weather (\cref{fig:ablation}; numbers in \cref{tab:ablation}, appendix).
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F15_ablation.png}
+\caption{Ablation: CV RMSE as feature groups are added. Dashed lines and squares: relative target; diamonds: set F (E without weather).}\label{fig:ablation}
+\end{figure}
+
+Daily lags are by far the most important group: from C to D the RMSE of RF falls from \num{9168} to \num{3010} kW ($-67$\%), and XGB falls by 66\%. Calendar features reduce the error by about a third (A to B) and special days by another 9\% (B to C), but without load history the models remain far worse than Naive-24h.
+
+Adding the weekly lag and the rolling means (D to E) makes every variant worse, by 13\% to 64\%, almost entirely in the July and August folds. The rolling means average out the daily cycle and keep only the seasonal level, which in July lies above every training value for 87--96\% of the hours. In the stable autumn folds they help by about \num{200} kW at most. They are therefore excluded, and set D is the model feature set; the weekly pattern is still represented by the weekday features. Removing weather (E to F) changes the error by at most 5\%: weather adds little once daily lags are present.
+
+\subsection{Forecast horizon: 1 hour versus 24 hours}
+For \hone, every model keeps its \hday\ configuration (target type and tuned hyperparameters) and only the features change, adding \code{lag_1}--\code{lag_3}. Both horizons use the same five validation windows (\cref{tab:horizon}).
+\input{report/tables/horizon.tex}
+
+Forecasting one hour ahead is clearly easier for SVR: its CV RMSE falls from \num{2411} to \num{1866} kW ($-23$\%) and its MAPE from 2.42\% to 1.86\%. LR improves by 9\% and XGB by 5\%, but RF improves by only 2\% and DT not at all. These tree models learn the deviation from \code{lag_24} with hyperparameters tuned for the day-ahead task (for example a depth-4 DT), so they make little use of the latest hour, whereas SVR uses the absolute target and benefits directly. The horizon thus strongly drives difficulty, which is also why accuracies obtained with very short horizons cannot be compared with day-ahead results.

@@ -1,0 +1,8 @@
+\section{Conclusion}\label{sec:conclusion}
+This project forecasts the hourly electricity load of Tetouan one day ahead under a strictly chronological evaluation. The SVR chosen on cross-validation reaches RMSE \num{1625} kW and MAPE 1.78\% on the December test, halving the error of the Naive-24h baseline (skill 50.7\%).
+
+\textbf{Answers to the research questions.} (RQ1) For every model, the better tuned version beats both naive baselines on CV and on the test. (RQ2) Daily lags are the most useful feature group ($-65$\% error), followed by calendar features and special days; weekly and rolling features hurt and weather adds little. (RQ3) Tuning matters most for SVR ($-39$\%); for tree models, learning the deviation from yesterday's load matters more, because it removes their failure to extrapolate during the July heat wave. All models train in seconds. The leakage experiment shows that shuffled splits and ten-minute horizons push R$^2$ to 0.999 with the same model, so such scores are not comparable with day-ahead forecasting.
+
+\textbf{Limitations.} The models use the measured weather of the target hour instead of weather forecasts, assume a forecast issued at 00:00 with yesterday's loads available, and are tested on a single month of a single year. One flag for all religious holidays over-corrected Mawlid by about 6\%.
+
+\textbf{Future work.} Use archived weather forecasts and an earlier issuance time (noon of the previous day), separate Eid from other religious holidays, test on further years and seasons, and tune the \hone\ models separately.

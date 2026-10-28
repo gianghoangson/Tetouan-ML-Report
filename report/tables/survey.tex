@@ -1,20 +1,20 @@
-\begingroup\small\setlength{\tabcolsep}{4pt}
-\begin{longtable}{p{.20\linewidth}p{.22\linewidth}p{.26\linewidth}p{.23\linewidth}}
-\caption{Repository-authored survey of ten public GitHub projects (docs/kaggle\_survey.csv / T11). Metrics and protocol descriptions are survey transcriptions, not independently reproduced results; targets and metrics vary.}\label{tab:survey}\\
+\begin{table}[H]\centering\small
+\caption{Survey of ten public GitHub projects on the Tetouan dataset (T11), read from their code. Results are as reported by each project and use different targets and splits.}\label{tab:survey}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llllll@{}}
 \toprule
-Repository owner & Target & Split / validation & Survey-reported value \\
-\midrule\endfirsthead
-\multicolumn{4}{l}{\small\itshape Continued from previous page}\\\toprule
-Repository owner & Target & Split / validation & Survey-reported value \\
-\midrule\endhead\bottomrule\endfoot
-\href{https://github.com/Kevinbui16/Electricity-Consumption-Prediction}{Kevinbui16} & Total (also each zone) & train\_test\_split 75/25 & 2,624 / 1,635 kW \\
-\href{https://github.com/niharkaria/Tetouan_Power_Consumption_Analysis}{niharkaria} & Total & train\_test\_split 80/20 & 0.9859 / 2,026 kW \\
-\href{https://github.com/nayana142/Power-Consumption-of-Tetouan-City}{nayana142} & Zone 3 & train\_test\_split 80/20 & 0.956 / 1,384 kW \\
-\href{https://github.com/Merci93/Electric-Power-Consumption}{Merci93} & Zone 1, 2, 3 (separate models) & train\_test\_split 70/30 & 0.821 / 0.850 / 0.913 \\
-\href{https://github.com/SoukainaBoufousse/ML_predict-the-power-consumption-in-10-minute-windows-of-Tetouan-city}{SoukainaBoufousse} & Zone 1, 2, 3 (separate models) & train\_test\_split 90/10 (Optuna validation) & 352.7 kW \\
-\href{https://github.com/ThiagoLevis/Power-consumption-of-Tetouan}{ThiagoLevis} & Mean of 3 zones (min-max scaled) & train\_test\_split 70/30 & 0.19 -- 0.29 \\
-\href{https://github.com/ruwindarowel/Tetouan-City-Power-Consumption}{ruwindarowel} & Total & RepeatedKFold 10x3 (CV) + hold-out & 9,907 kW \\
-\href{https://github.com/atishk28/electricity-load-forecasting}{atishk28} & Total & chronological 80/20 (last 20\% as test) & 0.834 / 5,744 kW \\
-\href{https://github.com/daniahfarooq/electricity-demand-forecasting}{daniahfarooq} & Zone 1, 2, 3 (per-zone models) & chronological 80/20 & 1,039 kW / 2.54\% / 0.973 \\
-\href{https://github.com/AtharvaPandey-coder/Power-Consumption}{AtharvaPandey-coder} & Zone 1 & chronological 80/20 & 0.971 \\
-\end{longtable}\endgroup
+Repository & Target & Data & Split & Load lags & Reported result \\
+\midrule
+\href{https://github.com/Kevinbui16/Electricity-Consumption-Prediction}{Kevinbui16} & Total & 10-min & random 75/25 & no & RMSE 2,624 kW \\
+\href{https://github.com/niharkaria/Tetouan_Power_Consumption_Analysis}{niharkaria} & Total & 10-min & random 80/20 & no & R$^2$ 0.986 \\
+\href{https://github.com/nayana142/Power-Consumption-of-Tetouan-City}{nayana142} & Zone 3 & 10-min & random 80/20 & no & R$^2$ 0.956$^a$ \\
+\href{https://github.com/Merci93/Electric-Power-Consumption}{Merci93} & Each zone & 10-min & random 70/30 & no & R$^2$ 0.82--0.91 \\
+\href{https://github.com/SoukainaBoufousse/ML_predict-the-power-consumption-in-10-minute-windows-of-Tetouan-city}{SoukainaBoufousse} & Each zone & 10-min & random 90/10 & no & RMSE 353 kW (Zone 3) \\
+\href{https://github.com/ThiagoLevis/Power-consumption-of-Tetouan}{ThiagoLevis} & Mean of zones & 10-min & random 70/30 & no & R$^2$ 0.19--0.29 \\
+\href{https://github.com/ruwindarowel/Tetouan-City-Power-Consumption}{ruwindarowel} & Total & 10-min & random (K-fold) & no & RMSE 9,907 kW \\
+\href{https://github.com/atishk28/electricity-load-forecasting}{atishk28} & Total & 10-min & chronological 80/20 & no & R$^2$ 0.834 \\
+\href{https://github.com/daniahfarooq/electricity-demand-forecasting}{daniahfarooq} & Each zone & hourly & chronological 80/20 & 1 h, 24 h & R$^2$ 0.973 (Zone 1) \\
+\href{https://github.com/AtharvaPandey-coder/Power-Consumption}{AtharvaPandey-coder} & Zone 1 & 10-min & chronological 80/20 & last 24 h & R$^2$ 0.971 \\
+\bottomrule\end{tabular}
+\par\smallskip{\footnotesize $^a$ Uses the other zones at the same timestamp as inputs (leakage).}
+\end{table}

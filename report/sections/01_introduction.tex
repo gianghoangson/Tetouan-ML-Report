@@ -1,27 +1,18 @@
 \section{Introduction}\label{sec:introduction}
-\subsection{Motivation and scope}
-Forecasts of electrical load provide an input to operational planning: a forecast error changes the amount of demand that must be accommodated beyond the anticipated load. This project studies the prediction problem itself; it does not simulate dispatch, electricity prices or reserve costs. Its practical relevance therefore rests on improving a clearly defined load forecast, rather than on claiming unmeasured economic benefits.
+Electricity distributors plan purchases and dispatch one day ahead, so they need a forecast of every hour of the next day. This project forecasts the hourly electricity load of Tetouan City (Morocco), using the UCI Power Consumption of Tetouan City dataset\cite{uci}. The target is the city total, the sum of the three distribution-zone loads, averaged per hour.
 
-The Tetouan dataset provides an instructive setting because daily cycles, weekday differences, warm-season peaks and special-day patterns coexist within a single year. Strong dependence on yesterday's load also makes a simple seasonal naive forecast a demanding reference. A high coefficient of determination alone can conceal a model that adds little beyond that reference. Furthermore, records separated by ten minutes are strongly related: a random split of such observations can reward interpolation between neighboring times without answering the intended future-forecast question.
+\textbf{Main problem (\hday, day-ahead).} At 00:00 of day $D$ the model forecasts the 24 hourly loads of day $D$. The most recent known load is that of 23:00 on day $D-1$, so every load-history feature must lag the target by at least 24 hours.
 
-The implemented study uses the UCI Power Consumption of Tetouan City dataset\cite{uci} and forecasts the sum of its three zone loads after hourly averaging. The main setting, called \hday\ in the repository, assembles predictions for a day's hourly loads at midnight using daily lags. A secondary \hone\ setting uses more recent completed-hour observations. Both settings use the weather measured at the target hour, so their results are conditional on an oracle-weather assumption. This qualification is central to interpreting the experiment, not an incidental implementation detail.
+\textbf{Secondary problem (\hone).} The same target forecast one hour ahead. It is used only to show how much the forecast horizon changes the difficulty.
 
-\subsection{Research objectives and questions}
-The repository's staged design supports three principal questions and two supplementary investigations:
+The load has a very strong daily cycle, so ``tomorrow equals today'' is already a strong forecast. A model is useful only if it beats such a seasonal naive baseline. Moreover, ten-minute records are strongly correlated: a randomly shuffled split lets a model interpolate between neighbouring points and report very high accuracy without forecasting anything. The project therefore uses a strictly chronological evaluation. December is reserved as the test set and used once, after all choices have been fixed on January--November.
+
+The study answers three research questions:
 \begin{enumerate}
-\item How accurately do conventional ML regressors predict the hourly city total relative to seasonal naive forecasts under chronological evaluation?
-\item How do calendar information, special-day indicators and historical load groups affect predictive performance?
-\item How much do hyperparameter search and the target formulation change accuracy, temporal stability and recorded computational cost?
-\item How do results change when recent hourly history becomes available in the secondary horizon setting?
-\item How do shuffled evaluation and changes in the forecasting task alter apparent accuracy?
+\item[\textbf{RQ1}] How much do conventional ML models (linear regression, decision tree, random forest, SVR and XGBoost) improve on seasonal naive baselines under chronological evaluation?
+\item[\textbf{RQ2}] How much does each feature group (weather, calendar, special days, load history) contribute?
+\item[\textbf{RQ3}] How do hyperparameter tuning and the target formulation affect accuracy and computational cost?
 \end{enumerate}
-These questions are answered using the saved experiments, not additional model development conducted while preparing this report.
+Two supplementary experiments compare the \hday\ and \hone\ horizons, and measure how common evaluation shortcuts (shuffled splits, very short horizons) inflate reported accuracy.
 
-\subsection{Contributions and evidence boundaries}
-The contribution is an auditable comparison of five model families---linear regression, decision tree, random forest, support vector regression and XGBoost---within a shared forecasting pipeline. Its main components are common seasonal baselines; five expanding-window validation folds; randomized search over absolute and lag-relative targets; fixed-parameter feature ablations; a separately tuned hourly setting; and a diagnostic study of evaluation choices. The final analysis retains the model selected by development CV even when a different candidate has a lower observed December error.
-
-Several boundaries prevent stronger claims. The dataset contains one year from one city. Feature decisions and parameter searches reuse development folds. Full-year descriptive graphics expose December's broad behavior, and the progress log records later reruns of the final notebook. The implementation establishes chronological fitting and a CV-dependent selection rule, but does not establish that the test data were hidden from every human decision throughout development. These distinctions are maintained throughout the report.
-
-\subsection{Organization}
-\Cref{sec:related,sec:data,sec:features,sec:method} establish the literature context, dataset, feature pipeline and evaluation protocol. \Cref{sec:baseline,sec:cv,sec:tuning,sec:ablation} examine validation and development experiments. \Cref{sec:final,sec:leakage} analyze the December results and diagnostic evaluation settings. \Cref{sec:discussion,sec:conclusion} synthesize the findings and identify future work. Supplementary material records exact source mappings, environment information and selected configurations.
-\evidence{Guideline PDF pp. 1--5; literature-review PDF pp. 25--32; notebooks 02--08; \code{report/research_audit.md}.}
+The contributions are: (i) a chronological pipeline with baselines, five expanding-window folds and a single December test; (ii) a lag-relative target that removes the tree models' failure to extrapolate during the July heat wave; (iii) a feature ablation; and (iv) a leakage experiment that explains why accuracies reported online are higher but not comparable.

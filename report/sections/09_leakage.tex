@@ -1,0 +1,17 @@
+\section{Leakage Experiment}\label{sec:leakage}
+Public projects on this dataset often report R$^2\approx0.99$, above the 0.987 of this project. This experiment, run after the final test, explains the gap by evaluating \emph{the same Random Forest} (the tuned absolute RF) under four set-ups that mimic common practice:
+\begin{itemize}
+\item \textbf{S1:} ten-minute data, random 75/25 split, weather and calendar features including \code{dayofyear} (as in the original paper and most public projects);
+\item \textbf{S2:} S1 plus the load of the previous ten minutes;
+\item \textbf{S3:} chronological split (test = December), but a ten-minute horizon with the previous-ten-minute load;
+\item \textbf{S4:} this project's pipeline: hourly data, chronological split, day-ahead features.
+\end{itemize}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{F16_leakage_settings.png}
+\caption{The same Random Forest under four evaluation set-ups: unexplained variance $1-R^2$ (left) and MAPE (right).}\label{fig:leakage_settings}
+\end{figure}
+
+S1 reaches R$^2=0.994$ (MAPE 1.25\%), S2 0.999 (0.61\%) and S3 0.998 (0.74\%), while S4 reaches 0.980 (2.19\%) (\cref{fig:leakage_settings}; numbers in \cref{tab:leakage}, appendix). With a random split, a test point at 20:10 has its neighbours at 20:00 and 20:20 in the training set, so the model only interpolates. In S2 the lag is built before splitting, so the load of a test row becomes the input of the training row ten minutes later: test targets leak into training. S3 is a legitimate evaluation, but of a much easier task (ten minutes ahead). The four set-ups change several things at once, so the experiment does not isolate the effect of each one. It does show that most of the high scores reported online come from the evaluation set-up rather than from a better model, and that they say nothing about next-day forecasting.
+
+\textbf{Shuffled KFold versus TimeSeriesSplit for tuning.} The RF is also tuned twice on the development data, changing only the folds (20 candidates each, \cref{tab:kfold}). Shuffled KFold estimates a CV RMSE of \num{2008} kW and selects deeper trees, but the selected model reaches \num{2174} kW on December, 8\% worse than promised. TimeSeriesSplit gives a pessimistic estimate (\num{3012} kW, because of the hard July fold), yet the model it selects is better on the test set (\num{2044} kW). Shuffled CV thus both misjudges the error and selects a worse model.
+\input{report/tables/kfold.tex}

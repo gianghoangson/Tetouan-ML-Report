@@ -1,5 +1,5 @@
-\begin{table}[tbp]\centering\small
-\caption{December h24 evaluation (T08), ordered by observed RMSE. The CV-selected model is SVR-tuned. This ordering does not redefine selection. RMSE/MAE in kW; skill is RMSE reduction against Naive-24h.}\label{tab:test24}
+\begin{table}[H]\centering\small
+\caption{December test, h24 (T08), ordered by test RMSE. The model chosen on CV before the test is SVR-tuned. RMSE/MAE in kW; skill is the RMSE reduction against Naive-24h.}\label{tab:test24}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrrrrr}
 \toprule
@@ -22,6 +22,5 @@ Naive-168h & \num{2619.8} & \num{1775.4} & \num{2.87} & \num{0.9658} & \num{20.5
 DT-tuned & \num{2846.6} & \num{1960.3} & \num{3.19} & \num{0.9597} & \num{13.64} \\
 DT-default & \num{2989.6} & \num{1987.4} & \num{3.28} & \num{0.9555} & \num{9.30} \\
 Naive-24h & \num{3296.3} & \num{2071.5} & \num{3.39} & \num{0.9459} & \num{0.00} \\
-MeanProfile & \num{9596.3} & \num{8961.7} & \num{14.66} & \num{0.5417} & \num{-191.12} \\
 \bottomrule\end{tabular}
 \end{table}
