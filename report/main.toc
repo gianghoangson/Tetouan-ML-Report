@@ -6,30 +6,31 @@
 \contentsline {subsection}{\numberline {3.3}Daily and weekly cycles}{4}{subsection.3.3}%
 \contentsline {subsection}{\numberline {3.4}Ramadan and holidays}{5}{subsection.3.4}%
 \contentsline {subsection}{\numberline {3.5}Weather and autocorrelation}{6}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}From insights to modelling decisions}{7}{subsection.3.6}%
 \contentsline {section}{\numberline {4}Methodology}{8}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Features}{8}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Chronological split and cross-validation}{8}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Baselines and models}{9}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Relative target}{9}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.2}Chronological split and cross-validation}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Baselines and models}{10}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Relative target}{10}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Metrics and selection rule}{10}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Baselines and Cross-Validation}{10}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Level 0 and Level 1: one validation month}{10}{subsection.5.1}%
+\contentsline {section}{\numberline {5}Baselines and Cross-Validation}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Level 0 and Level 1: one validation month}{11}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Level 2: five temporal folds}{11}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Hyperparameter Tuning}{11}{section.6}%
-\contentsline {section}{\numberline {7}Ablation and Forecast Horizon}{13}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Feature ablation (RQ2)}{13}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Forecast horizon: 1 hour versus 24 hours}{14}{subsection.7.2}%
-\contentsline {section}{\numberline {8}Final Test and Error Analysis}{14}{section.8}%
-\contentsline {subsection}{\numberline {8.1}December test}{14}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Error analysis}{15}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}Explainability}{16}{subsection.8.3}%
-\contentsline {subsection}{\numberline {8.4}Accuracy and cost (RQ3)}{17}{subsection.8.4}%
-\contentsline {section}{\numberline {9}Leakage Experiment}{17}{section.9}%
-\contentsline {section}{\numberline {10}Conclusion}{18}{section.10}%
-\contentsline {section}{References}{19}{section*.29}%
-\contentsline {section}{\numberline {A}Supplementary Material}{21}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Reproducibility}{21}{subsection.A.1}%
-\contentsline {subsection}{\numberline {A.2}Cross-validation folds and Level 0--2 results}{21}{subsection.A.2}%
-\contentsline {subsection}{\numberline {A.3}Hyperparameter tuning}{23}{subsection.A.3}%
-\contentsline {subsection}{\numberline {A.4}Ablation}{24}{subsection.A.4}%
-\contentsline {subsection}{\numberline {A.5}Final test and leakage experiment}{24}{subsection.A.5}%
+\contentsline {section}{\numberline {6}Hyperparameter Tuning}{12}{section.6}%
+\contentsline {section}{\numberline {7}Ablation and Forecast Horizon}{14}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Feature ablation (RQ2)}{14}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Forecast horizon: 1 hour versus 24 hours}{15}{subsection.7.2}%
+\contentsline {section}{\numberline {8}Final Test and Error Analysis}{15}{section.8}%
+\contentsline {subsection}{\numberline {8.1}December test}{15}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Error analysis}{16}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Explainability}{17}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Accuracy and cost (RQ3)}{18}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Leakage Experiment}{18}{section.9}%
+\contentsline {section}{\numberline {10}Conclusion}{19}{section.10}%
+\contentsline {section}{References}{20}{section*.30}%
+\contentsline {section}{\numberline {A}Supplementary Material}{22}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Reproducibility}{22}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Cross-validation folds and Level 0--2 results}{22}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A.3}Hyperparameter tuning}{24}{subsection.A.3}%
+\contentsline {subsection}{\numberline {A.4}Ablation}{25}{subsection.A.4}%
+\contentsline {subsection}{\numberline {A.5}Final test and leakage experiment}{25}{subsection.A.5}%

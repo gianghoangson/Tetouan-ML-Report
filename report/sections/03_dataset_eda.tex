@@ -60,3 +60,22 @@ The autocorrelation function (\cref{fig:acf}) peaks every 24 hours: 0.98 at lag 
 \includegraphics[width=\linewidth]{F07_acf_total.png}
 \caption{Autocorrelation of the hourly total load up to lag 200, January--November (F07).}\label{fig:acf}
 \end{figure}
+
+\subsection{From insights to modelling decisions}\label{sec:eda_summary}
+\Cref{tab:eda_insights} links each EDA finding to the way it is used in training, and to the later result that checks whether the decision was right.
+\begin{table}[H]\centering\small
+\caption{EDA insights, how they are used in training, and where they are checked.}\label{tab:eda_insights}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{.27\linewidth}@{}}\toprule
+Insight (evidence) & Use in training & Checked by \\\midrule
+Clean data, no gaps (quality checks) & No row removed or imputed; only hourly averaging & -- \\
+Zones exchange load; the total is stable (\cref{fig:zones}) & Target is the city total; zone loads are never inputs (they are parts of the target) & -- \\
+Strong daily cycle, ACF 0.98 at lag 24 (\cref{fig:season,fig:acf}) & Hour and its sin/cos; \code{lag_24}, \code{lag_48}; Naive-24h as the baseline to beat; relative target $y_t-y_{t-24}$ & Ablation: daily lags cut RMSE by 67\% (\cref{sec:ablation}) \\
+Weekly cycle: Sundays $-6$\%, Monday mornings unlike Sundays; ACF peak at lag 168 (\cref{fig:weekday,fig:acf}) & Weekday, weekend flag and their sin/cos; Naive-168h baseline; \code{lag_168} tested in the ablation & Naive-24h errs most on Mondays (\cref{sec:baseline}); weekday is the largest SHAP group (\cref{fig:shap}) \\
+Summer loads 30\% above the base level (\cref{fig:annual}) & Folds start in July so the peak is evaluated; no \code{month}/\code{dayofyear}; relative target for tree models & July fold fails for absolute trees (\cref{sec:cv}); fixed by the relative target (\cref{sec:tuning}) \\
+Ramadan reshapes the night profile, not explained by weather (\cref{fig:ramadan}) & \code{is_ramadan} flag & Special days cut RMSE by 9\% (\cref{sec:ablation}) \\
+Religious holidays $-9$\%, civil holidays $-3$\% and uneven (\cref{fig:holidays}) & Separate religious and civil holiday flags & Mawlid is the worst test day (\cref{sec:final}) \\
+Temperature effect nonlinear above \SI{22}{\celsius} and depends on the hour (\cref{fig:temperature}) & Weather of the target hour as input; nonlinear models (DT, RF, SVR, XGB) next to linear regression & Removing weather changes RMSE by at most 5\% (\cref{sec:ablation}) \\
+Neighbouring hours are almost identical (high ACF at short lags) & Chronological split and \code{TimeSeriesSplit}, never shuffled & Shuffled splits inflate R$^2$ to 0.999 (\cref{sec:leakage}) \\
+Wind speed is almost binary & Kept as is & Listed as a limitation (\cref{sec:conclusion}) \\
+\bottomrule\end{tabularx}
+\end{table}
