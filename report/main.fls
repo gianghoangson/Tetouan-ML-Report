@@ -1,7 +1,7 @@
-PWD C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning
+PWD C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report
 INPUT C:\Users\Giang Hoang Son\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
 INPUT report\main.tex
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.log
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.log
 INPUT D:\MiKTeX\tex\latex\base\article.cls
 INPUT D:\MiKTeX\tex\latex\base\article.cls
 INPUT D:\MiKTeX\tex\latex\base\size11.clo
@@ -136,6 +136,14 @@ INPUT D:\MiKTeX\tex\latex\biblatex\blx-case-expl3.sty
 INPUT D:\MiKTeX\tex\latex\biblatex\blx-case-expl3.sty
 INPUT D:\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
 INPUT D:\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
+INPUT D:\MiKTeX\tex\latex\xcolor\xcolor.sty
+INPUT D:\MiKTeX\tex\latex\xcolor\xcolor.sty
+INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
+INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
+INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
 INPUT D:\MiKTeX\tex\latex\hyperref\hyperref.sty
 INPUT D:\MiKTeX\tex\latex\hyperref\hyperref.sty
 INPUT D:\MiKTeX\tex\generic\kvdefinekeys\kvdefinekeys.sty
@@ -174,26 +182,21 @@ INPUT D:\MiKTeX\tex\generic\uniquecounter\uniquecounter.sty
 INPUT D:\MiKTeX\tex\latex\cleveref\cleveref.sty
 INPUT D:\MiKTeX\tex\latex\cleveref\cleveref.sty
 INPUT D:\MiKTeX\tex\latex\graphics\color.sty
-INPUT D:\MiKTeX\tex\latex\graphics\color.sty
-INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
-INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
-INPUT D:\MiKTeX\tex\latex\graphics-cfg\color.cfg
-INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
-INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
-INPUT D:\MiKTeX\tex\latex\graphics\mathcolor.ltx
 INPUT D:\MiKTeX\tex\latex\lm\t1lmr.fd
 INPUT D:\MiKTeX\tex\latex\lm\t1lmr.fd
 INPUT D:\MiKTeX\tex\latex\lm\t1lmr.fd
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.aux
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.aux
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.aux
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.aux
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.aux
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.aux
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.aux
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.aux
 INPUT D:\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT D:\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT D:\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT D:\MiKTeX\tex\latex\epstopdf-pkg\epstopdf-base.sty
 INPUT D:\MiKTeX\tex\latex\epstopdf-pkg\epstopdf-base.sty
+INPUT D:\MiKTeX\tex\latex\grfext\grfext.sty
+INPUT D:\MiKTeX\tex\latex\grfext\grfext.sty
 INPUT D:\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT D:\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT D:\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
@@ -208,20 +211,27 @@ INPUT D:\MiKTeX\tex\latex\microtype\mt-cmr.cfg
 INPUT D:\MiKTeX\tex\latex\biblatex\lbx\english.lbx
 INPUT D:\MiKTeX\tex\latex\biblatex\lbx\english.lbx
 INPUT D:\MiKTeX\tex\latex\biblatex\lbx\english.lbx
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bcf
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bbl
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bbl
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bbl
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bbl
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.bbl
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.pdf
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bcf
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bbl
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bbl
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bbl
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bbl
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.bbl
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.pdf
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
+INPUT .\report\assets\neu-logo.png
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr12.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr17.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
@@ -267,40 +277,10 @@ INPUT D:\MiKTeX\tex\latex\microtype\mt-msb.cfg
 INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmbx10.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
 INPUT C:\Users\Giang Hoang Son\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmbx10.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr12.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.toc
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.toc
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.toc
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.toc
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lof
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lof
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lof
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lof
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lot
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lot
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lot
-INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-rm.enc
-INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathit.enc
-INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathsy.enc
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.lot
-INPUT .\report\sections\01_introduction.tex
-INPUT .\report\sections\01_introduction.tex
-INPUT report\sections\01_introduction.tex
-INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
-INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
-INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr9.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmri9.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt9.tfm
-INPUT .\report\sections\02_related_work.tex
-INPUT .\report\sections\02_related_work.tex
-INPUT report\sections\02_related_work.tex
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmr7.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmr5.tfm
@@ -316,6 +296,35 @@ INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
+INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-rm.enc
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr12.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.toc
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.toc
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.toc
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.toc
+INPUT .\report\sections\01_introduction.tex
+INPUT .\report\sections\01_introduction.tex
+INPUT report\sections\01_introduction.tex
+INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT D:\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtk10.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
+INPUT .\report\sections\02_related_work.tex
+INPUT .\report\sections\02_related_work.tex
+INPUT report\sections\02_related_work.tex
+INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathit.enc
+INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathsy.enc
+INPUT .\report\tables\survey.tex
+INPUT .\report\tables\survey.tex
+INPUT report\tables\survey.tex
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr9.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmr9.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\lmmi9.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\lmsy9.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT .\report\sections\03_dataset_eda.tex
 INPUT .\report\sections\03_dataset_eda.tex
 INPUT report\sections\03_dataset_eda.tex
@@ -346,12 +355,23 @@ INPUT .\results\figures\F04_heatmap_hour_weekday.png
 INPUT .\results\figures\F04_heatmap_hour_weekday.png
 INPUT .\results\figures\F04_heatmap_hour_weekday.png
 INPUT .\results\figures\F04_heatmap_hour_weekday.png
+INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ts1-lmr10.tfm
 INPUT .\results\figures\F05_ramadan_profile.png
 INPUT .\results\figures\F05_ramadan_profile.png
 INPUT .\results\figures\F05_ramadan_profile.png
 INPUT .\results\figures\F05_ramadan_profile.png
 INPUT .\results\figures\F05_ramadan_profile.png
 INPUT .\results\figures\F05_ramadan_profile.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\results\figures\F08_weekday_holiday.png
+INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-ts1.enc
 INPUT .\results\figures\F06a_temperature_vs_total.png
 INPUT .\results\figures\F06a_temperature_vs_total.png
 INPUT .\results\figures\F06a_temperature_vs_total.png
@@ -370,94 +390,60 @@ INPUT .\results\figures\F07_acf_total.png
 INPUT .\results\figures\F07_acf_total.png
 INPUT .\results\figures\F07_acf_total.png
 INPUT .\results\figures\F07_acf_total.png
-INPUT .\report\sections\04_preprocessing_features.tex
-INPUT .\report\sections\04_preprocessing_features.tex
-INPUT report\sections\04_preprocessing_features.tex
-INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathex.enc
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ts1-lmr10.tfm
+INPUT .\report\sections\04_methodology.tex
+INPUT .\report\sections\04_methodology.tex
+INPUT report\sections\04_methodology.tex
+INPUT .\report\tables\splits.tex
+INPUT .\report\tables\splits.tex
+INPUT report\tables\splits.tex
+INPUT .\results\figures\F10_split_and_folds.png
+INPUT .\results\figures\F10_split_and_folds.png
+INPUT .\results\figures\F10_split_and_folds.png
+INPUT .\results\figures\F10_split_and_folds.png
+INPUT .\results\figures\F10_split_and_folds.png
+INPUT .\results\figures\F10_split_and_folds.png
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx8.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx6.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr8.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt8.tfm
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmr6.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmtt8.tfm
-INPUT .\report\sections\05_methodology.tex
-INPUT .\report\sections\05_methodology.tex
-INPUT report\sections\05_methodology.tex
-INPUT .\report\tables\splits.tex
-INPUT .\report\tables\splits.tex
-INPUT report\tables\splits.tex
-INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx7.tfm
-INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx5.tfm
-INPUT .\report\tables\folds.tex
-INPUT .\report\tables\folds.tex
-INPUT report\tables\folds.tex
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\results\figures\F10_split_and_folds.png
-INPUT .\report\sections\06_baselines.tex
-INPUT .\report\sections\06_baselines.tex
-INPUT report\sections\06_baselines.tex
-INPUT .\report\tables\baselines.tex
-INPUT .\report\tables\baselines.tex
-INPUT report\tables\baselines.tex
+INPUT .\report\sections\05_baselines_cv.tex
+INPUT .\report\sections\05_baselines_cv.tex
+INPUT report\sections\05_baselines_cv.tex
+INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-mathex.enc
 INPUT .\results\figures\F11_level1_vs_baselines.png
 INPUT .\results\figures\F11_level1_vs_baselines.png
 INPUT .\results\figures\F11_level1_vs_baselines.png
 INPUT .\results\figures\F11_level1_vs_baselines.png
 INPUT .\results\figures\F11_level1_vs_baselines.png
 INPUT .\results\figures\F11_level1_vs_baselines.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\results\figures\F11b_week_actual_vs_pred.png
-INPUT .\report\sections\07_cross_validation.tex
-INPUT .\report\sections\07_cross_validation.tex
-INPUT report\sections\07_cross_validation.tex
-INPUT .\report\tables\cv.tex
-INPUT .\report\tables\cv.tex
-INPUT report\tables\cv.tex
-INPUT .\report\tables\cv_folds.tex
-INPUT .\report\tables\cv_folds.tex
-INPUT report\tables\cv_folds.tex
 INPUT .\results\figures\F12_rmse_per_fold.png
 INPUT .\results\figures\F12_rmse_per_fold.png
 INPUT .\results\figures\F12_rmse_per_fold.png
 INPUT .\results\figures\F12_rmse_per_fold.png
 INPUT .\results\figures\F12_rmse_per_fold.png
 INPUT .\results\figures\F12_rmse_per_fold.png
-INPUT .\report\sections\08_hyperparameter_tuning.tex
-INPUT .\report\sections\08_hyperparameter_tuning.tex
-INPUT report\sections\08_hyperparameter_tuning.tex
+INPUT .\report\sections\06_tuning.tex
+INPUT .\report\sections\06_tuning.tex
+INPUT report\sections\06_tuning.tex
 INPUT .\report\tables\search_space.tex
 INPUT .\report\tables\search_space.tex
 INPUT report\tables\search_space.tex
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
-INPUT .\report\tables\selected_h24.tex
-INPUT .\report\tables\selected_h24.tex
-INPUT report\tables\selected_h24.tex
-INPUT .\report\tables\tuning.tex
-INPUT .\report\tables\tuning.tex
-INPUT report\tables\tuning.tex
+INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx7.tfm
+INPUT D:\MiKTeX\fonts\tfm\public\lm\rm-lmbx5.tfm
 INPUT .\results\figures\F13_default_vs_tuned.png
 INPUT .\results\figures\F13_default_vs_tuned.png
 INPUT .\results\figures\F13_default_vs_tuned.png
 INPUT .\results\figures\F13_default_vs_tuned.png
 INPUT .\results\figures\F13_default_vs_tuned.png
 INPUT .\results\figures\F13_default_vs_tuned.png
-INPUT .\report\sections\09_ablation_horizon.tex
-INPUT .\report\sections\09_ablation_horizon.tex
-INPUT report\sections\09_ablation_horizon.tex
-INPUT .\report\tables\ablation.tex
-INPUT .\report\tables\ablation.tex
-INPUT report\tables\ablation.tex
+INPUT .\report\sections\07_ablation_horizon.tex
+INPUT .\report\sections\07_ablation_horizon.tex
+INPUT report\sections\07_ablation_horizon.tex
 INPUT .\results\figures\F15_ablation.png
 INPUT .\results\figures\F15_ablation.png
 INPUT .\results\figures\F15_ablation.png
@@ -467,65 +453,34 @@ INPUT .\results\figures\F15_ablation.png
 INPUT .\report\tables\horizon.tex
 INPUT .\report\tables\horizon.tex
 INPUT report\tables\horizon.tex
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\results\figures\F15b_horizon.png
-INPUT .\report\sections\10_final_evaluation.tex
-INPUT .\report\sections\10_final_evaluation.tex
-INPUT report\sections\10_final_evaluation.tex
+INPUT .\report\sections\08_final_evaluation.tex
+INPUT .\report\sections\08_final_evaluation.tex
+INPUT report\sections\08_final_evaluation.tex
 INPUT .\report\tables\test24.tex
 INPUT .\report\tables\test24.tex
 INPUT report\tables\test24.tex
-INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
-INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
-INPUT D:\MiKTeX\tex\latex\lm\ts1lmr.fd
-INPUT D:\MiKTeX\fonts\tfm\public\lm\ts1-lmr10.tfm
-INPUT .\report\tables\test1.tex
-INPUT .\report\tables\test1.tex
-INPUT report\tables\test1.tex
-INPUT D:\MiKTeX\fonts\enc\dvips\lm\lm-ts1.enc
 INPUT .\results\figures\F17_test_actual_vs_pred.png
 INPUT .\results\figures\F17_test_actual_vs_pred.png
 INPUT .\results\figures\F17_test_actual_vs_pred.png
 INPUT .\results\figures\F17_test_actual_vs_pred.png
 INPUT .\results\figures\F17_test_actual_vs_pred.png
 INPUT .\results\figures\F17_test_actual_vs_pred.png
-INPUT .\results\figures\F17b_residuals.png
-INPUT .\results\figures\F17b_residuals.png
-INPUT .\results\figures\F17b_residuals.png
-INPUT .\results\figures\F17b_residuals.png
-INPUT .\results\figures\F17b_residuals.png
-INPUT .\results\figures\F17b_residuals.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
 INPUT .\results\figures\F18_error_by_hour_weekday.png
-INPUT .\report\tables\worst_days.tex
-INPUT .\report\tables\worst_days.tex
-INPUT report\tables\worst_days.tex
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19a_feature_importance.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\results\figures\F19b_shap_summary.png
-INPUT .\report\sections\11_leakage.tex
-INPUT .\report\sections\11_leakage.tex
-INPUT report\sections\11_leakage.tex
-INPUT .\report\tables\leakage.tex
-INPUT .\report\tables\leakage.tex
-INPUT report\tables\leakage.tex
+INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\results\figures\F19d_shap_groups.png
+INPUT .\report\sections\09_leakage.tex
+INPUT .\report\sections\09_leakage.tex
+INPUT report\sections\09_leakage.tex
 INPUT .\results\figures\F16_leakage_settings.png
 INPUT .\results\figures\F16_leakage_settings.png
 INPUT .\results\figures\F16_leakage_settings.png
@@ -535,15 +490,9 @@ INPUT .\results\figures\F16_leakage_settings.png
 INPUT .\report\tables\kfold.tex
 INPUT .\report\tables\kfold.tex
 INPUT report\tables\kfold.tex
-INPUT .\report\sections\12_discussion.tex
-INPUT .\report\sections\12_discussion.tex
-INPUT report\sections\12_discussion.tex
-INPUT .\report\tables\runtime.tex
-INPUT .\report\tables\runtime.tex
-INPUT report\tables\runtime.tex
-INPUT .\report\sections\13_conclusion.tex
-INPUT .\report\sections\13_conclusion.tex
-INPUT report\sections\13_conclusion.tex
+INPUT .\report\sections\10_discussion_conclusion.tex
+INPUT .\report\sections\10_discussion_conclusion.tex
+INPUT report\sections\10_discussion_conclusion.tex
 INPUT D:\MiKTeX\fonts\tfm\public\lm\ec-lmcsc10.tfm
 INPUT .\report\appendices\supplementary.tex
 INPUT .\report\appendices\supplementary.tex
@@ -551,53 +500,71 @@ INPUT report\appendices\supplementary.tex
 INPUT .\report\tables\dependencies.tex
 INPUT .\report\tables\dependencies.tex
 INPUT report\tables\dependencies.tex
-INPUT .\report\tables\cv_variability.tex
-INPUT .\report\tables\cv_variability.tex
-INPUT report\tables\cv_variability.tex
-INPUT .\report\tables\parameters.tex
-INPUT .\report\tables\parameters.tex
-INPUT report\tables\parameters.tex
-INPUT .\report\tables\search_inventory.tex
-INPUT .\report\tables\search_inventory.tex
-INPUT report\tables\search_inventory.tex
-INPUT .\report\tables\survey.tex
-INPUT .\report\tables\survey.tex
-INPUT report\tables\survey.tex
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ01_zone_transfer_20170420.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\DQ02_windspeed_bimodal.png
-INPUT .\results\figures\F08_weekday_holiday.png
-INPUT .\results\figures\F08_weekday_holiday.png
-INPUT .\results\figures\F08_weekday_holiday.png
-INPUT .\results\figures\F08_weekday_holiday.png
-INPUT .\results\figures\F08_weekday_holiday.png
-INPUT .\results\figures\F08_weekday_holiday.png
+INPUT .\report\tables\folds.tex
+INPUT .\report\tables\folds.tex
+INPUT report\tables\folds.tex
+INPUT .\report\tables\baselines.tex
+INPUT .\report\tables\baselines.tex
+INPUT report\tables\baselines.tex
+INPUT .\report\tables\cv.tex
+INPUT .\report\tables\cv.tex
+INPUT report\tables\cv.tex
+INPUT .\report\tables\cv_folds.tex
+INPUT .\report\tables\cv_folds.tex
+INPUT report\tables\cv_folds.tex
+INPUT .\report\tables\tuning.tex
+INPUT .\report\tables\tuning.tex
+INPUT report\tables\tuning.tex
+INPUT .\report\tables\selected_h24.tex
+INPUT .\report\tables\selected_h24.tex
+INPUT report\tables\selected_h24.tex
+INPUT .\report\tables\ablation.tex
+INPUT .\report\tables\ablation.tex
+INPUT report\tables\ablation.tex
+INPUT .\report\tables\worst_days.tex
+INPUT .\report\tables\worst_days.tex
+INPUT report\tables\worst_days.tex
+INPUT .\report\tables\runtime.tex
+INPUT .\report\tables\runtime.tex
+INPUT report\tables\runtime.tex
+INPUT .\report\tables\leakage.tex
+INPUT .\report\tables\leakage.tex
+INPUT report\tables\leakage.tex
+INPUT .\results\figures\F17b_residuals.png
+INPUT .\results\figures\F17b_residuals.png
+INPUT .\results\figures\F17b_residuals.png
+INPUT .\results\figures\F17b_residuals.png
+INPUT .\results\figures\F17b_residuals.png
+INPUT .\results\figures\F17b_residuals.png
 INPUT .\results\figures\F17c_scatter.png
 INPUT .\results\figures\F17c_scatter.png
 INPUT .\results\figures\F17c_scatter.png
 INPUT .\results\figures\F17c_scatter.png
 INPUT .\results\figures\F17c_scatter.png
 INPUT .\results\figures\F17c_scatter.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19b_shap_summary.png
+INPUT .\results\figures\F19a_feature_importance.png
+INPUT .\results\figures\F19a_feature_importance.png
+INPUT .\results\figures\F19a_feature_importance.png
+INPUT .\results\figures\F19a_feature_importance.png
+INPUT .\results\figures\F19a_feature_importance.png
+INPUT .\results\figures\F19a_feature_importance.png
 INPUT .\results\figures\F19c_shap_dependence.png
 INPUT .\results\figures\F19c_shap_dependence.png
 INPUT .\results\figures\F19c_shap_dependence.png
 INPUT .\results\figures\F19c_shap_dependence.png
 INPUT .\results\figures\F19c_shap_dependence.png
 INPUT .\results\figures\F19c_shap_dependence.png
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.aux
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.out
-INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.run.xml
-OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Machine-Learning\report\main.run.xml
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.aux
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.out
+INPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.run.xml
+OUTPUT C:\Users\Giang Hoang Son\OneDrive\Desktop\nam 3 ki 1\statistic\Tetouan-ML-Report\report\main.run.xml
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
@@ -626,17 +593,13 @@ INPUT D:\MiKTeX\fonts\type1\public\lm\lmr9.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmr9.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmri10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmri10.pfb
-INPUT D:\MiKTeX\fonts\type1\public\lm\lmri9.pfb
-INPUT D:\MiKTeX\fonts\type1\public\lm\lmri9.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy7.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy7.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
+INPUT D:\MiKTeX\fonts\type1\public\lm\lmtk10.pfb
+INPUT D:\MiKTeX\fonts\type1\public\lm\lmtk10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
 INPUT D:\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
-INPUT D:\MiKTeX\fonts\type1\public\lm\lmtt9.pfb
-INPUT D:\MiKTeX\fonts\type1\public\lm\lmtt9.pfb
-INPUT D:\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb
-INPUT D:\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb
