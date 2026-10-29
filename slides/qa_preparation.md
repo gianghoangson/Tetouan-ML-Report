@@ -76,6 +76,10 @@ The selected SVR's worst December day is December 1, MAE 4,579.2 kW, with mean b
 
 ## Additional questions for the revised slides
 
+**Is the comparison with published studies fair?** No study shares our target, horizon, split and test period, so the table positions the result and does not rank it. The values are those each study reports (course literature review, Table 7); we did not re-run their settings. The clearest contrast is Islam et al. (2025): a 10-minute-ahead chronological task with MAPE 6.3%, against our day-ahead MAPE 1.78%. Biswas et al. (2026) report a lower MAPE (1.04%) on the mean of the three zones (same MAPE as the total), but the horizon is not stated, so the gap cannot be interpreted. Studies without past-load inputs or with a shuffled split are not forecasts of unseen future periods.
+
+**Why was the leakage slide removed?** The comparison with published studies answers the same question (why other numbers look different) more directly. The leakage diagnostic is kept for Q&A (question 10).
+
 **Why not say the weekly lag alone is neutral?** The saved ablation adds the weekly lag and three rolling summaries together. It does not identify their individual effects. A weekly-only result would be needed.
 
 **Does removing weather change error by no more than 5%?** Approximately, but the largest saved change is +5.3145% for residual RF. Slides use 5.3%. Absolute RF and XGB change by about +1.6% and +1.9%; E/F tests do not quantify the selected SVR's weather dependence.

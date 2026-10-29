@@ -1,6 +1,6 @@
 # Tetouan electricity forecasting presentation
 
-**18 slides, no backup slides, English, 16:9 LaTeX Beamer.** The presenter plan totals exactly **15:00**, followed by Q&A.
+**19 slides, no backup slides, English, 16:9 LaTeX Beamer.** The presenter plan totals exactly **15:00**, followed by Q&A.
 
 The user authorized the existing root-level `Tetouan-ML-Report/` repository after the originally specified nested report path was found missing. ML evidence was read exclusively from `Prj Tetouan ML/Machine-Learning/`. The outer `Machine-Learning/` was not used.
 
@@ -11,20 +11,20 @@ The user authorized the existing root-level `Tetouan-ML-Report/` repository afte
 | `main.tex` | Presentation source; exact title-page identity, proportional FDA faculty logo, no submission date |
 | `metrics.tex` | Display values generated from verified saved results |
 | `evidence_map.md` | Claim-by-claim sources, active-version decisions and scientific qualifications |
-| `presenter_notes.md` | 18 scripts, timings, takeaways and transitions; Minh/Son speaking plan |
+| `presenter_notes.md` | 19 scripts, timings, takeaways and transitions; Minh/Son speaking plan |
 | `qa_preparation.md` | 12 likely instructor questions with concise and expanded answers |
 | `figures/` | Five simplified vector PDF charts and PNG previews |
 | `build_assets.py` | Read-only analysis of original evidence; writes only presentation artifacts |
 | `verification.json` | Numerical checks, figure matches and preservation checks |
 | `original_files_manifest.json` | SHA-256 hashes of 194 pre-existing files in both authorized repositories |
 | `validate_slides.py`, `quality_check.json` | Source structure, paths, identities, timing and preservation checks |
-| `main.pdf` | Compiled 18-page presentation |
+| `main.pdf` | Compiled 19-page presentation |
 
-The current `main.pdf` compiles successfully with the installed LaTeX environment. All 18 rendered pages were visually inspected after the layout refinement. No new software or packages were installed.
+The current `main.pdf` compiles successfully with the installed LaTeX environment. All 19 rendered pages were visually inspected after the layout refinement. No new software or packages were installed.
 
 ## Design and visuals
 
-White background, dark navy text, restrained blue accents, Latin Modern Sans typography and a slide-number footer. Source lines are removed from the visible deck; claim provenance remains in `evidence_map.md`. Metropolis is used if available, with a custom-styled default Beamer fallback. The 18 frames have no overlays or automatic section dividers.
+White background, dark navy text, restrained blue accents, Latin Modern Sans typography and a slide-number footer. Source lines are removed from the visible deck; claim provenance remains in `evidence_map.md`. Metropolis is used if available, with a custom-styled default Beamer fallback. The 19 frames have no overlays or automatic section dividers.
 
 Eight data visuals are used:
 
@@ -72,7 +72,7 @@ pdflatex --disable-installer -no-shell-escape -interaction=nonstopmode -file-lin
 
 ### Actual build status
 
-The requested `latexmk` command completed from the report root and produced a 18-page PDF. The final build log has no overfull box warnings. Every rendered page was inspected for collisions, clipping, chart and table readability, and footer clearance. Scientific caveats previously embedded in source lines now appear in slide bodies.
+The requested `latexmk` command completed from the report root and produced a 19-page PDF. The final build log has no overfull box warnings. Every rendered page was inspected for collisions, clipping, chart and table readability, and footer clearance. Scientific caveats previously embedded in source lines now appear in slide bodies.
 
 ### Overleaf option
 
@@ -117,3 +117,5 @@ The 18-slide deck contains two EDA slides after the seasonal load profile. Tunin
 The F07 ACF and F04 right panel are redrawn with larger labels in slides/figures/acf_view.pdf and slides/figures/weekday_difference.pdf. Running python slides/refresh_eda_view.py refreshes both views from January-November data without training any model or changing experiment outputs. The evidence map records the supplied 48-hour ACF .96 versus the saved prose's .97.
 
 The selected SVR metrics, title design, FDA logo and slide visual identity are preserved.
+
+29/10: added slide 7 (holidays and Ramadan → special-day features), split the feature table into original vs engineered inputs, added the raw data size (52,416 × 9) to slide 3, and replaced the leakage slide with a comparison against published Tetouan studies (values as reported in the literature review). The plan is now 19 slides: Son 1-10 (6:40), Minh 11-19 (8:20).

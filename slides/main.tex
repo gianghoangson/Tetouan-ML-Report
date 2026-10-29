@@ -33,7 +33,7 @@
 \setbeamertemplate{frametitle}{%
   \vspace{1mm}\insertframetitle\par\vspace{.7mm}
   {\color{Blue}\rule{\textwidth}{0.6pt}}}
-\newcommand{\footmarker}{\insertframenumber\,/\,18}
+\newcommand{\footmarker}{\insertframenumber\,/\,\inserttotalframenumber}
 \setbeamertemplate{footline}{%
   \vbox to 17pt{%
     \vfill
@@ -109,24 +109,24 @@ If demand repeats every day, copying yesterday is already competitive.
 {\small\color{Muted}Evaluate future periods and interpret gains against the named baseline.}
 \end{frame}
 
-% MAIN 03 -- 45 seconds
+% MAIN 03 -- 40 seconds
 \begin{frame}{The target is mean hourly power across three zones}
-\vspace{2mm}
 \begin{columns}[c,onlytextwidth]
 \column{.59\textwidth}
 \[y_t=\frac{1}{6}\sum_{j=0}^{5}\bigl(Z_{1,t,j}+Z_{2,t,j}+Z_{3,t,j}\bigr)\quad[\mathrm{kW}]\]
+{\small\textbf{Z1--Z3 form the target only, never the inputs.}}
 \column{.37\textwidth}
-{\small\textbf{52,416} ten-minute records\par
-\textbf{8,736} hourly means\par
-1 Jan--30 Dec 2017, Tetouan}
+{\small\textbf{52,416 $\times$ 9}: 10-minute records\par
+{\color{Muted}\footnotesize timestamp, 5 weather, 3 zone loads}\par
+\textbf{8,736} hourly means, 2017}
 \end{columns}
-\centering\includegraphics[width=\textwidth,height=3.55cm,keepaspectratio]{results/figures/F01_total_hourly_year.png}\par
+\centering\includegraphics[width=\textwidth,height=3.2cm,keepaspectratio]{results/figures/F01_total_hourly_year.png}\par
 \raggedright
 {\small Mean power (kW); hourly energy is $y_t\times1\,\mathrm{h}$ (kWh).\par
-Whole-year view includes December, but no 31 December data; the centred smooth is descriptive.}
+{\color{Muted}Whole-year view includes December, but no 31 December data; the centred smooth is descriptive.}}
 \end{frame}
 
-% MAIN 04 -- 35 seconds
+% MAIN 04 -- 30 seconds
 \begin{frame}{Daily shape and season both matter}
 \vspace{2mm}
 \begin{columns}[c,onlytextwidth]
@@ -154,7 +154,7 @@ Copying yesterday (Naive-24h) is therefore a strong baseline.}
 \takeaway{$\rightarrow$ features: \texttt{lag\_24}, \texttt{lag\_48} (daily history).}
 \end{frame}
 
-% MAIN 06 -- 55 seconds
+% MAIN 06 -- 50 seconds
 \begin{frame}{Sundays and Mondays break the daily pattern}
 \setlength{\parskip}{2pt}
 \tagline{JANUARY--NOVEMBER / DIFFERENCE FROM MON--FRI AT THE SAME HOUR}
@@ -170,7 +170,26 @@ Copying yesterday mismatches \textbf{Monday/Sunday} and \textbf{Sunday/Saturday}
 \takeaway{$\rightarrow$ features: \texttt{dayofweek}, \texttt{is\_weekend}, cyclic weekday.}
 \end{frame}
 
-% MAIN 07 -- 45 seconds
+% MAIN 07 -- 40 seconds
+\begin{frame}{Holidays and Ramadan move the load}
+\setlength{\parskip}{2pt}
+\tagline{JANUARY--NOVEMBER DATA ONLY}
+\begin{columns}[c,onlytextwidth]
+\column{.52\textwidth}
+\fig{results/figures/F05_ramadan_profile.png}{4.6cm}
+\column{.44\textwidth}
+{\small\textbf{Religious holidays} (two Eids, Islamic New Year):\par
+\textbf{3--13\% lower} than the surrounding days, about $-9\%$ on average.\par\vspace{1.5mm}
+\textbf{Civil holidays}: weaker and uneven, about $-3\%$.\par
+$\Rightarrow$ two separate flags, not one.\par\vspace{1.5mm}
+\textbf{Ramadan}: night load jumps (\textbf{+32,000 kW at 02:00});\par
+temperature differs by only 1.9\,$^\circ$C.}
+\end{columns}
+\takeaway{$\rightarrow$ features: \texttt{is\_religious\_holiday}, \texttt{is\_civil\_holiday}, \texttt{is\_ramadan}.}
+{\small\color{Muted}Dates come from the official calendar, known in advance.}
+\end{frame}
+
+% MAIN 08 -- 40 seconds
 \begin{frame}{h24 and h1 use different information at issuance}
 \begin{columns}[t,onlytextwidth]
 \column{.48\textwidth}
@@ -192,24 +211,24 @@ Uses the latest completed-hour load.\par \textbf{Prompt measurements assumed}.}
 Both settings assume prompt load measurements and use observed target-hour weather.}
 \end{frame}
 
-% MAIN 08 -- 40 seconds
+% MAIN 09 -- 35 seconds
 \begin{frame}{Seventeen inputs combine timing, weather and history}
-\tagline{MAIN h24 MODEL: FEATURE SET D}
-{\renewcommand{\arraystretch}{1.07}
-\begin{tabularx}{\textwidth}{@{}p{2.45cm}X>{\centering\arraybackslash}p{1.45cm}@{}}
+\tagline{MAIN h24 MODEL: FEATURE SET D = 5 ORIGINAL + 12 ENGINEERED}
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}p{2.2cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.6cm}>{\centering\arraybackslash}p{1.0cm}@{}}
 \toprule
-Group & Inputs & Count\\\midrule
-Weather & Temperature, humidity, wind speed, general diffuse, diffuse & 5\\
-Calendar & Hour, day of week, weekend; sine and cosine for hour and weekday & 7\\
-Special days & Religious holiday, civil holiday, Ramadan indicators & 3\\
-Daily history & $y_{t-24}$, $y_{t-48}$ & 2\\\bottomrule
+Group & Inputs & Built from & Count\\\midrule
+\multicolumn{4}{@{}l}{\color{Blue}\bfseries In the original dataset}\\
+Weather & Temperature, humidity, wind speed, 2 diffuse-radiation flows & raw columns & 5\\\midrule
+\multicolumn{4}{@{}l}{\color{Blue}\bfseries Engineered by us}\\
+Calendar & Hour, weekday, weekend flag; sin/cos of hour and weekday & timestamp & 7\\
+Special days & Religious holiday, civil holiday, Ramadan & 2017 calendar & 3\\
+Daily history & $y_{t-24}$, $y_{t-48}$ & past total load & 2\\\bottomrule
 \end{tabularx}
-}\par\vspace{1mm}
-{\color{Blue}\bfseries Target-hour observed weather requires forecasts at issuance.}\par\vspace{1mm}
-{\small\color{Muted}History shifted; scalers fitted per fold. Weekly/rolling inputs excluded from set D.}
+}
 \end{frame}
 
-% MAIN 09 -- 60 seconds
+% MAIN 10 -- 55 seconds
 \begin{frame}{Model selection stays within January--November}
 \vspace{1mm}
 \begin{columns}[c,onlytextwidth]
@@ -225,7 +244,7 @@ Selection: lowest mean CV RMSE $\rightarrow$ refit on all development data $\rig
 \color{Muted}Tuning and reporting reuse folds (no nested CV); zero gap assumes prompt data.}
 \end{frame}
 
-% MAIN 10 -- 55 seconds
+% MAIN 11 -- 50 seconds
 \begin{frame}{Learn the load level---or a correction to yesterday}
 \vspace{2mm}
 \begin{columns}[t,onlytextwidth]
@@ -250,7 +269,7 @@ XGBoost (XGB)}
 {\small\color{Muted}RF averages are range-bounded; boosted trees do not share this strict bound.}
 \end{frame}
 
-% MAIN 11 -- 65 seconds
+% MAIN 12 -- 65 seconds
 \begin{frame}{Why predict a correction? July tests extrapolation}
 \setlength{\parskip}{2pt}
 \tagline{FOLD 0: 4 JULY--2 AUGUST \quad / \quad TUNED MODELS}
@@ -275,7 +294,7 @@ XGBoost & 5,344 & \textbf{2,979}\\\bottomrule
 Target variants were tuned separately; gains also reflect their chosen parameters.}
 \end{frame}
 
-% MAIN 12 -- 90 seconds
+% MAIN 13 -- 90 seconds
 \begin{frame}{Absolute SVR leads CV, with close alternatives}
 \setlength{\parskip}{2pt}
 {\small Randomized search: \textbf{170 configurations $\times$ 5 temporal folds per target type};\par
@@ -293,7 +312,7 @@ SVR and DT trail Naive-24h (\textbf{3,392 kW}) on CV.}
 \color{Muted}Same configurations/dates; histories and initial rows differ. CV folds are reused.}
 \end{frame}
 
-% MAIN 13 -- 65 seconds
+% MAIN 14 -- 65 seconds
 \begin{frame}{Daily lags drive accuracy; the expanded set hurts}
 \setlength{\parskip}{3pt}
 \tagline{ABSOLUTE-TARGET RF / FIVE-FOLD CV / FIXED D-TUNED PARAMETERS}
@@ -306,12 +325,12 @@ C & + Special days & 15 & 9,168 & $-8.7\%$\\
 \textcolor{Blue}{\textbf{D}} & \textcolor{Blue}{\textbf{+ Daily lags (24 h, 48 h)}} & \textcolor{Blue}{\textbf{17}} & \textcolor{Blue}{\textbf{3,010}} & \textcolor{Blue}{$-67.2\%$}\\
 E & + Weekly lag and rolling summaries & 21 & 3,700 & $+22.9\%$\\\bottomrule
 \end{tabularx}}\par
-{\small\textbf{D is selected.} Daily lags give the largest gain; adding weekly/rolling features worsens RF.\par
-XGBoost also worsens: \textbf{3,010 $\rightarrow$ 4,921 kW} (D $\rightarrow$ E).\par
-\color{Muted}Possible mechanism: rolling levels may hinder July extrapolation. D/E does not isolate the weekly lag. E/F weather removal changes RMSE by up to 5.3\%; this is not an SVR test.}
+{\small\textbf{D is selected:} daily lags give the largest gain; weekly/rolling features worsen RF and XGBoost\par
+(XGB \textbf{3,010 $\rightarrow$ 4,921 kW}), so they are \textbf{excluded from the final model}.\par
+\color{Muted}Possible mechanism: rolling levels may hinder July extrapolation. D/E does not isolate the weekly lag.}
 \end{frame}
 
-% MAIN 14 -- 65 seconds
+% MAIN 15 -- 65 seconds
 \begin{frame}{The selected SVR halves daily-baseline December RMSE}
 \begin{columns}[c,onlytextwidth]
 \column{.70\textwidth}
@@ -328,7 +347,7 @@ $R^2$: \textbf{\TestRtwo}}
 {\small December 1--30 only; results condition on observed target-hour weather.}
 \end{frame}
 
-% MAIN 15 -- 55 seconds
+% MAIN 16 -- 55 seconds
 \begin{frame}{Good daily tracking still leaves concentrated errors}
 \centering\includegraphics[width=\textwidth,height=4.65cm,keepaspectratio]{slides/figures/december_trace.pdf}\par
 \raggedright
@@ -341,54 +360,51 @@ $R^2$: \textbf{\TestRtwo}}
 {\small\color{Muted}Possible explanation: the holiday flag may transfer larger Eid demand reductions to Mawlid.}
 \end{frame}
 
-% MAIN 16 -- 50 seconds
-\begin{frame}{Evaluation shortcuts change what the score means}
-\setlength{\parskip}{2pt}
-\tagline{A CONCRETE LEAKAGE MECHANISM IN THE SHUFFLED DIAGNOSTIC}
-{\centering
-\begin{tikzpicture}[node distance=10mm,>=Latex,
- box/.style={draw=Blue,fill=Pale,rounded corners=2pt,align=center,inner sep=5pt,font=\small}]
-\node[box] (a) {Held-out response\\$y_t$};
-\node[box,right=of a] (b) {Lag in successor row\\$X_{t+10\,\mathrm{min}}$};
-\node[box,right=of b] (c) {Successor assigned\\to training};
-\draw[->,thick,Blue] (a)--(b);\draw[->,thick,Blue] (b)--(c);
-\end{tikzpicture}
-\par}
-\vspace{1mm}
-{\small\textbf{Separate RF tuning diagnostic} (20 candidates; errors in kW)}\par
-{\renewcommand{\arraystretch}{1.10}\begin{tabularx}{\textwidth}{@{}Xrr@{}}
+% MAIN 17 -- 50 seconds
+\begin{frame}{Compared with published Tetouan studies}
+\setlength{\parskip}{1pt}
+\tagline{VALUES AS REPORTED BY EACH STUDY, NOT RE-RUN}
+{\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{}p{3.1cm}p{2.3cm}Xp{3.3cm}rr@{}}
 \toprule
-CV strategy & CV estimate & December test\\\midrule
-Shuffled KFold & 2,007.6 & 2,173.6\\
-Expanding TimeSeriesSplit & 3,012.4 & 2,044.2\\\bottomrule
+Study & Target & Forecast horizon & Split & MAPE & $R^2$\\\midrule
+RoSe et al.\ (2023) & Total & none (no past load) & 70/30, order not stated & -- & 0.976\\
+Islam et al.\ (2025) & not stated & 10 min ahead & 75/15/10 chronological & 6.3\% & 0.853\\
+Alsalem (2025) & Zone 3 only & 10 min ahead & 70/30, order kept & -- & 0.989\\
+Biswas et al.\ (2026) & mean of 3 zones & not stated & chronological & 1.04\% & --\\\midrule
+\textcolor{Blue}{\textbf{This study}} & \textcolor{Blue}{\textbf{Total}} & \textcolor{Blue}{\textbf{24 h (day-ahead)}} & \textcolor{Blue}{\textbf{chronological}} & \textcolor{Blue}{\textbf{\TestMAPE\%}} & \textcolor{Blue}{\textbf{0.987}}\\\bottomrule
 \end{tabularx}}\par\vspace{1mm}
-{\small\color{Blue}\bfseries Same Random Forest: shuffled 10-min split $R^2$ 0.999 vs chronological h24 $R^2$ 0.980.}\par
-{\small\color{Muted}Forecast settings, features and test sets differ; this is a descriptive comparison.}
+{\small
+\textbf{Longer horizon:} others forecast 10 minutes ahead, use no past load, or state no horizon.\par
+\textbf{Strict evaluation:} model chosen on chronological CV; December used only once.\par
+\textbf{Named reference:} $-$\GainDaily\% RMSE versus copying yesterday (Naive-24h).\par}
+{\small\color{Muted}Settings differ: a positioning, not a ranking. Salam \& El Hibaoui (2018) and da Silva \& Meneses (2023) report no MAPE or $R^2$.}
 \end{frame}
 
-% MAIN 17 -- 45 seconds
+% MAIN 18 -- 40 seconds
 \begin{frame}{Findings \& limitations}
 \setlength{\parskip}{2pt}
 \tagline{FINDINGS}
 {\small
 \begin{enumerate}
-\setlength{\itemsep}{3mm}
+\setlength{\itemsep}{1.5mm}
 \item Choose the final model on chronological CV; report December separately.
 \item Daily lags give the largest RF gain; weekly/rolling features hurt.
 \item The CV-selected SVR halves December Naive-24h error (\textbf{$-50.7\%$}).
 \end{enumerate}}
-\vspace{3mm}
+\vspace{1mm}
 \tagline{LIMITATIONS}
 {\small
 \begin{itemize}
-\setlength{\itemsep}{2mm}
-\item Weather is observed, not forecast; prompt recent-load measurements assumed.
+\setlength{\itemsep}{1mm}
+\item Weather is observed at the target hour; a real midnight forecast needs weather forecasts.
+\item Prompt recent-load measurements assumed.
 \item One city, one year, one 30-day test.
 \end{itemize}}
 \takeaway{Next: issuance-time weather and independent seasonal tests.}
 \end{frame}
 
-% MAIN 18 -- 20 seconds
+% MAIN 19 -- 20 seconds
 \begin{frame}{Conclusion \& Q\&A}
 \vspace{6mm}
 \tagline{CV-SELECTED ABSOLUTE-TARGET SVR \quad / \quad DECEMBER 2017}
