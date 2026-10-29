@@ -114,7 +114,7 @@
   "search_space": {
     "sources": [
       "T06_search_space.csv",
-      "src/models.py"
+      "notebooks/02_models.ipynb (Part 5)"
     ],
     "caption": "Hyperparameter search spaces (T06). Each model is tuned twice (absolute and relative target) with the same space; \\emph{Candidates} is the number of sampled configurations.",
     "rows": 19,

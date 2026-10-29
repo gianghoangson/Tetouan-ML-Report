@@ -1,15 +1,15 @@
-[0] Config.pm:328> INFO - This is Biber 2.21
-[1] Config.pm:331> INFO - Logfile is 'report/main.blg'
-[432] biber-MSWIN64:342> INFO - === 
-[603] Biber.pm:421> INFO - Reading 'report/main.bcf'
-[782] Biber.pm:1002> INFO - Found 12 citekeys in bib section 0
-[799] Biber.pm:4487> INFO - Processing section 0
-[834] Biber.pm:4678> INFO - Looking for bibtex file 'report/references.bib' for section 0
-[969] bibtex.pm:1713> INFO - LaTeX decoding ...
-[1008] bibtex.pm:1519> INFO - Found BibTeX data source 'report/references.bib'
-[1178] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[1179] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[1179] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
-[1180] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
-[1261] bbl.pm:676> INFO - Writing 'report/main.bbl' with encoding 'UTF-8'
-[1269] bbl.pm:779> INFO - Output to report/main.bbl
+[0] Config.pm:307> INFO - This is Biber 2.19
+[0] Config.pm:310> INFO - Logfile is 'report/main.blg'
+[36] biber:340> INFO - === Thu Oct 29, 2026, 23:33:54
+[45] Biber.pm:419> INFO - Reading 'report/main.bcf'
+[75] Biber.pm:979> INFO - Found 12 citekeys in bib section 0
+[81] Biber.pm:4419> INFO - Processing section 0
+[86] Biber.pm:4610> INFO - Looking for bibtex file 'report/references.bib' for section 0
+[87] bibtex.pm:1713> INFO - LaTeX decoding ...
+[92] bibtex.pm:1519> INFO - Found BibTeX data source 'report/references.bib'
+[313] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[313] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[313] Biber.pm:4239> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[313] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[321] bbl.pm:660> INFO - Writing 'report/main.bbl' with encoding 'UTF-8'
+[324] bbl.pm:763> INFO - Output to report/main.bbl

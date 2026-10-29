@@ -81,7 +81,7 @@ for _,r in d.iterrows():
     rows.append(((r'\addlinespace ' if first and prev is not None else '')+(r.model if first else ''), n(r.n_iter,0) if first else '', r'\code{'+r.hyperparameter.split('__')[-1]+'}', space))
     prev=r.model
 table('search_space','Hyperparameter search spaces (T06). Each model is tuned twice (absolute and relative target) with the same space; \\emph{Candidates} is the number of sampled configurations.',
-      ['Model','Candidates','Hyperparameter','Values / distribution'],rows,['T06_search_space.csv','src/models.py'],cols='lrll')
+      ['Model','Candidates','Hyperparameter','Values / distribution'],rows,['T06_search_space.csv','notebooks/02_models.ipynb (Part 5)'],cols='lrll')
 d=read('T09_ablation_summary.csv').set_index(['feature_set','model'])
 table('ablation','Feature ablation with fixed D-selected hyperparameters: mean CV RMSE in kW (T09). Missing entries were not run because the residual base is absent.',
       ['Set (columns)','RF','XGB',r'RF $\Delta$',r'XGB $\Delta$'],
