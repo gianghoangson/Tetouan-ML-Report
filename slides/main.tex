@@ -327,7 +327,8 @@ E & + Weekly lag and rolling summaries & 21 & 3,700 & $+22.9\%$\\\bottomrule
 \end{tabularx}}\par
 {\small\textbf{D is selected:} daily lags give the largest gain; weekly/rolling features worsen RF and XGBoost\par
 (XGB \textbf{3,010 $\rightarrow$ 4,921 kW}), so they are \textbf{excluded from the final model}.\par
-\color{Muted}Possible mechanism: rolling levels may hinder July extrapolation. D/E does not isolate the weekly lag.}
+\textbf{Set F} = E without weather: RMSE $+1.6\%$ (RF), $+1.9\%$ (XGB), at most \textbf{$+5.3\%$} (RF $\Delta$).\par
+{\color{Muted}F is not a test of the selected SVR.}}
 \end{frame}
 
 % MAIN 15 -- 65 seconds
