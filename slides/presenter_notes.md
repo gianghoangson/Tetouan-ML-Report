@@ -60,11 +60,11 @@
 
 **Speaking time:** 30 seconds. **Speaker:** Giang Hoang Son.
 
-**Script:** These profiles use January through November only. Every season has a similar shape: the minimum occurs around six or seven in the morning, followed by daytime demand and an evening peak around nineteen or twenty hours. Summer has a higher load profile. These patterns motivate two complementary sources of information. Calendar features describe where an hour falls in the daily and weekly cycle. Recent daily load helps represent the current level of demand. The plot shows an association with season; it does not by itself prove a particular physical cause.
+**Script:** These profiles use January through November only. Every season has a similar shape: the minimum occurs around six or seven in the morning, followed by daytime demand and an evening peak around nineteen or twenty hours. Summer has a higher load profile, with more demand in the afternoon. The hour of day therefore explains most of the shape, so we add the hour and its sine and cosine encodings as features. The summer shift is linked to temperature, which is one of the weather inputs. The plot shows an association with season; it does not by itself prove a particular physical cause.
 
-**Key takeaway:** Timing and recent load level both belong in the model inputs.
+**Key takeaway:** The hour of day drives the daily shape; temperature helps with the seasonal level.
 
-**Transition:** The strong daily shape also appears in the autocorrelation plot.
+**Transition:** The season sets the level, but the best guide to today's level is yesterday, as the autocorrelation shows.
 
 ## 5. Today looks like yesterday
 
