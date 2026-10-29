@@ -1,4 +1,4 @@
-% Compile from the REPORT REPOSITORY ROOT, not from slides/.
+% Compile from the report repository root or from inside slides/ (e.g. VS Code).
 % All figure paths are local to this repository; no ML-repository dependencies.
 \documentclass[aspectratio=169]{beamer}
 \usepackage[T1]{fontenc}
@@ -47,6 +47,9 @@
 \newcommand{\tagline}[1]{{\color{Blue}\fontsize{9}{11}\selectfont\bfseries #1}\par\vspace{1mm}}
 \newcommand{\metric}[2]{{\color{Blue}\fontsize{25}{29}\selectfont\bfseries #1}\par{\small #2}\par}
 \newcommand{\fig}[2]{\includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}}
+% Paths are written from the repository root; inside slides/, also look one level up
+\makeatletter\def\input@path{{./}{../}}\makeatother
+\graphicspath{{./}{../}}
 \input{slides/metrics.tex}
 \title{Machine Learning-Based Electricity Consumption Forecasting in Tetouan City}
 \subtitle{A chronological evaluation of conventional regression models}

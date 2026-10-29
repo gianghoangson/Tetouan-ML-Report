@@ -1,5 +1,5 @@
 % Ten-section report and supplementary appendix.
-% Compile from the repository root; see report/README.md.
+% Compile from the repository root (see report/README.md) or from inside report/ (e.g. VS Code).
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -14,12 +14,14 @@
 \usepackage{float}
 \usepackage[section]{placeins}
 \usepackage[backend=biber,style=numeric,sorting=none,giveninits=true,maxbibnames=8]{biblatex}
-\addbibresource{report/references.bib}
+% Paths are written from the repository root; when compiled inside report/, also look one level up
+\IfFileExists{report/main.tex}{\addbibresource{report/references.bib}}{\addbibresource{references.bib}}
+\makeatletter\def\input@path{{./}{../}}\makeatother
 \usepackage{xcolor}
 \definecolor{refblue}{RGB}{0,70,170}
 \usepackage[unicode,colorlinks=true,linkcolor=refblue,citecolor=refblue,urlcolor=refblue]{hyperref}
 \usepackage[capitalise,noabbrev]{cleveref}
-\graphicspath{{results/figures/}}
+\graphicspath{{./}{../}{results/figures/}{../results/figures/}}
 \sisetup{group-separator={,},group-minimum-digits=4,detect-all}
 \captionsetup{font=small,labelfont=bf,skip=7pt}
 \setlength{\parskip}{5pt}
@@ -52,7 +54,7 @@
 {\large Faculty of Data Science and Artificial Intelligence\par}
 
 \vspace{1.7cm}
-{\large MACHINE LEARNING\par}
+{\large STATISTICS\par}
 
 \vspace{0.5cm}
 \rule{\textwidth}{0.6pt}
