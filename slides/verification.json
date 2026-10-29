@@ -1,0 +1,1291 @@
+{
+  "scope": "Saved artifacts and arithmetic only; no training or experiment execution",
+  "passed": 304,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "December has 720 unique hourly forecasts",
+      "passed": true
+    },
+    {
+      "check": "December coverage",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "SVR-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "SVR-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "SVR-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "SVR-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "XGB-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "XGB-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "XGB-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "XGB-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "RF_delta-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "RF_delta-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "RF_delta-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "RF_delta-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "XGB-default: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "XGB-default: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "XGB-default: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "XGB-default: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "DT_delta-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "DT_delta-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "DT_delta-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "DT_delta-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "RF-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "RF-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "RF-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "RF-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "RF-default: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "RF-default: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "RF-default: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "RF-default: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "SVR-default: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "SVR-default: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "SVR-default: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "SVR-default: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "LR-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "LR-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "LR-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "LR-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "LR-default: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "LR-default: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "LR-default: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "LR-default: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "LR_delta-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "LR_delta-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "LR_delta-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "LR_delta-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "Naive-168h: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "Naive-168h: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "Naive-168h: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "Naive-168h: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "DT-tuned: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "DT-tuned: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "DT-tuned: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "DT-tuned: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "DT-default: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "DT-default: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "DT-default: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "DT-default: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "Naive-24h: reconstructed RMSE",
+      "passed": true
+    },
+    {
+      "check": "Naive-24h: reconstructed MAE",
+      "passed": true
+    },
+    {
+      "check": "Naive-24h: reconstructed MAPE",
+      "passed": true
+    },
+    {
+      "check": "Naive-24h: reconstructed R2",
+      "passed": true
+    },
+    {
+      "check": "SVR: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "SVR: selected search score",
+      "passed": true
+    },
+    {
+      "check": "SVR: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta: selected search score",
+      "passed": true
+    },
+    {
+      "check": "SVR_delta: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "RF_delta: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "RF_delta: selected search score",
+      "passed": true
+    },
+    {
+      "check": "RF_delta: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta: selected search score",
+      "passed": true
+    },
+    {
+      "check": "XGB_delta: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "DT_delta: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "DT_delta: selected search score",
+      "passed": true
+    },
+    {
+      "check": "DT_delta: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "LR_delta: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "LR_delta: selected search score",
+      "passed": true
+    },
+    {
+      "check": "LR_delta: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "LR: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "LR: selected search score",
+      "passed": true
+    },
+    {
+      "check": "LR: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "XGB: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "XGB: selected search score",
+      "passed": true
+    },
+    {
+      "check": "XGB: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "RF: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "RF: selected search score",
+      "passed": true
+    },
+    {
+      "check": "RF: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "DT: CV mean and sample SD",
+      "passed": true
+    },
+    {
+      "check": "DT: selected search score",
+      "passed": true
+    },
+    {
+      "check": "DT: five selected search folds",
+      "passed": true
+    },
+    {
+      "check": "CV selection is absolute SVR",
+      "passed": true
+    },
+    {
+      "check": "Test-best is residual SVR",
+      "passed": true
+    },
+    {
+      "check": "Worst day and its MAE",
+      "passed": true
+    },
+    {
+      "check": "Local raw row count",
+      "passed": true
+    },
+    {
+      "check": "Hourly row count",
+      "passed": true
+    },
+    {
+      "check": "Saved actual is hourly three-zone mean power",
+      "passed": true
+    },
+    {
+      "check": "No raw missing/duplicate timestamps",
+      "passed": true
+    },
+    {
+      "check": "Development profiles: minima 6-7, maxima 19-20",
+      "passed": true
+    },
+    {
+      "check": "Reused report figure matches ML: F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Reused report figure matches ML: F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/.gitignore",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/.python-version",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/README.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/requirements.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/run_all.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/guideline.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/Guideline_ML_Project_Tetouan.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/kaggle_survey.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/Literature_Review_Tetouan.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/progress.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/result.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/01_eda.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/02_features.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/03_baselines_level1.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/04_level2_cv.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/05_level3_tuning.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/06_ablation_horizon.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/07_final_test_analysis.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/08_leakage_experiment.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/config.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/data.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/evaluate.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/features.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/models.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/viz.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/__init__.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F02_zones_daily.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F04_heatmap_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F05_ramadan_profile.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F06a_temperature_vs_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F06b_correlation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F07_acf_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F08_weekday_holiday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F10_split_and_folds.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F14_hyperparameter_sensitivity.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F16_leakage_settings.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17b_residuals.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17c_scatter.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17_test_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F18_error_by_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19a_feature_importance.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19b_shap_summary.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19c_shap_dependence.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19d_shap_groups.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/best_params.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_DT.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_DT_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_LR.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_LR_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_RF.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_RF_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_SVR.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_SVR_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_XGB.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_XGB_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T01_data_quality.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T01_descriptive_stats.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T02_cv_folds.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T02_split_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T03_features.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T04_level0_level1.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T04_level0_level1_wide.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T05_level2_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T05_level2_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T06_best_params.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T06_search_space.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T07_default_vs_tuned.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T07_level3_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_final_test.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_final_test_long.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_test_predictions.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_worst_days.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T09_ablation.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T09_ablation_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T10_horizon.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T10_horizon_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T11_kaggle_survey.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T12b_kfold_vs_tscv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T12_leakage_settings.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/data/processed/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/data/raw/Tetuan City power consumption.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/.gitignore",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/build_tables.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/check_evidence.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/FINAL_REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/inspect_evidence.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.aux",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bbl",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bbl-SAVE-ERROR",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bcf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bcf-SAVE-ERROR",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.blg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.fdb_latexmk",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.fls",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.log",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.out",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.run.xml",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.toc",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/README.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/references.bib",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/reference_verification.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/REPORT_PROGRESS.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/research_audit.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/review_checks.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/table_sources.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validate_report.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validate_sections_06_09.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validation_summary.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F02_zones_daily.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F04_heatmap_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F05_ramadan_profile.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F06a_temperature_vs_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F06b_correlation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F07_acf_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F08_weekday_holiday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F10_split_and_folds.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F14_hyperparameter_sensitivity.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F16_leakage_settings.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17b_residuals.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17c_scatter.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17_test_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F18_error_by_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19a_feature_importance.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19b_shap_summary.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19c_shap_dependence.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19d_shap_groups.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/appendices/supplementary.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/assets/neu-logo.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/01_eda.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/02_features.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/03_baselines_level1.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/04_level2_cv.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/05_level3_tuning.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/06_ablation_horizon.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/07_final_test_analysis.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/08_leakage_experiment.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_1.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_2.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_3.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_4.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_5.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/Guideline_ML_Project_Tetouan.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/Literature_Review_Tetouan.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/numerical_checks.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/peer_review_checks.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/report_validation.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/sections_06_09_validation.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/source_manifest.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/table_inventory.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/01_introduction.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/02_related_work.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/03_dataset_eda.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/04_methodology.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/05_baselines_cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/06_tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/07_ablation_horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/08_final_evaluation.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/09_leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/10_discussion_conclusion.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/dependencies.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/descriptive.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/kfold.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/runtime.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/splits.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/survey.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/test24.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/worst_days.tex",
+      "passed": true
+    }
+  ],
+  "display_values": {
+    "TestRMSE": "1,624.6",
+    "TestMAE": "1,094.6",
+    "TestMAPE": "1.78",
+    "TestRtwo": "0.9869",
+    "GainDaily": "50.7",
+    "GainWeekly": "38.0",
+    "CVRMSE": "2,410.6",
+    "CVSD": "766.3",
+    "HoneRMSE": "1,866.4",
+    "HoneGain": "22.6",
+    "DeltaTest": "1,419.1",
+    "Bias": "-202.1",
+    "WorstMAE": "4,579.2",
+    "TuningGain": "39.3",
+    "RFBefore": "9,168.1",
+    "RFAfter": "3,010.4"
+  },
+  "figure_matches": {
+    "F01_total_hourly_year.png": true,
+    "F02_zones_daily.png": true,
+    "F03_profile_by_season.png": true,
+    "F04_heatmap_hour_weekday.png": true,
+    "F05_ramadan_profile.png": true,
+    "F06a_temperature_vs_total.png": true,
+    "F06b_correlation.png": true,
+    "F07_acf_total.png": true,
+    "F08_weekday_holiday.png": true,
+    "F10_split_and_folds.png": true,
+    "F11_level1_vs_baselines.png": true,
+    "F12_rmse_per_fold.png": true,
+    "F13_default_vs_tuned.png": true,
+    "F14_hyperparameter_sensitivity.png": true,
+    "F15_ablation.png": true,
+    "F16_leakage_settings.png": true,
+    "F17b_residuals.png": true,
+    "F17c_scatter.png": true,
+    "F17_test_actual_vs_pred.png": true,
+    "F18_error_by_hour_weekday.png": true,
+    "F19a_feature_importance.png": false,
+    "F19b_shap_summary.png": false,
+    "F19c_shap_dependence.png": true,
+    "F19d_shap_groups.png": true
+  },
+  "profiles": {
+    "Winter": {
+      "minimum_hour": 7,
+      "maximum_hour": 19
+    },
+    "Spring": {
+      "minimum_hour": 6,
+      "maximum_hour": 20
+    },
+    "Summer": {
+      "minimum_hour": 6,
+      "maximum_hour": 20
+    },
+    "Autumn": {
+      "minimum_hour": 6,
+      "maximum_hour": 19
+    }
+  },
+  "student_identity_source": "User-provided exact title-slide details",
+  "paths": {
+    "ml": "C:\\Users\\Giang Hoang Son\\OneDrive\\Desktop\\nam 3 ki 1\\statistic\\Prj Tetouan ML\\Machine-Learning",
+    "report": "C:\\Users\\Giang Hoang Son\\OneDrive\\Desktop\\nam 3 ki 1\\statistic\\Tetouan-ML-Report",
+    "output": "C:\\Users\\Giang Hoang Son\\OneDrive\\Desktop\\nam 3 ki 1\\statistic\\Tetouan-ML-Report\\slides"
+  }
+}

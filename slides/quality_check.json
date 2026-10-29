@@ -1,0 +1,1190 @@
+{
+  "passed": 294,
+  "failed": 0,
+  "main_slides": 16,
+  "backup_slides": 3,
+  "speaking_seconds": 900,
+  "original_files_checked": 194,
+  "new_files_outside_slides": [],
+  "compilation": "Blocked: beamer.cls not found",
+  "rendered_slide_layout_verified": false,
+  "scope": "Static checks are not a substitute for successful compilation and PDF inspection.",
+  "checks": [
+    {
+      "check": "16:9 Beamer declaration",
+      "passed": true
+    },
+    {
+      "check": "16 main frames",
+      "passed": true
+    },
+    {
+      "check": "3 backup frames",
+      "passed": true
+    },
+    {
+      "check": "Backups do not increment frame number",
+      "passed": true
+    },
+    {
+      "check": "No submission date",
+      "passed": true
+    },
+    {
+      "check": "Identity: NATIONAL ECONOMICS UNIVERSITY",
+      "passed": true
+    },
+    {
+      "check": "Identity: Faculty of Data Science and Artificial Intelligence",
+      "passed": true
+    },
+    {
+      "check": "Identity: MACHINE LEARNING",
+      "passed": true
+    },
+    {
+      "check": "Identity: Dang Nhat Minh",
+      "passed": true
+    },
+    {
+      "check": "Identity: 11247196",
+      "passed": true
+    },
+    {
+      "check": "Identity: Giang Hoang Son",
+      "passed": true
+    },
+    {
+      "check": "Identity: 11247222",
+      "passed": true
+    },
+    {
+      "check": "Identity: DS66A",
+      "passed": true
+    },
+    {
+      "check": "Identity: Ph.D. Luong Van Thien",
+      "passed": true
+    },
+    {
+      "check": "Identity: A chronological evaluation of conventional regression models",
+      "passed": true
+    },
+    {
+      "check": "Exact title metadata",
+      "passed": true
+    },
+    {
+      "check": "No cross-repository TeX paths",
+      "passed": true
+    },
+    {
+      "check": "Notes total 900 seconds",
+      "passed": true
+    },
+    {
+      "check": "16 scripts",
+      "passed": true
+    },
+    {
+      "check": "16 key takeaways",
+      "passed": true
+    },
+    {
+      "check": "12 Q&A questions",
+      "passed": true
+    },
+    {
+      "check": "Balanced braces without negative depth",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes block",
+      "passed": true
+    },
+    {
+      "check": "Environment closes enumerate",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes block",
+      "passed": true
+    },
+    {
+      "check": "Environment closes block",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes tabularx",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes tabularx",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes tikzpicture",
+      "passed": true
+    },
+    {
+      "check": "Environment closes center",
+      "passed": true
+    },
+    {
+      "check": "Environment closes tabularx",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes block",
+      "passed": true
+    },
+    {
+      "check": "Environment closes block",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes enumerate",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes columns",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes tabularx",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes enumerate",
+      "passed": true
+    },
+    {
+      "check": "Environment closes frame",
+      "passed": true
+    },
+    {
+      "check": "Environment closes document",
+      "passed": true
+    },
+    {
+      "check": "All environments closed",
+      "passed": true
+    },
+    {
+      "check": "Frame 1: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 2: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 3: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 4: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 5: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 6: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 7: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 8: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 9: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 10: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 11: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 12: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 13: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 14: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 15: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 16: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 17: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 18: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Frame 19: paired inline math delimiters",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: report/assets/neu-logo.png",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: results/figures/F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/figures/chronological_cv.pdf",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/figures/december_trace.pdf",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/figures/ablation.pdf",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: results/figures/F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/figures/cv_ranking.pdf",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/figures/december_comparison.pdf",
+      "passed": true
+    },
+    {
+      "check": "Asset exists: slides/metrics.tex",
+      "passed": true
+    },
+    {
+      "check": "Seven data visuals plus logo",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/.gitignore",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/.python-version",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/README.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/requirements.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/run_all.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/guideline.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/Guideline_ML_Project_Tetouan.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/kaggle_survey.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/Literature_Review_Tetouan.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/progress.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/docs/result.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/01_eda.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/02_features.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/03_baselines_level1.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/04_level2_cv.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/05_level3_tuning.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/06_ablation_horizon.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/07_final_test_analysis.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/notebooks/08_leakage_experiment.ipynb",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/config.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/data.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/evaluate.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/features.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/models.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/viz.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/src/__init__.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F02_zones_daily.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F04_heatmap_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F05_ramadan_profile.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F06a_temperature_vs_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F06b_correlation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F07_acf_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F08_weekday_holiday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F10_split_and_folds.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F14_hyperparameter_sensitivity.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F16_leakage_settings.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17b_residuals.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17c_scatter.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F17_test_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F18_error_by_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19a_feature_importance.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19b_shap_summary.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19c_shap_dependence.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/figures/F19d_shap_groups.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/best_params.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_DT.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_DT_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_LR.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_LR_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_RF.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_RF_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_SVR.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_SVR_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_XGB.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/search_XGB_delta.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T01_data_quality.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T01_descriptive_stats.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T02_cv_folds.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T02_split_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T03_features.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T04_level0_level1.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T04_level0_level1_wide.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T05_level2_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T05_level2_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T06_best_params.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T06_search_space.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T07_default_vs_tuned.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T07_level3_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_final_test.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_final_test_long.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_test_predictions.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T08_worst_days.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T09_ablation.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T09_ablation_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T10_horizon.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T10_horizon_cv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T11_kaggle_survey.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T12b_kfold_vs_tscv.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/results/tables/T12_leakage_settings.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/data/processed/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Prj Tetouan ML/Machine-Learning/data/raw/Tetuan City power consumption.csv",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/.gitignore",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/build_tables.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/check_evidence.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/FINAL_REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/inspect_evidence.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.aux",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bbl",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bbl-SAVE-ERROR",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bcf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.bcf-SAVE-ERROR",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.blg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.fdb_latexmk",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.fls",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.log",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.out",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.pdf",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.run.xml",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/main.toc",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/README.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/references.bib",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/reference_verification.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/REPORT_PROGRESS.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/research_audit.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/review_checks.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/table_sources.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validate_report.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validate_sections_06_09.py",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/validation_summary.md",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/.gitkeep",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F01_total_hourly_year.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F02_zones_daily.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F03_profile_by_season.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F04_heatmap_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F05_ramadan_profile.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F06a_temperature_vs_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F06b_correlation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F07_acf_total.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F08_weekday_holiday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F10_split_and_folds.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F11_level1_vs_baselines.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F12_rmse_per_fold.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F13_default_vs_tuned.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F14_hyperparameter_sensitivity.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F15_ablation.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F16_leakage_settings.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17b_residuals.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17c_scatter.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F17_test_actual_vs_pred.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F18_error_by_hour_weekday.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19a_feature_importance.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19b_shap_summary.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19c_shap_dependence.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/results/figures/F19d_shap_groups.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/appendices/supplementary.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/assets/neu-logo.png",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/01_eda.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/02_features.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/03_baselines_level1.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/04_level2_cv.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/05_level3_tuning.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/06_ablation_horizon.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/07_final_test_analysis.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/08_leakage_experiment.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_1.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_2.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_3.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_4.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/figure_contact_5.jpg",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/Guideline_ML_Project_Tetouan.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/Literature_Review_Tetouan.txt",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/numerical_checks.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/peer_review_checks.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/report_validation.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/sections_06_09_validation.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/source_manifest.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/evidence/table_inventory.json",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/01_introduction.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/02_related_work.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/03_dataset_eda.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/04_methodology.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/05_baselines_cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/06_tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/07_ablation_horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/08_final_evaluation.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/09_leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/sections/10_discussion_conclusion.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/ablation.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/baselines.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/cv.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/cv_folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/dependencies.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/descriptive.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/folds.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/horizon.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/kfold.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/leakage.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/runtime.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/search_space.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/selected_h24.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/splits.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/survey.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/test24.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/tuning.tex",
+      "passed": true
+    },
+    {
+      "check": "Original unchanged: Tetouan-ML-Report/report/tables/worst_days.tex",
+      "passed": true
+    },
+    {
+      "check": "No new files outside slides",
+      "passed": true
+    }
+  ]
+}
