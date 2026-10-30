@@ -28,15 +28,3 @@ All results come from the project repository. \code{python run_all.py} runs the 
 \includegraphics[width=.6\linewidth]{F17c_scatter.png}
 \caption{Actual against forecast December load of the selected SVR, with the line $y=x$.}\label{fig:test_scatter}
 \end{figure}
-\begin{figure}[H]\centering
-\includegraphics[width=.8\linewidth]{F19b_shap_summary.png}
-\caption{Detailed SHAP summary of the relative RF: one dot per December hour, colour is the feature value (red high, blue low).}\label{fig:shap_detail}
-\end{figure}
-\begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{F19a_feature_importance.png}
-\caption{Relative RF: built-in importance (left, explains the deviation from \code{lag_24}) and test permutation importance (right, full forecast).}\label{fig:importance}
-\end{figure}
-\begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{F19c_shap_dependence.png}
-\caption{SHAP dependence of the relative RF on temperature and \code{lag_24} (contributions to the deviation from yesterday, kW).}\label{fig:shap_dependence}
-\end{figure}
