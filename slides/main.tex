@@ -209,9 +209,6 @@ History: $y_{t-1},y_{t-2},y_{t-3},y_{t-24}$.\par\vspace{1mm}
 Uses the latest completed-hour load.\par \textbf{Prompt measurements assumed}.}
 \end{block}
 \end{columns}
-\vspace{1mm}
-{\small The 24-hour lag is a minimum history offset; lead times vary across the daily batch.\par
-Both settings assume prompt load measurements and use observed target-hour weather.}
 \end{frame}
 
 % MAIN 09 -- 35 seconds
@@ -269,7 +266,6 @@ XGBoost (XGB)}
 {\small Learn the change from yesterday so recent load carries the current level.}
 \end{columns}
 \takeaway{Both target formulations compete on development CV.}
-{\small\color{Muted}RF averages are range-bounded; boosted trees do not share this strict bound.}
 \end{frame}
 
 % MAIN 12 -- 65 seconds
@@ -293,8 +289,7 @@ XGBoost & 5,344 & \textbf{2,979}\\\bottomrule
 {\small RF averages cannot extrapolate beyond training targets. Learning a correction reduces the impact of the level shift.}
 \end{columns}
 \takeaway{Residual learning is not necessary for the selected SVR.}
-{\small SVR CV: absolute \textbf{2,411} vs residual \textbf{2,427 kW}; nearly tied.\par
-Target variants were tuned separately; gains also reflect their chosen parameters.}
+{\small SVR CV: absolute \textbf{2,411} vs residual \textbf{2,427 kW}; nearly tied.}
 \end{frame}
 
 % MAIN 13 -- 90 seconds
@@ -311,8 +306,7 @@ SVR CV RMSE fell \textbf{39.3\%} versus default SVR.}
 \textbf{Default models:} XGB wins November; LR (\textbf{2,792 kW}) wins five-fold CV.\par
 SVR and DT trail Naive-24h (\textbf{3,392 kW}) on CV.}
 \end{columns}
-{\small\textbf{More recent history: h24 vs h1 (CV).} SVR \CVRMSE{} $\rightarrow$ \HoneRMSE{} kW ($-22.6\%$).\par
-\color{Muted}Same configurations/dates; histories and initial rows differ. CV folds are reused.}
+{\small\textbf{More recent history: h24 vs h1 (CV).} SVR \CVRMSE{} $\rightarrow$ \HoneRMSE{} kW ($-22.6\%$).}
 \end{frame}
 
 % MAIN 14 -- 65 seconds
@@ -348,7 +342,6 @@ MAPE: \textbf{\TestMAPE\%}\par
 $R^2$: \textbf{\TestRtwo}}
 \end{columns}
 \takeaway{Residual SVR: observed test-best; not CV-selected. Absolute SVR remains final.}
-{\small December 1--30 only; results condition on observed target-hour weather.}
 \end{frame}
 
 % MAIN 16 -- 55 seconds
@@ -361,7 +354,6 @@ $R^2$: \textbf{\TestRtwo}}
 \column{.61\textwidth}
 {\small\textbf{Worst day: 1 December (Mawlid)}\par MAE \WorstMAE{} kW; highlighted in blue.}
 \end{columns}
-{\small\color{Muted}Possible explanation: the holiday flag may transfer larger Eid demand reductions to Mawlid.}
 \end{frame}
 
 % MAIN 17 -- 50 seconds
