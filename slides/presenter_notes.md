@@ -200,9 +200,9 @@
 
 **Speaking time:** 40 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Three findings stand out. Choose the final model using chronological development CV and report December separately. Daily lags provide the largest gain in the fixed-parameter RF ablation, while adding weekly and rolling features hurts that tested model. The CV-selected SVR halves the daily-baseline December error, a fifty point seven percent reduction. Two limitations stay visible. First, the weather inputs are the values actually measured at the target hour; a real forecast issued at midnight would only have weather forecasts, so errors could be higher in practice. Second, coverage is limited to one city, one year and one thirty-day test. Prompt arrival of recent loads is also assumed. The fitted weights remain fixed while earlier observed December loads update the inputs. Documentation records test reruns, so December's independence is limited. These last details remain in our notes and Q&A rather than crowding the slide.
+**Script:** Three findings stand out. Choose the final model using chronological development CV and report December separately. Daily lags provide the largest gain in the fixed-parameter RF ablation, while adding weekly and rolling features hurts that tested model. The CV-selected SVR halves the daily-baseline December error, a fifty point seven percent reduction. Two limitations stay visible. First, the weather inputs are the values actually measured at the target hour; a real forecast issued at midnight would only have weather forecasts, so errors could be higher in practice. Second, the dataset is small: one year of data from a single city. Next steps are to use weather forecasts as inputs and to add more years of data.
 
-**Key takeaway:** The December gains depend on available inputs and limited observed coverage.
+**Key takeaway:** The December gains depend on observed weather and a small dataset.
 
 **Transition:** We finish with the selected SVR's December result.
 
