@@ -90,6 +90,6 @@ The selected SVR's worst December day is December 1, MAE 4,579.2 kW, with mean b
 
 ## Tuning details retained for Q&A
 
-Random search budgets per target type are Ridge 20, DT 40, RF 30, SVR 30 and XGBoost 50: 170 configurations, each on five temporal folds. Selected RBF SVR: C=26.926469, gamma=0.006338653, epsilon=0.01. Inputs and target are standardized using training-fold data; epsilon is in scaled-target units. The merged CV slide cites Bergstra and Bengio (2012).
+Random search budgets per target type are Ridge 20, DT 40, RF 30, SVR 30 and XGBoost 50: 170 configurations, each on five temporal folds. Selected RBF SVR: C=26.926469, gamma=0.006338653, epsilon=0.01. Inputs and target are standardized using training-fold data; epsilon is in scaled-target units.
 
 The saved EDA prose rounds 48-hour ACF to 0.97; the team supplied 0.96 for this slide and explicitly requested preservation. Lag12 is described only as negative. The shuffled ten-minute RF R2 .999 versus chronological h24 RF .980 is descriptive: horizons, feature sets and test populations differ, so it is not an isolated leakage effect.

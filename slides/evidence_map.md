@@ -92,14 +92,14 @@ No literature performance ranking or unmatched external benchmark result is pres
 - No saved weekly-only ablation was located in current tables, notebooks or report. D/E jointly adds lag168, rolling mean24, rolling SD24 and rolling mean168. The deck does not assert that weekly lag alone is neutral or rolling means alone caused the loss.
 - Rolling-level extrapolation is a possible mechanism. RF/DT range bounds do not apply generally to additive XGBoost. Small RBF gamma does not imply a mathematically linear SVR.
 - Slide 16 presents Eid-to-Mawlid transfer as a possible explanation only. No causal holiday claim is made.
-- Bergstra and Bengio (2012) is visible on slide 13. Internal paths remain here rather than in visible slide footers.
+- No citation is shown on slide 13; Bergstra and Bengio (2012) is cited in the report (sections 2 and 6). Internal paths remain here rather than in visible slide footers.
 - FDA logo is the existing report/assets/fda-logo.png; the requested alternate filename logo-fda.png is absent.
 
 Final revision validation: 18 compiled PDF pages; 900 seconds in slide comments and presenter notes; folds 0-4; no visible internal source footers; headline December metrics checked in extracted PDF text. All 18 rendered pages were inspected, with slide 9 rechecked after its final spacing change. No overfull/underfull box warnings remain. All 194 original-file hashes match the preservation manifest.
 
 ## EDA expansion and model condensation - current revision
 
-Two EDA slides follow the seasonal profile. Tuning is merged into CV results (slide 12); findings and limitations are merged (slide 17). Total 18 slides, 900 seconds; handover remains after the chronological CV title (now slide 9). Title page and the six model/result frames marked for preservation retain their content. Test-rerun and load-history-update caveats remain in notes and Q&A. Internal source footers remain absent; Bergstra and Bengio (2012) stays visible on the CV slide. The F04 original is unchanged; refresh_eda_view.py redraws only its right-panel values with slide-size labels.
+Two EDA slides follow the seasonal profile. Tuning is merged into CV results (slide 12); findings and limitations are merged (slide 17). Total 18 slides, 900 seconds; handover remains after the chronological CV title (now slide 9). Title page and the six model/result frames marked for preservation retain their content. Test-rerun and load-history-update caveats remain in notes and Q&A. Internal source footers remain absent. Bergstra and Bengio (2012) was later removed from the CV slide (still cited in the report). The F04 original is unchanged; refresh_eda_view.py redraws only its right-panel values with slide-size labels.
 
 Projection-figure detail: F07 is shown through slides/figures/acf_view.pdf, using the same biased ACF definition as notebook 01 and larger labels. Read-only recomputation gives lags 24/48/168 = 0.9770493217/0.9652388248/0.9470116842. Displayed values remain the team's requested .98/.96/.95; nearest-two-decimal rounding would give .97 at lag48. Original F07/F04 PNGs remain unchanged. The right-panel F04 derivative uses the exact same-hour Mon-Fri normalization.
 
