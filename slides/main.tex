@@ -293,16 +293,24 @@ XGBoost & 5,344 & \textbf{2,979}\\\bottomrule
 % MAIN 13 -- 90 seconds
 \begin{frame}{Absolute SVR leads CV, with close alternatives}
 \setlength{\parskip}{2pt}
-{\small Randomized search: \textbf{170 configurations $\times$ 5 temporal folds per target type};\par
-SVR CV RMSE fell \textbf{39.3\%} versus default SVR.}
+{\small Randomized search: \textbf{170 configurations $\times$ 5 temporal folds per target type}.}
 \begin{columns}[c,onlytextwidth]
 \column{.63\textwidth}
 \fig{slides/figures/cv_ranking.pdf}{3.85cm}
 \column{.33\textwidth}
 \metric{\CVRMSE}{kW mean CV RMSE}
-{\small $\pm$ \CVSD{} kW fold SD.\par
-\textbf{Default models:} XGB wins November; LR (\textbf{2,792 kW}) wins five-fold CV.\par
-SVR and DT trail Naive-24h (\textbf{3,392 kW}) on CV.}
+{\small $\pm$ \CVSD{} kW fold SD.\par}
+\vspace{1mm}
+{\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.05}
+\textbf{Default vs tuned (CV, kW)}\par
+\begin{tabular}{@{}lrrr@{}}
+\toprule Model & Default & Tuned & Change\\\midrule
+\textcolor{Blue}{\textbf{SVR}} & 3,969 & \textcolor{Blue}{\textbf{2,411}} & $-39.3\%$\\
+RF $\Delta$ & 3,070 & 2,429 & $-20.9\%$\\
+XGB $\Delta$ & 3,265 & 2,441 & $-25.2\%$\\
+DT $\Delta$ & 4,048 & 2,525 & $-37.6\%$\\
+LR $\Delta$ & 2,792 & 2,770 & $-0.8\%$\\\bottomrule
+\end{tabular}}
 \end{columns}
 {\small\textbf{More recent history: h24 vs h1 (CV).} SVR \CVRMSE{} $\rightarrow$ \HoneRMSE{} kW ($-22.6\%$).}
 \end{frame}
@@ -321,9 +329,7 @@ C & + Special days & 15 & 9,168 & $-8.7\%$\\
 E & + Weekly lag and rolling summaries & 21 & 3,700 & $+22.9\%$\\\bottomrule
 \end{tabularx}}\par
 {\small\textbf{D is selected:} daily lags give the largest gain; weekly/rolling features worsen RF and XGBoost\par
-(XGB \textbf{3,010 $\rightarrow$ 4,921 kW}), so they are \textbf{excluded from the final model}.\par
-\textbf{Set F} = E without weather: RMSE $+1.6\%$ (RF), $+1.9\%$ (XGB), at most \textbf{$+5.3\%$} (RF $\Delta$).\par
-{\color{Muted}F is not a test of the selected SVR.}}
+(XGB \textbf{3,010 $\rightarrow$ 4,921 kW}), so they are \textbf{excluded from the final model}.}
 \end{frame}
 
 % MAIN 15 -- 65 seconds
