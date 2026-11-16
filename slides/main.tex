@@ -286,8 +286,6 @@ XGBoost & 5,344 & \textbf{2,979}\\\bottomrule
 \end{tabular}\par\vspace{1mm}
 {\small RF averages cannot extrapolate beyond training targets. Learning a correction reduces the impact of the level shift.}
 \end{columns}
-\takeaway{Residual learning is not necessary for the selected SVR.}
-{\small SVR CV: absolute \textbf{2,411} vs residual \textbf{2,427 kW}; nearly tied.}
 \end{frame}
 
 % MAIN 13 -- 90 seconds
@@ -328,8 +326,7 @@ C & + Special days & 15 & 9,168 & $-8.7\%$\\
 \textcolor{Blue}{\textbf{D}} & \textcolor{Blue}{\textbf{+ Daily lags (24 h, 48 h)}} & \textcolor{Blue}{\textbf{17}} & \textcolor{Blue}{\textbf{3,010}} & \textcolor{Blue}{$-67.2\%$}\\
 E & + Weekly lag and rolling summaries & 21 & 3,700 & $+22.9\%$\\\bottomrule
 \end{tabularx}}\par
-{\small\textbf{D is selected:} daily lags give the largest gain; weekly/rolling features worsen RF and XGBoost\par
-(XGB \textbf{3,010 $\rightarrow$ 4,921 kW}), so they are \textbf{excluded from the final model}.}
+{\small\textbf{D is selected:} daily lags give the largest gain.}
 \end{frame}
 
 % MAIN 15 -- 65 seconds
@@ -345,7 +342,6 @@ MAE: \textbf{\TestMAE{} kW}\par
 MAPE: \textbf{\TestMAPE\%}\par
 $R^2$: \textbf{\TestRtwo}}
 \end{columns}
-\takeaway{Residual SVR: observed test-best; not CV-selected. Absolute SVR remains final.}
 \end{frame}
 
 % MAIN 16 -- 55 seconds

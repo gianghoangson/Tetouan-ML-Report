@@ -130,7 +130,7 @@
 
 **Speaking time:** 50 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Thank you, Minh. We compare two seasonal baselines with five regression families: linear regression or tuned Ridge, decision tree, random forest, RBF support vector regression, and XGBoost. Each family learns either the absolute load or a residual relative to the same hour yesterday. We subtract yesterday's load during fitting and add it back to the predicted correction. This lets the known recent load carry the current level. That matters when July demand rises beyond the training range. Standard tree and forest averages cannot exceed their training targets; additive boosted trees do not share that strict mathematical bound. We compare both formulations using development CV.
+**Script:** Thank you, Son. We compare two seasonal baselines, copying the same hour yesterday (Naive-24h) or last week (Naive-168h), with five regression models: linear regression, decision tree, random forest, RBF SVR and XGBoost. Each model is trained in two ways. The absolute version learns the load directly. The residual version, marked Delta, learns the change from yesterday, y minus lag 24, and adds yesterday's load back when predicting. Both versions are tuned and compared on the same cross-validation.
 
 **Key takeaway:** A residual target changes what the model learns, while preserving the final forecast units.
 
@@ -140,9 +140,9 @@
 
 **Speaking time:** 65 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Fold zero covers July fourth through August second. The training maximum is one hundred ten thousand seven hundred eleven kilowatts, while the validation maximum reaches one hundred thirty-three thousand one hundred thirty. About twelve percent of validation hours exceed the training maximum. For the difference from yesterday, no validation residual falls outside the training residual range. The tuned random forest's July RMSE falls from five thousand five hundred fifty-four to three thousand two hundred fifteen kilowatts. XGBoost also improves, from five thousand three hundred forty-four to two thousand nine hundred seventy-nine. These separately tuned comparisons support residual learning, but do not isolate the target transformation from parameter choices. SVR is different: absolute and residual CV results are nearly tied, and absolute SVR remains selected.
+**Script:** Why learn a change? Look at fold 0, the July validation window. The highest load in training is about 110,700 kW, but July reaches 133,100, and 12% of July hours are above anything the model has seen. Tree models predict averages of training values, so they cannot go above that maximum. The change from yesterday stays in a familiar range: no hour falls outside it. After tuning, the residual target cuts the July RMSE of random forest from 5,554 to 3,215 kW, and of XGBoost from 5,344 to 2,979.
 
-**Key takeaway:** Residuals reduce the July range shift; absolute SVR still wins the specified CV criterion.
+**Key takeaway:** The residual target removes the July range shift for tree models.
 
 **Transition:** We next combine model tuning with the chronological CV comparison.
 
@@ -150,7 +150,7 @@
 
 **Speaking time:** 90 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** We now combine the tuning and CV results. Randomized search evaluates one hundred seventy configurations across the five families per target type, each on five temporal folds. We compare candidates by mean CV RMSE. Tuning cuts absolute SVR's CV error by thirty-nine point three percent relative to default SVR. The table on the right compares each model before and after tuning on the same five folds, using its better target type. SVR gains the most, from three thousand nine hundred sixty-nine to two thousand four hundred eleven. Decision tree improves by thirty-seven point six percent, XGBoost by twenty-five and random forest by twenty-one, mainly thanks to the residual target. Linear regression barely changes, because it has almost nothing to tune. After tuning, absolute SVR has the lowest mean at two thousand four hundred ten point six. The top four means are within one point three percent, below fold variation. Finally, with more recent history, the saved h1 CV result is one thousand eight hundred sixty-six point four, twenty-two point six percent lower. Configurations and validation dates match, but histories and initial training rows differ. This is a comparison of information settings, and the reused CV folds are not a nested evaluation.
+**Script:** Next, tuning. Randomized search tries 170 configurations across the five models for each target type, each scored on the same five time-ordered folds. The chart ranks the tuned versions by mean CV RMSE: absolute SVR is first with 2,410.6 kW, plus or minus 766. The table shows the gain over the default models: SVR improves by 39%, decision tree by 38%, XGBoost and random forest by 21 to 25%, mostly thanks to the residual target. Linear regression barely changes, because it has almost nothing to tune. At the bottom: forecasting only one hour ahead, the same SVR drops to 1,866 kW, 22.6% lower, because it can use the last few hours of load.
 
 **Key takeaway:** Temporal CV, tuning, and recent history answer different comparison questions.
 
@@ -160,7 +160,7 @@
 
 **Speaking time:** 65 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** We add feature groups to absolute-target random forest, keeping the parameters selected for D fixed. Calendar information cuts error by about a third. Special days add a smaller gain. Daily lags deliver the largest improvement, from nine thousand one hundred sixty-eight to three thousand ten kilowatts. Weekly and rolling features then raise error to three thousand seven hundred. XGBoost also worsens, from three thousand ten to four thousand nine hundred twenty-one. That is why the weekly lag and the rolling summaries are excluded from the final model, which uses set D. One possible mechanism is reliance on rolling seasonal levels that are hard to extrapolate in July. The saved comparison does not isolate the weekly lag, so we cannot claim it is neutral alone.
+**Script:** Which features matter? This ablation uses one model: the tuned absolute random forest, with its parameters fixed, on the same five CV folds. We add one feature group at a time. Weather alone gives an RMSE of 15,010 kW. Calendar features cut it by a third, and special days by another 9%. Daily lags, the load 24 and 48 hours earlier, give the biggest drop, 67%, down to 3,010. Adding the weekly lag and rolling averages makes it worse, 3,700, and XGBoost shows the same pattern. So every model uses set D, 17 features.
 
 **Key takeaway:** Daily lags dominate this fixed-parameter RF ablation; combined weekly/rolling inputs hurt.
 
@@ -170,7 +170,7 @@
 
 **Speaking time:** 65 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** On the seven hundred and twenty December hours, the selected SVR has RMSE one thousand six hundred and twenty-four point six kilowatts. MAE is about one thousand ninety-five, MAPE is one point seven eight percent, and R squared is zero point nine eight six nine. The RMSE reduction is fifty point seven percent against Naive-24h. However, the weekly baseline is stronger than the daily baseline in December. Against Naive-168h, the reduction is thirty-eight percent. The residual SVR has an even lower observed test RMSE, about one thousand four hundred and nineteen. We report this transparently, but do not change the final selection after seeing December. These are results for this specific test month with observed target-hour weather; they do not establish year-round operational accuracy.
+**Script:** Now December, used only once. The CV-selected SVR reaches an RMSE of 1,624.6 kW: 50.7% lower than Naive-24h and 38% lower than Naive-168h. MAE is about 1,095 kW, MAPE 1.78% and R squared 0.987. The residual SVR at the bottom happens to be better on December, 1,419 kW, but it was not the best on CV; picking it now would mean choosing with the test set. So the absolute SVR stays our final model.
 
 **Key takeaway:** Test-best and CV-selected are distinct roles.
 
@@ -180,7 +180,7 @@
 
 **Speaking time:** 55 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** The top panel shows all seven hundred twenty December predictions; the lower panel shows forecast minus actual. Negative errors mean underprediction. Overall bias is minus two hundred two point one kilowatts. The worst day is December first, Mawlid, with daily MAE four thousand five hundred seventy-nine point two. One possible explanation is that the shared holiday indicator transfers the larger reductions seen around Eid to Mawlid. This is a hypothesis, not a causal conclusion: saved forecast errors cannot establish it. A targeted ablation or additional holiday observations would be needed. The full-month view shows that good average accuracy can hide concentrated daily errors.
+**Script:** The top panel shows the actual load and our forecast for all 720 December hours; the two lines almost overlap. The bottom panel shows the error, forecast minus actual. The overall bias is minus 202 kW, so the model slightly under-forecasts. The errors are concentrated: the worst day is December 1st, Mawlid, a religious holiday, with an MAE of 4,579 kW. Holidays are rare in the training data, so they remain the hardest days.
 
 **Key takeaway:** Overall metrics should be accompanied by time-local error analysis.
 
@@ -190,7 +190,7 @@
 
 **Speaking time:** 50 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** How does this compare with published work on the same dataset? The table lists the numbers each study reports; we did not re-run their settings. Two studies forecast only ten minutes ahead: Islam and colleagues report a MAPE of six point three percent, and Alsalem an R squared of zero point nine eight nine, but for Zone 3 only. RoSe and colleagues use no past load at all, so their model is not a forecast of the future. Biswas and colleagues report a MAPE of one point zero four percent on the mean of the three zones, but the horizon is not stated. Our task is day-ahead, the model is chosen on chronological cross-validation and December is used once, and we still reach a MAPE of one point seven eight percent and R squared of zero point nine eight seven. Because targets, horizons and test periods differ, this positions our result rather than ranking the studies.
+**Script:** How does this compare with published work on the same dataset? These are the numbers each study reports; we did not re-run them. Islam and Alsalem forecast only ten minutes ahead, and Alsalem's R squared is for Zone 3 only. RoSe uses no past load, so it is not a real forecast. Biswas reports a MAPE of 1.04%, but on the mean of the zones and without stating the horizon. Our task is day-ahead, the model is chosen on chronological CV and December is used once, and we still reach a MAPE of 1.78% and R squared of 0.987. Since targets and horizons differ, this positions our result rather than ranking the studies.
 
 **Key takeaway:** A longer horizon and stricter evaluation than the published studies, with errors in the same range or lower.
 
@@ -200,7 +200,7 @@
 
 **Speaking time:** 40 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Three findings stand out. Choose the final model using chronological development CV and report December separately. Daily lags provide the largest gain in the fixed-parameter RF ablation, while adding weekly and rolling features hurts that tested model. The CV-selected SVR halves the daily-baseline December error, a fifty point seven percent reduction. Two limitations stay visible. First, the weather inputs are the values actually measured at the target hour; a real forecast issued at midnight would only have weather forecasts, so errors could be higher in practice. Second, the dataset is small: one year of data from a single city. Next steps are to use weather forecasts as inputs and to add more years of data.
+**Script:** Three findings. First, choose the final model on chronological CV and report December separately. Second, daily lags give the largest gain, while weekly and rolling features hurt. Third, the selected SVR halves the Naive-24h error in December, a 50.7% reduction. Two limitations. We use the weather measured at the target hour; a real forecast at midnight would only have weather forecasts, so errors could be higher. And the dataset is small: one year from one city. Next steps are weather forecasts as inputs and more years of data.
 
 **Key takeaway:** The December gains depend on observed weather and a small dataset.
 
@@ -210,7 +210,7 @@
 
 **Speaking time:** 20 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Our CV-selected SVR reaches December RMSE of one thousand six hundred and twenty-four point six kilowatts, fifty point seven percent below Naive-24h. It is a promising chronological benchmark, conditional on observed weather. Thank you. We welcome your questions.
+**Script:** To conclude: our CV-selected SVR forecasts December with an RMSE of 1,624.6 kW, 50.7% better than copying yesterday. It is a promising result under strict chronological evaluation, with the caveat of observed weather. Thank you; we are happy to take your questions.
 
 **Key takeaway:** Strong measured performance, carefully bounded interpretation.
 
