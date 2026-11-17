@@ -32,7 +32,7 @@ So với các bài đã công bố trên cùng bộ dữ liệu thì sao? Đây 
 
 ## 18. Findings & limitations (~35s)
 
-Ba kết quả chính. Thứ nhất, chọn model cuối bằng CV theo thời gian và báo cáo tháng 12 riêng. Thứ hai, lag theo ngày giúp nhiều nhất, còn feature theo tuần và trung bình trượt làm kết quả tệ hơn. Thứ ba, SVR được chọn giảm một nửa sai số của Naive-24h trong tháng 12, cụ thể là 50,7%. Hai hạn chế. Nhóm dùng thời tiết đo thực tế tại giờ cần dự báo; nếu dự báo thật lúc nửa đêm thì chỉ có thời tiết dự báo, nên sai số có thể cao hơn. Và dữ liệu còn nhỏ: một năm, một thành phố. Hướng tiếp theo là dùng thời tiết dự báo làm đầu vào và thu thập thêm nhiều năm dữ liệu.
+Ba kết quả chính. Thứ nhất, chọn model cuối bằng CV theo thời gian và báo cáo tháng 12 riêng. Thứ hai, lag theo ngày giúp nhiều nhất, còn feature theo tuần và trung bình trượt làm kết quả tệ hơn. Thứ ba, SVR được chọn giảm một nửa sai số của Naive-24h trong tháng 12, cụ thể là 50,7%. Hạn chế: dữ liệu còn nhỏ, chỉ một năm của một thành phố. Hướng tiếp theo là thu thập thêm nhiều năm dữ liệu.
 
 ## 19. Conclusion & Q&A (~15s)
 

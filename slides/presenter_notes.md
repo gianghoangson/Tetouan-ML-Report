@@ -200,9 +200,9 @@
 
 **Speaking time:** 40 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** Three findings. First, choose the final model on chronological CV and report December separately. Second, daily lags give the largest gain, while weekly and rolling features hurt. Third, the selected SVR halves the Naive-24h error in December, a 50.7% reduction. Two limitations. We use the weather measured at the target hour; a real forecast at midnight would only have weather forecasts, so errors could be higher. And the dataset is small: one year from one city. Next steps are weather forecasts as inputs and more years of data.
+**Script:** Three findings. First, choose the final model on chronological CV and report December separately. Second, daily lags give the largest gain, while weekly and rolling features hurt. Third, the selected SVR halves the Naive-24h error in December, a 50.7% reduction. One limitation: the dataset is small, one year from one city. The next step is more years of data.
 
-**Key takeaway:** The December gains depend on observed weather and a small dataset.
+**Key takeaway:** The December gains come from a small dataset.
 
 **Transition:** We finish with the selected SVR's December result.
 
