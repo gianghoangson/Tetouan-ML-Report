@@ -36,4 +36,4 @@ Ba kết quả chính. Thứ nhất, chọn model cuối bằng CV theo thời g
 
 ## 19. Conclusion & Q&A (~15s)
 
-Tóm lại: SVR được chọn qua CV dự báo tháng 12 với RMSE 1.624,6 kW, tốt hơn 50,7% so với việc lấy tải hôm qua. Đây là kết quả khả quan dưới cách đánh giá chặt chẽ theo thời gian, với lưu ý là đang dùng thời tiết đo thực tế. Cảm ơn thầy và các bạn đã lắng nghe, nhóm sẵn sàng nhận câu hỏi.
+Tóm lại: SVR được chọn qua CV dự báo tháng 12 với RMSE 1.624,6 kW, tốt hơn 50,7% so với việc lấy tải hôm qua. Đây là kết quả khả quan dưới cách đánh giá chặt chẽ theo thời gian. Cảm ơn thầy và các bạn đã lắng nghe, nhóm sẵn sàng nhận câu hỏi.

@@ -100,7 +100,7 @@
 
 **Speaking time:** 40 seconds. **Speaker:** Giang Hoang Son.
 
-**Script:** Our main setting, h24, issues one batch at midnight for that day's twenty-four hourly intervals. The interval starts are zero to twenty-three hours after issuance; their completions are one to twenty-four hours after issuance. The name h24 describes the minimum load-history lag, not a uniform lead time. The h1 setting updates each hour and can use the latest completed-hour load. These are different information settings. Both assume that completed loads arrive promptly, and both use observed target-hour weather. Operational forecasting would need weather forecasts available at issuance. We compare their saved CV results later, after introducing the models.
+**Script:** Our main setting, h24, issues one batch at midnight for that day's twenty-four hourly intervals. The interval starts are zero to twenty-three hours after issuance; their completions are one to twenty-four hours after issuance. The name h24 describes the minimum load-history lag, not a uniform lead time. The h1 setting updates each hour and can use the latest completed-hour load. These are different information settings. Both assume that completed loads arrive promptly. We compare their saved CV results later, after introducing the models.
 
 **Key takeaway:** Forecast resolution, history age and issuance lead are different concepts.
 
@@ -210,7 +210,7 @@
 
 **Speaking time:** 20 seconds. **Speaker:** Dang Nhat Minh.
 
-**Script:** To conclude: our CV-selected SVR forecasts December with an RMSE of 1,624.6 kW, 50.7% better than copying yesterday. It is a promising result under strict chronological evaluation, with the caveat of observed weather. Thank you; we are happy to take your questions.
+**Script:** To conclude: our CV-selected SVR forecasts December with an RMSE of 1,624.6 kW, 50.7% better than copying yesterday. It is a promising result under strict chronological evaluation. Thank you; we are happy to take your questions.
 
 **Key takeaway:** Strong measured performance, carefully bounded interpretation.
 
